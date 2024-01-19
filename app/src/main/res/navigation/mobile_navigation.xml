@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.myapplication.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_schedule"
+        android:name="com.example.myapplication.ui.schedule.ScheduleFragment"
+        android:label="@string/menu_schedule"
+        tools:layout="@layout/fragment_schedule" />
+
+    <fragment
+        android:id="@+id/nav_analysis"
+        android:name="com.example.myapplication.ui.analysis.AnalysisFragment"
+        android:label="@string/menu_analysis"
+        tools:layout="@layout/fragment_analysis" />
+
+    <fragment
+        android:id="@+id/nav_tournaments"
+        android:name="com.example.myapplication.ui.tournaments.TournamentsFragment"
+        android:label="@string/menu_tournaments"
+        tools:layout="@layout/fragment_tournaments" />
+
+    <fragment
+        android:id="@+id/nav_diet"
+        android:name="com.example.myapplication.ui.diet.DietFragment"
+        android:label="@string/menu_diet"
+        tools:layout="@layout/fragment_diet" />
+
+    <fragment
+        android:id="@+id/nav_progress"
+        android:name="com.example.myapplication.ui.progress.ProgressFragment"
+        android:label="@string/menu_progress"
+        tools:layout="@layout/fragment_progress" />
+
+</navigation>

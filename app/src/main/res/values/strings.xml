@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Forge</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_who">Athlete/Coach</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_progress">Progression</string>
+    <string name="menu_schedule">Training schedule</string>
+    <string name="menu_analysis">Competition analysis</string>
+    <string name="menu_tournaments">Calendar of tournaments</string>
+    <string name="menu_diet">Diet</string>
+</resources>
