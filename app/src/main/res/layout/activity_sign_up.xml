@@ -127,7 +127,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="70dp"
         android:text="Already have an account?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/loginLink"
@@ -138,7 +138,7 @@
         android:id="@+id/loginLink"
         android:layout_width="100dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="75dp"
+        android:layout_marginBottom="70dp"
         android:background="@drawable/login_outline"
         android:text="Log in"
         android:textSize="15sp"
