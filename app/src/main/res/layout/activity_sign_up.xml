@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".SignUpActivity"
-    android:background="@color/redish">
+    android:background="@color/purple">
 
     <TextView
         android:id="@+id/title"
@@ -34,7 +34,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/login_outline">
+            android:background="@drawable/outline">
 
             <ImageView
                 android:layout_width="90dp"
@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_marginTop="15dp"
-                android:background="@drawable/login_outline"
+                android:background="@drawable/outline"
                 android:drawableStart="@drawable/login_username"
                 android:drawablePadding="8dp"
                 android:hint="Username"
@@ -90,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/login_outline"
+                android:background="@drawable/outline"
                 android:drawableStart="@drawable/login_mail"
                 android:drawablePadding="8dp"
                 android:hint="Email"
@@ -102,7 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/login_outline"
+                android:background="@drawable/outline"
                 android:drawableStart="@drawable/login_password"
                 android:drawablePadding="8dp"
                 android:hint="Password"
@@ -137,11 +137,13 @@
     <Button
         android:id="@+id/loginLink"
         android:layout_width="100dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_marginBottom="70dp"
-        android:background="@drawable/login_outline"
         android:text="Log in"
-        android:textSize="15sp"
+        android:inputType="textCapSentences"
+        android:textSize="14sp"
+        android:backgroundTint="@color/red_2"
+        app:cornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="@id/cardView"
         app:layout_constraintTop_toBottomOf="@id/cardView"
