@@ -12,7 +12,6 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.databinding.ActivityLoginBinding;
-import com.example.myapplication.databinding.ActivityMainBinding;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -22,14 +21,14 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);
-        Button loginButton = findViewById(R.id.login);
+        Button loginButton = findViewById(R.id.logIn);
         ToggleButton toggleButton = findViewById(R.id.toggleButton);
+        Button signupButton = findViewById(R.id.signLink);
 
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -47,6 +46,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
