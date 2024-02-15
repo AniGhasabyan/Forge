@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        EditText username = findViewById(R.id.username);
+        EditText username = findViewById(R.id.usormail);
         EditText password = findViewById(R.id.password);
         Button loginButton = findViewById(R.id.logIn);
         ToggleButton toggleButton = findViewById(R.id.toggleButton);
