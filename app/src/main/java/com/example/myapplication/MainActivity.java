@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up FAB and Snackbar based on the current destination
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() == R.id.nav_home) {
+                binding.appBarMain.fab.setImageResource(R.drawable.baseline_add);
                 binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
