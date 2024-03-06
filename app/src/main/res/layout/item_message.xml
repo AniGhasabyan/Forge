@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:layout_gravity="end"
+    android:background="@drawable/bubble_sent">
 
     <TextView
         android:id="@+id/text_view_message"
