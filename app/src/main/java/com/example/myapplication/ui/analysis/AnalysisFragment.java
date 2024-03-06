@@ -42,7 +42,11 @@ public class AnalysisFragment extends Fragment {
         // Initialize RecyclerView
         messages = new ArrayList<>();
         RecyclerView recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setReverseLayout(true);
+        recyclerView.setLayoutManager(layoutManager);
+
         messageAdapter = new MessageAdapter(messages);
         recyclerView.setAdapter(messageAdapter);
 
@@ -59,7 +63,7 @@ public class AnalysisFragment extends Fragment {
 
         if (!messageText.isEmpty()) {
             Message message = new Message(messageText);
-            messages.add(message);
+            messages.add(0, message);
             messageAdapter.notifyDataSetChanged();
 
             // Clear the input field
