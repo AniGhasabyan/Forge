@@ -89,7 +89,7 @@ public class SignUpActivity extends AppCompatActivity {
                             firebaseUser.sendEmailVerification();
 
                             Dialog dialog = new Dialog(SignUpActivity.this);
-                            dialog.showDialog("Confirm registration", "");
+                            dialog.showDialog("Verify Your Email", "Please check your email and click on the verification link to complete the registration process.");
                         } else {
                             try {
                                 throw task.getException();
