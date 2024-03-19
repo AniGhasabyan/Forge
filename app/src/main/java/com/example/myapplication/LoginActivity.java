@@ -75,10 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     loginUser(email, password);
                 }
-
-//                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                startActivity(intent);
-//                finish();
             }
         });
     }
