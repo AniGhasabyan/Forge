@@ -20,11 +20,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText et_username, et_email, et_password1, et_password2;
     private static final String TAG = "SignUpActivity";
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,8 @@ public class SignUpActivity extends AppCompatActivity {
         et_email = findViewById(R.id.signup_email);
         et_password1 = findViewById(R.id.signup_password);
         et_password2 = findViewById(R.id.signup_password_conf);
+
+        auth = FirebaseAuth.getInstance();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,15 +85,14 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void registerUser(String username, String email, String password){
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignUpActivity.this,
-                new OnCompleteListener<AuthResult>() {
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            FirebaseUser firebaseUser = auth.getCurrentUser();
+                            FirebaseUser user = auth.getCurrentUser();
 
-                            firebaseUser.sendEmailVerification();
+                            user.sendEmailVerification();
 
                             Dialog dialog = new Dialog(SignUpActivity.this);
                             dialog.showDialog("Verify Your Email", "Please check your email and click on the verification link to complete the registration process.");
