@@ -24,8 +24,8 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        EditText username = findViewById(R.id.usormail);
-        EditText password = findViewById(R.id.password);
+        EditText et_email = findViewById(R.id.login_email);
+        EditText et_password = findViewById(R.id.login_password);
         Button loginButton = findViewById(R.id.logIn);
         ToggleButton toggleButton = findViewById(R.id.toggleButton);
         Button signupButton = findViewById(R.id.signLink);
@@ -42,18 +42,21 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = et_email.getText().toString();
+                String password1 = et_password.getText().toString();
+
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });

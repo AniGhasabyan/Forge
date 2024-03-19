@@ -74,19 +74,19 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/usormail"
+                android:id="@+id/login_email"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/outline_2"
                 android:drawableStart="@drawable/login_mail"
                 android:drawablePadding="8dp"
-                android:hint="Username or email"
+                android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:padding="10dp" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/login_password"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_marginTop="8dp"
