@@ -15,7 +15,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.MyApplication.NoActionBar">
+            android:theme="@style/Theme.MyApplication.LoginSignUp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,7 +26,7 @@
         <activity
             android:name=".SignUpActivity"
             android:exported="false"
-            android:theme="@style/Theme.MyApplication.NoActionBar" />
+            android:theme="@style/Theme.MyApplication.LoginSignUp" />
 
         <activity
             android:name=".MainActivity"
