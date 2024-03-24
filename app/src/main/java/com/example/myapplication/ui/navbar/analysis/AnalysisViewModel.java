@@ -1,16 +1,16 @@
-package com.example.myapplication.ui.tournaments;
+package com.example.myapplication.ui.navbar.analysis;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class TournamentsViewModel extends ViewModel {
+public class AnalysisViewModel  extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public TournamentsViewModel() {
+    public AnalysisViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is calendar of tournaments fragment");
+        mText.setValue("This is competition analysis fragment");
     }
 
     public LiveData<String> getText() {

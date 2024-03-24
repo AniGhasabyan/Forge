@@ -7,37 +7,37 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.myapplication.ui.home.HomeFragment"
+        android:name="com.example.myapplication.ui.navbar.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_schedule"
-        android:name="com.example.myapplication.ui.schedule.ScheduleFragment"
+        android:name="com.example.myapplication.ui.navbar.schedule.ScheduleFragment"
         android:label="@string/menu_schedule"
         tools:layout="@layout/fragment_schedule" />
 
     <fragment
         android:id="@+id/nav_analysis"
-        android:name="com.example.myapplication.ui.analysis.AnalysisFragment"
+        android:name="com.example.myapplication.ui.navbar.analysis.AnalysisFragment"
         android:label="@string/menu_analysis"
         tools:layout="@layout/fragment_analysis" />
 
     <fragment
         android:id="@+id/nav_tournaments"
-        android:name="com.example.myapplication.ui.tournaments.TournamentsFragment"
+        android:name="com.example.myapplication.ui.navbar.tournaments.TournamentsFragment"
         android:label="@string/menu_tournaments"
         tools:layout="@layout/fragment_tournaments" />
 
     <fragment
         android:id="@+id/nav_diet"
-        android:name="com.example.myapplication.ui.diet.DietFragment"
+        android:name="com.example.myapplication.ui.navbar.diet.DietFragment"
         android:label="@string/menu_diet"
         tools:layout="@layout/fragment_diet" />
 
     <fragment
         android:id="@+id/nav_progress"
-        android:name="com.example.myapplication.ui.progress.ProgressFragment"
+        android:name="com.example.myapplication.ui.navbar.progress.ProgressFragment"
         android:label="@string/menu_progress"
         tools:layout="@layout/fragment_progress" />
 

@@ -1,16 +1,16 @@
-package com.example.myapplication.ui.analysis;
+package com.example.myapplication.ui.navbar.diet;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class AnalysisViewModel  extends ViewModel {
+public class DietViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public AnalysisViewModel() {
+    public DietViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is competition analysis fragment");
+        mText.setValue("This is diet fragment");
     }
 
     public LiveData<String> getText() {

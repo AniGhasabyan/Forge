@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.schedule;
+package com.example.myapplication.ui.navbar.schedule;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

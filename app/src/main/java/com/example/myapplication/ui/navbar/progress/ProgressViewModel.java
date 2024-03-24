@@ -1,20 +1,19 @@
-package com.example.myapplication.ui.schedule;
+package com.example.myapplication.ui.navbar.progress;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class ScheduleViewModel  extends ViewModel {
+public class ProgressViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public ScheduleViewModel() {
+    public ProgressViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is training schedule fragment");
+        mText.setValue("This is progression fragment");
     }
 
     public LiveData<String> getText() {
         return mText;
     }
-
 }
