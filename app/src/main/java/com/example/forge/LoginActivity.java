@@ -1,5 +1,7 @@
 package com.example.forge;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,6 +20,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -83,13 +88,27 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    FirebaseUser firebaseUser = auth.getCurrentUser();
+                    if(firebaseUser.isEmailVerified()){
+                        finishPreviousActivities(LoginActivity.this);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Dialog dialog = new Dialog(LoginActivity.this);
+                        dialog.showDialog("Email Is Not Verified", "Please check your email and click on the verification link to complete the registration process.");
+                    }
                 } else {
                     Toast.makeText(LoginActivity.this, "Incorrect email or password. Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    public static void finishPreviousActivities(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.AppTask> tasks = activityManager.getAppTasks();
+        for (ActivityManager.AppTask task : tasks) {
+            task.finishAndRemoveTask();
+        }
     }
 }
