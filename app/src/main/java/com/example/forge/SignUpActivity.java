@@ -93,7 +93,7 @@ public class SignUpActivity extends AppCompatActivity {
                             FirebaseUser user = auth.getCurrentUser();
 
                             database = FirebaseDatabase.getInstance();
-                            reference = database.getReference("Registered Users");
+                            reference = database.getReference("RegisteredUsers");
 
                             ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(username);
                             reference.child(username).setValue(writeUserDetails);
