@@ -6,13 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.forge.LoginActivity;
-import com.example.forge.MainActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,16 +22,33 @@ public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
     private FirebaseAuth auth;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        ProfileViewModel profileViewModel =
-                new ViewModelProvider(this).get(ProfileViewModel.class);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ProfileViewModel profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+    }
 
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         auth = FirebaseAuth.getInstance();
 
-        Button logoutButton = binding.getRoot().findViewById(R.id.buttonLogout);
+        TextView tv_username = view.findViewById(R.id.profileUsername);
+        TextView tv_email = view.findViewById(R.id.profileEmail);
+        TextView tv_password = view.findViewById(R.id.profilePassword);
+        Button logoutButton = view.findViewById(R.id.buttonLogout);
+        Button deleteAccountButton = view.findViewById(R.id.buttonDeleteAcc);
+
+        tv_email.setText(auth.getCurrentUser().getEmail());
+        tv_password.setText("******");
+
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,12 +60,17 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        return binding.getRoot();
+        deleteAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
-
 }

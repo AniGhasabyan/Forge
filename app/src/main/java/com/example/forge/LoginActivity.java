@@ -81,10 +81,10 @@ public class LoginActivity extends AppCompatActivity {
                 String password = et_password.getText().toString();
 
                 if (TextUtils.isEmpty(email)){
-                    et_email.setError("Username is required");
+                    et_email.setError("Email is required");
                     et_email.requestFocus();
                 } else if (TextUtils.isEmpty(password)){
-                    et_password.setError("Email is required");
+                    et_password.setError("Password is required");
                     et_password.requestFocus();
                 } else {
                     loginUser(email, password);

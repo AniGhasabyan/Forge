@@ -95,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity {
                             database = FirebaseDatabase.getInstance();
                             reference = database.getReference("Registered Users");
 
-                            ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(username, email);
+                            ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(username);
                             reference.child(username).setValue(writeUserDetails);
 
                             user.sendEmailVerification();
