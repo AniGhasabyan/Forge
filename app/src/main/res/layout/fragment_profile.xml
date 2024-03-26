@@ -88,8 +88,8 @@
         android:layout_height="wrap_content"
         android:text="Logout"
         android:textColor="@color/red"
-        android:layout_marginTop="18dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginLeft="21dp"
         android:backgroundTint="@color/gray"/>
 
     <Button
@@ -98,8 +98,8 @@
         android:layout_height="wrap_content"
         android:text="Delete Account"
         android:textColor="@color/red"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="21dp"
         android:backgroundTint="@color/gray"/>
 
 </LinearLayout>
