@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.databinding.FragmentAnalysisBinding;
 import com.example.forge.ui.Message;
-import com.example.forge.ui.MessageAdapter;
+import com.example.forge.ui.Adapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class AnalysisFragment extends Fragment {
 
     private FragmentAnalysisBinding binding;
     private List<Message> messages;
-    private MessageAdapter messageAdapter;
+    private Adapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,8 +46,8 @@ public class AnalysisFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        messageAdapter = new MessageAdapter(messages);
-        recyclerView.setAdapter(messageAdapter);
+        adapter = new Adapter(messages);
+        recyclerView.setAdapter(adapter);
 
         // Set up button click listener
         Button sendButton = binding.buttonSend;
@@ -63,7 +63,7 @@ public class AnalysisFragment extends Fragment {
         if (!messageText.isEmpty()) {
             Message message = new Message(messageText);
             messages.add(0, message);
-            messageAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
             // Clear the input field
             editTextMessage.getText().clear();
