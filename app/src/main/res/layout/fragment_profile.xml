@@ -66,15 +66,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Logout"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"/>
+        android:textColor="@color/red"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="16dp"
+        android:backgroundTint="@color/gray"/>
 
     <Button
         android:id="@+id/buttonDeleteAcc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Delete Account"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"/>
+        android:textColor="@color/red"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="16dp"
+        android:backgroundTint="@color/gray"/>
 
 </LinearLayout>
