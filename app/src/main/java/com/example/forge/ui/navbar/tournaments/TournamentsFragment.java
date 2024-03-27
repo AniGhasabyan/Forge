@@ -64,7 +64,7 @@ public class TournamentsFragment extends Fragment {
                 lastDateClicked = currentDateClicked;
                 doubleClick = true;
 
-                view.postDelayed(() -> doubleClick = false, 500);
+                view.postDelayed(() -> doubleClick = false, 1000);
             }
         });
 
@@ -80,11 +80,10 @@ public class TournamentsFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String tournament = input.getText().toString().trim();
+                String date = dayOfMonth + "/" + (month + 1) + "/" + year;
                 if (!tournament.isEmpty()) {
-                    tournamentList.add(new Message(tournament));
+                    tournamentList.add(new Message(date + " " + tournament));
                     adapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(requireContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
                 }
             }
         });
