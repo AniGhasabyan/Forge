@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.forge.R;
 import com.example.forge.databinding.FragmentAnalysisBinding;
 import com.example.forge.ui.Message;
 import com.example.forge.ui.Adapter;
@@ -38,9 +39,8 @@ public class AnalysisFragment extends Fragment {
         final TextView textView = binding.textAnalysis;
         analysisViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        // Initialize RecyclerView
         messages = new ArrayList<>();
-        RecyclerView recyclerView = binding.recyclerView;
+        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_analysis);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(true);
@@ -49,7 +49,6 @@ public class AnalysisFragment extends Fragment {
         adapter = new Adapter(messages);
         recyclerView.setAdapter(adapter);
 
-        // Set up button click listener
         Button sendButton = binding.buttonSend;
         sendButton.setOnClickListener(view -> onSendButtonClicked());
 

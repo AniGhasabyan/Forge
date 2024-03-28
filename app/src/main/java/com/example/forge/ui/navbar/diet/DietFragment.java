@@ -46,7 +46,7 @@ public class DietFragment extends Fragment {
         final TextView textView = binding.textDiet;
         dietViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        recyclerView = root.findViewById(R.id.recyclerViewDietNotes);
+        recyclerView = root.findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         dietNotesList = new ArrayList<>();
         adapter = new Adapter(dietNotesList);

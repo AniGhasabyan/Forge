@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.forge.R;
 import com.example.forge.ui.Message;
 import com.example.forge.ui.Adapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
@@ -41,7 +42,7 @@ public class TournamentsFragment extends Fragment {
         final TextView textView = binding.textTournaments;
         tournamentsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        RecyclerView recyclerView = binding.recyclerViewTournaments;
+        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_tournaments);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         tournamentList = new ArrayList<>();
         adapter = new Adapter(tournamentList);
