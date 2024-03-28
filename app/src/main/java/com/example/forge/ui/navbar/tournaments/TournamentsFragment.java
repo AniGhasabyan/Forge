@@ -82,8 +82,8 @@ public class TournamentsFragment extends Fragment {
                 String tournament = input.getText().toString().trim();
                 String date = dayOfMonth + "/" + (month + 1) + "/" + year;
                 if (!tournament.isEmpty()) {
-                    tournamentList.add(new Message(date + "\n" + "\n" + tournament));
-                    adapter.notifyDataSetChanged();
+                    tournamentList.add(0, new Message(date + "\n" + "\n" + tournament));
+                    adapter.notifyItemInserted(0);
                 }
             }
         });
