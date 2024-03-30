@@ -16,6 +16,7 @@ import com.example.forge.LoginActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileFragment extends Fragment {
 
@@ -48,6 +49,11 @@ public class ProfileFragment extends Fragment {
 
         tv_email.setText(auth.getCurrentUser().getEmail());
         tv_password.setText("******");
+
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        String displayName = firebaseUser.getDisplayName();
+
+        tv_username.setText(displayName);
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
