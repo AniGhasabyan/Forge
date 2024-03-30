@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
-import com.example.forge.ui.Message;
-import com.example.forge.ui.Adapter;
+import com.example.forge.Message;
+import com.example.forge.ui.MessageAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class DietFragment extends Fragment {
     private FragmentDietBinding binding;
     private List<Message> dietNotesList;
     private RecyclerView recyclerView;
-    private Adapter adapter;
+    private MessageAdapter messageAdapter;
     private DietViewModel dietViewModel;
 
 
@@ -49,13 +49,13 @@ public class DietFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         dietNotesList = new ArrayList<>();
-        adapter = new Adapter(dietNotesList);
-        recyclerView.setAdapter(adapter);
+        messageAdapter = new MessageAdapter(dietNotesList);
+        recyclerView.setAdapter(messageAdapter);
 
         dietViewModel.getDietNotes().observe(getViewLifecycleOwner(), dietNotes -> {
             dietNotesList.clear();
             dietNotesList.addAll(dietNotes);
-            adapter.notifyDataSetChanged();
+            messageAdapter.notifyDataSetChanged();
         });
 
         Button addButton = root.findViewById(R.id.buttonAddNote);

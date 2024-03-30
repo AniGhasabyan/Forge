@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,8 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
-import com.example.forge.ui.Message;
-import com.example.forge.ui.Adapter;
+import com.example.forge.Message;
+import com.example.forge.ui.MessageAdapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class TournamentsFragment extends Fragment {
 
     private FragmentTournamentsBinding binding;
     private List<Message> tournamentList;
-    private Adapter adapter;
+    private MessageAdapter messageAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -45,8 +44,8 @@ public class TournamentsFragment extends Fragment {
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_tournaments);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         tournamentList = new ArrayList<>();
-        adapter = new Adapter(tournamentList);
-        recyclerView.setAdapter(adapter);
+        messageAdapter = new MessageAdapter(tournamentList);
+        recyclerView.setAdapter(messageAdapter);
 
         CalendarView calendarView = binding.calendarView;
 
@@ -84,7 +83,7 @@ public class TournamentsFragment extends Fragment {
                 String date = dayOfMonth + "/" + (month + 1) + "/" + year;
                 if (!tournament.isEmpty()) {
                     tournamentList.add(0, new Message(date + "\n" + "\n" + tournament));
-                    adapter.notifyItemInserted(0);
+                    messageAdapter.notifyItemInserted(0);
                 }
             }
         });

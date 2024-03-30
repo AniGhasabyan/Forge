@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.forge.ui.Message;
+import com.example.forge.Message;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.forge.ui;
+package com.example.forge;
 
 public class Message {
     private String text;

@@ -1,5 +1,6 @@
 package com.example.forge.ui;
 
+import com.example.forge.Message;
 import com.example.forge.R;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.MessageViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
     private List<Message> messages;
 
-    public Adapter(List<Message> messages) {
+    public MessageAdapter(List<Message> messages) {
         this.messages = messages;
     }
 
