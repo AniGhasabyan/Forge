@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +23,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -93,18 +99,27 @@ public class SignUpActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             FirebaseUser user = auth.getCurrentUser();
 
-                            database = FirebaseDatabase.getInstance();
-                            reference = database.getReference("RegisteredUsers");
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference userRef = db.collection("users").document(user.getUid());
 
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(username).build();
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("username", username);
 
-                            user.updateProfile(profileUpdates);
+                            userRef.set(userData)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                    .setDisplayName(username).build();
+
+                                            user.updateProfile(profileUpdates);
 
                             user.sendEmailVerification();
 
                             Dialog dialog = new Dialog(SignUpActivity.this);
                             dialog.showDialog("Verify Your Email", "Please check your email and click on the verification link to complete the registration process.");
+                                        }
+                                    });
                         } else {
                             try {
                                 throw task.getException();

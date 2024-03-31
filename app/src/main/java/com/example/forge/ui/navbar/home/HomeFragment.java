@@ -16,6 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentHomeBinding;
 import com.example.forge.ui.UserAdapter;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -50,22 +54,26 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        List<String> users = getUsers();
-        userAdapter.setUsernames(users);
+        getUsers();
     }
 
-    private List<String> getUsers() {
-        List<String> users = new ArrayList<>();
+    private void getUsers() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersRef = db.collection("users");
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        String displayName = firebaseUser.getDisplayName();
-        users.add(displayName);
-        users.add("User 3");
-        users.add("User 2");
-        users.add("User 1");
-
-        return users;
+        usersRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<String> users = new ArrayList<>();
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                String username = document.getString("username");
+                if (username != null && !username.isEmpty()) {
+                    users.add(username);
+                }
+            }
+            userAdapter.setUsernames(users);
+        }).addOnFailureListener(e -> {
+        });
     }
+
 
     @Override
     public void onDestroyView() {
