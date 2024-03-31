@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentHomeBinding;
 import com.example.forge.ui.UserAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +56,13 @@ public class HomeFragment extends Fragment {
 
     private List<String> getUsers() {
         List<String> users = new ArrayList<>();
-        users.add("User 1");
-        users.add("User 2");
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        String displayName = firebaseUser.getDisplayName();
+        users.add(displayName);
         users.add("User 3");
+        users.add("User 2");
+        users.add("User 1");
 
         return users;
     }
