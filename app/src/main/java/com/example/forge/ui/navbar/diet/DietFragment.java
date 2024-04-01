@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.forge.databinding.FragmentDietBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class DietFragment extends Fragment {
 
@@ -33,6 +35,7 @@ public class DietFragment extends Fragment {
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
     private DietViewModel dietViewModel;
+    private FirebaseFirestore db;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -62,6 +65,8 @@ public class DietFragment extends Fragment {
         addButton.setOnClickListener(v -> {
             showAddNoteDialog();
         });
+
+        db = FirebaseFirestore.getInstance();
 
         return root;
     }
