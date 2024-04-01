@@ -18,6 +18,7 @@ import com.example.forge.R;
 import com.example.forge.databinding.FragmentAnalysisBinding;
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
+import com.example.forge.ui.navbar.diet.DietViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,11 @@ public class AnalysisFragment extends Fragment {
     private FragmentAnalysisBinding binding;
     private List<Message> messages;
     private MessageAdapter messageAdapter;
+    private AnalysisViewModel analysisViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        AnalysisViewModel analysisViewModel =
+        analysisViewModel =
                 new ViewModelProvider(this).get(AnalysisViewModel.class);
 
         binding = FragmentAnalysisBinding.inflate(inflater, container, false);
@@ -49,6 +51,12 @@ public class AnalysisFragment extends Fragment {
         messageAdapter = new MessageAdapter(messages);
         recyclerView.setAdapter(messageAdapter);
 
+        analysisViewModel.getMessage().observe(getViewLifecycleOwner(), dietNotes -> {
+            messages.clear();
+            messages.addAll(dietNotes);
+            messageAdapter.notifyDataSetChanged();
+        });
+
         Button sendButton = binding.buttonSend;
         sendButton.setOnClickListener(view -> onSendButtonClicked());
 
@@ -60,12 +68,7 @@ public class AnalysisFragment extends Fragment {
         String messageText = editTextMessage.getText().toString().trim();
 
         if (!messageText.isEmpty()) {
-            Message message = new Message(messageText);
-            messages.add(0, message);
-            messageAdapter.notifyDataSetChanged();
-
-            // Clear the input field
-            editTextMessage.getText().clear();
+            analysisViewModel.addMessage(new Message(messageText));
         }
     }
 
