@@ -20,15 +20,20 @@ import com.example.forge.R;
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TournamentsFragment extends Fragment {
 
     private FragmentTournamentsBinding binding;
     private List<Message> tournamentList;
     private MessageAdapter messageAdapter;
+    private FirebaseFirestore db;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -68,6 +73,19 @@ public class TournamentsFragment extends Fragment {
             }
         });
 
+        db = FirebaseFirestore.getInstance();
+
+        db.collection("tournaments")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String noteContent = document.getString("note");
+                        tournamentList.add(new Message(noteContent));
+                    }
+
+                    messageAdapter.notifyItemInserted(0);
+                });
+
         return root;
     }
 
@@ -81,9 +99,16 @@ public class TournamentsFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String tournament = input.getText().toString().trim();
                 String date = dayOfMonth + "/" + (month + 1) + "/" + year;
+
+                Map<String, Object> noteData = new HashMap<>();
+
                 if (!tournament.isEmpty()) {
                     tournamentList.add(0, new Message(date + "\n" + "\n" + tournament));
                     messageAdapter.notifyItemInserted(0);
+
+                    noteData.put("note", date  + "\n" + "\n" + tournament);
+                    db.collection("tournaments")
+                            .add(noteData);
                 }
             }
         });
