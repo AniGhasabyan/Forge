@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -17,6 +19,8 @@ public class AnalysisViewModel extends ViewModel {
     private MutableLiveData<List<Message>> message;
     private MutableLiveData<String> mText;
     private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     public AnalysisViewModel() {
         message = new MutableLiveData<>();
@@ -25,8 +29,12 @@ public class AnalysisViewModel extends ViewModel {
         mText = new MutableLiveData<>();
         mText.setValue("This is analysis fragment");
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
-        db.collection("analyses")
+
+        db.collection("users").document(user.getUid())
+                .collection("analyses")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Message> notes = new ArrayList<>();
@@ -48,7 +56,8 @@ public class AnalysisViewModel extends ViewModel {
             currentNotes.add(0, note);
             message.setValue(currentNotes);
 
-            db.collection("analyses")
+            db.collection("users").document(user.getUid())
+                    .collection("analyses")
                     .add(note);
         }
     }

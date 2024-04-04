@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -17,7 +19,8 @@ public class DietViewModel extends ViewModel {
     private MutableLiveData<List<Message>> dietNotes;
     private MutableLiveData<String> mText;
     private FirebaseFirestore db;
-    private MessageAdapter messageAdapter;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     public DietViewModel() {
         dietNotes = new MutableLiveData<>();
@@ -26,8 +29,12 @@ public class DietViewModel extends ViewModel {
         mText = new MutableLiveData<>();
         mText.setValue("This is diet fragment");
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
-        db.collection("diets")
+
+        db.collection("users").document(user.getUid())
+                .collection("diets")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Message> notes = new ArrayList<>();
@@ -49,7 +56,8 @@ public class DietViewModel extends ViewModel {
             currentNotes.add(0, note);
             dietNotes.setValue(currentNotes);
 
-            db.collection("diets")
+            db.collection("users").document(user.getUid())
+                    .collection("diets")
                     .add(note);
         }
     }

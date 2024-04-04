@@ -20,6 +20,8 @@ import com.example.forge.R;
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -34,6 +36,8 @@ public class TournamentsFragment extends Fragment {
     private List<Message> tournamentList;
     private MessageAdapter messageAdapter;
     private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -73,11 +77,12 @@ public class TournamentsFragment extends Fragment {
             }
         });
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        db.collection("tournaments")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("users").document(user.getUid())
+                .collection("tournaments").get().addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String noteContent = document.getString("note");
                         tournamentList.add(new Message(noteContent));
@@ -107,7 +112,9 @@ public class TournamentsFragment extends Fragment {
                     messageAdapter.notifyItemInserted(0);
 
                     noteData.put("note", date  + "\n" + "\n" + tournament);
-                    db.collection("tournaments")
+
+                    db.collection("users").document(user.getUid())
+                            .collection("tournaments")
                             .add(noteData);
                 }
             }
