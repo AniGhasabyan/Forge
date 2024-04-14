@@ -2,7 +2,6 @@ package com.example.forge;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.Menu;
 import android.widget.ImageButton;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -44,37 +43,35 @@ public class MainActivity extends AppCompatActivity {
                                 .setAction("Action", null).show();
                     }
                 });
-                binding.appBarMain.fab.setVisibility(View.VISIBLE); // Ensure the FAB is visible
+                binding.appBarMain.fab.setVisibility(View.VISIBLE);
             } else {
                 // If not on the home destination, hide the FAB
                 binding.appBarMain.fab.setVisibility(View.GONE);
             }
 
             ImageButton threeDotsButton = findViewById(R.id.three_dots);
+            ImageButton switchAccountsButton = findViewById(R.id.switch_accounts);
+
             if (destination.getId() == R.id.nav_profile) {
-                // Hide the three dots button when on the profile fragment
                 threeDotsButton.setVisibility(View.GONE);
             } else {
-                // Show the three dots button for other destinations
                 threeDotsButton.setVisibility(View.VISIBLE);
-                // Set OnClickListener for the three dots button
                 threeDotsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // Open the profile fragment
                         NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
                         navController.navigate(R.id.nav_profile);
                     }
                 });
             }
 
-            ImageButton switchAccountsButton = findViewById(R.id.switch_accounts);
             switchAccountsButton.setVisibility(destination.getId() == R.id.nav_profile ? View.VISIBLE : View.GONE);
             switchAccountsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                 }
             });
+
         });
 
         DrawerLayout drawer = binding.drawerLayout;
