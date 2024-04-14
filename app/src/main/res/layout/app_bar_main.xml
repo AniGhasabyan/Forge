@@ -25,6 +25,16 @@
                 android:layout_gravity="end"
                 android:background="@drawable/baseline_three_dots"
                 android:layout_marginRight="20dp"/>
+
+            <ImageButton
+                android:id="@+id/switch_accounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="@drawable/baseline_switch_account"
+                android:layout_marginRight="20dp"
+                android:visibility="gone"/>
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
