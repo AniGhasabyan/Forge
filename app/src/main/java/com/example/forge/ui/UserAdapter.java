@@ -51,7 +51,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         this.usernames.clear();
         if (usernames != null) {
             this.usernames.addAll(0, usernames);
-            notifyDataSetChanged(); // Notify adapter when data changes
+            notifyItemInserted(0);
         }
     }
 
