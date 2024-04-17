@@ -13,6 +13,7 @@
         android:layout_marginStart="20dp">
 
         <LinearLayout
+            android:id="@+id/ch_schedule"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -36,6 +37,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ch_progress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -69,6 +71,7 @@
         android:layout_marginStart="20dp">
 
         <LinearLayout
+            android:id="@+id/ch_analysis"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -92,6 +95,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ch_tournaments"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -126,6 +130,7 @@
         android:layout_marginBottom="80dp">
 
         <LinearLayout
+            android:id="@+id/ch_diet"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

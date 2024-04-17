@@ -1,4 +1,4 @@
-package com.example.forge.ui.profile;
+package com.example.forge.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,7 +26,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ProfileViewModel profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
     }
 
     @Override

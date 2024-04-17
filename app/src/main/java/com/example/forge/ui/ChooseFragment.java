@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,12 @@ public class ChooseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Any additional setup for your fragment
+
+        LinearLayout scheduleL = view.findViewById(R.id.ch_schedule);
+        LinearLayout progressL = view.findViewById(R.id.ch_progress);
+        LinearLayout analysisL = view.findViewById(R.id.ch_analysis);
+        LinearLayout tournamentsL = view.findViewById(R.id.ch_tournaments);
+        LinearLayout dietL = view.findViewById(R.id.ch_diet);
+
     }
 }
