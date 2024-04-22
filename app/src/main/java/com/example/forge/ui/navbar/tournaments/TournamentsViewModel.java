@@ -10,7 +10,7 @@ public class TournamentsViewModel extends ViewModel {
 
     public TournamentsViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is calendar of tournaments fragment");
+        mText.setValue("Double click on a date in the calendar to add a tournament");
     }
 
     public LiveData<String> getText() {

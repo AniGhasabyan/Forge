@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.forge.R;
 
@@ -34,5 +36,44 @@ public class ChooseFragment extends Fragment {
         LinearLayout tournamentsL = view.findViewById(R.id.ch_tournaments);
         LinearLayout dietL = view.findViewById(R.id.ch_diet);
 
+        scheduleL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFragment(R.id.nav_schedule);
+            }
+        });
+
+        progressL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFragment(R.id.nav_progress);
+            }
+        });
+
+        analysisL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFragment(R.id.nav_analysis);
+            }
+        });
+
+        tournamentsL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFragment(R.id.nav_tournaments);
+            }
+        });
+
+        dietL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFragment(R.id.nav_diet);
+            }
+        });
+    }
+
+    private void openFragment(int destinationId) {
+        NavController navController = Navigation.findNavController(requireView());
+        navController.navigate(destinationId);
     }
 }
