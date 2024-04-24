@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Snackbar.make(view, "Add new athlete/coach", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
+                        navController.navigate(R.id.nav_search);
                     }
                 });
                 binding.appBarMain.fab.setVisibility(View.VISIBLE);

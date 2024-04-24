@@ -53,4 +53,10 @@
         android:label="Choose"
         tools:layout="@layout/fragment_choose" />
 
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.example.forge.ui.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search_users" />
+
 </navigation>
