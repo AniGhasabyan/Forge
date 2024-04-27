@@ -16,6 +16,7 @@ import com.example.forge.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
 public class SearchFragment extends Fragment {
@@ -50,21 +51,18 @@ public class SearchFragment extends Fragment {
         }
 
         mAuth.fetchSignInMethodsForEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                        if (task.isSuccessful()) {
-                            SignInMethodQueryResult result = task.getResult();
-                            if (result.getSignInMethods() != null && !result.getSignInMethods().isEmpty()) {
-                                String displayName = mAuth.getCurrentUser().getDisplayName();
-                                if (displayName != null) {
-                                    Toast.makeText(requireContext(), "User exists. Display name: " + displayName, Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(requireContext(), "User exists, but display name is not available", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(requireContext(), "User does not exist", Toast.LENGTH_SHORT).show();
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String displayName = mAuth.getCurrentUser().getDisplayName();
+                        if (task.getResult().getSignInMethods().size() == 0) {
+                            Toast.makeText(requireContext(), "User does not exist with this email.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "User exists with this email. Display name: " + displayName, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Exception e = task.getException();
+                        if (e instanceof FirebaseAuthInvalidUserException) {
+                            Toast.makeText(requireContext(), "User does not exist with this email.", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(requireContext(), "Error searching for user: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
