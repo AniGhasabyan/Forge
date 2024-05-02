@@ -69,6 +69,7 @@ public class AnalysisFragment extends Fragment {
 
         if (!messageText.isEmpty()) {
             analysisViewModel.addMessage(new Message(messageText));
+            editTextMessage.setText("");
         }
     }
 
