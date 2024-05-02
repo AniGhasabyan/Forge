@@ -16,13 +16,18 @@ import com.example.forge.R;
 
 public class ChooseFragment extends Fragment {
 
+    private String username;
+
     public ChooseFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        if (getArguments() != null) {
+            username = getArguments().getString("username");
+        }
+
         return inflater.inflate(R.layout.fragment_choose, container, false);
     }
 
@@ -73,7 +78,10 @@ public class ChooseFragment extends Fragment {
     }
 
     private void openFragment(int destinationId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("username", username);
+
         NavController navController = Navigation.findNavController(requireView());
-        navController.navigate(destinationId);
+        navController.navigate(destinationId, bundle);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.forge.ui;
+package com.example.forge.ui.navbar.home;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +33,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        holder.bind(usernames.get(position));
+        String username = usernames.get(position);
+        holder.bind(username);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("username", username);
+
                 NavController navController = Navigation.findNavController(view);
-                navController.navigate(R.id.nav_choose);
+                navController.navigate(R.id.nav_choose, bundle);
             }
         });
     }
+
 
     @Override
     public int getItemCount() {
