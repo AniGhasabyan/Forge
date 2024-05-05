@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentHomeBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -57,18 +59,23 @@ public class HomeFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersRef = db.collection("users");
 
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        String currentUserUsername = firebaseUser.getDisplayName();
+
         usersRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             List<String> users = new ArrayList<>();
             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                 String username = document.getString("username");
-                if (username != null && !username.isEmpty()) {
+                if (username != null && !username.isEmpty() && !username.equals(currentUserUsername)) {
                     users.add(username);
                 }
             }
             userAdapter.setUsernames(users);
         }).addOnFailureListener(e -> {
+            // Handle failure
         });
     }
+
 
 
     @Override
