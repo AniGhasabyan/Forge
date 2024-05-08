@@ -6,10 +6,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.forge.R;
 
@@ -19,6 +22,8 @@ public class ScheduleFragment extends Fragment {
 
     private TextView mondayTextView, tuesdayTextView, wednesdayTextView, thursdayTextView,
             fridayTextView, saturdayTextView, sundayTextView;
+
+    private ScheduleViewModel scheduleViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_schedule, container, false);
@@ -30,6 +35,8 @@ public class ScheduleFragment extends Fragment {
         fridayTextView = root.findViewById(R.id.fridayText);
         saturdayTextView = root.findViewById(R.id.saturdayText);
         sundayTextView = root.findViewById(R.id.sundayText);
+
+        scheduleViewModel = new ViewModelProvider(this).get(ScheduleViewModel.class);
 
         View.OnClickListener dayClickListener = new View.OnClickListener() {
             @Override
@@ -46,7 +53,6 @@ public class ScheduleFragment extends Fragment {
                                 String selectedTime = selectedHour + ":" + selectedMinute;
                                 TextView textView = (TextView) v;
 
-                                // Check if the text view already has a time set
                                 String currentText = textView.getText().toString().trim();
                                 if (!currentText.isEmpty()) {
                                     currentText += "\n" + selectedTime;
@@ -56,6 +62,8 @@ public class ScheduleFragment extends Fragment {
 
                                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
                                 textView.setText(currentText);
+
+                                scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime);
                             }
                         },
                         hour,
@@ -75,5 +83,16 @@ public class ScheduleFragment extends Fragment {
         sundayTextView.setOnClickListener(dayClickListener);
 
         return root;
+    }
+
+    private String getDayOfWeekFromView(View v) {
+        String day = "";
+
+        Object tag = v.getTag();
+        if (tag instanceof String) {
+            day = (String) tag;
+        }
+
+        return day;
     }
 }
