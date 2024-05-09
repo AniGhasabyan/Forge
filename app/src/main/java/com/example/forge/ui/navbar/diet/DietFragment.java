@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.forge.databinding.FragmentDietBinding;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class DietFragment extends Fragment {
 
