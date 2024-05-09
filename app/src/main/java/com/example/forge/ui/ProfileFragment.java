@@ -1,5 +1,6 @@
 package com.example.forge.ui;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,14 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.forge.LoginActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -22,11 +25,6 @@ public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
     private FirebaseAuth auth;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,20 +55,74 @@ public class ProfileFragment extends Fragment {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                auth.signOut();
-                Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                requireActivity().finish();
+                showConfirmationDialog(false);
             }
         });
 
         deleteAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                showConfirmationDialog(true);
             }
         });
+    }
+
+    private void showConfirmationDialog(boolean isDelete) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_confirmation, null);
+        builder.setView(dialogView);
+
+        TextView messageTextView = dialogView.findViewById(R.id.textViewMessage);
+        Button cancelBtn = dialogView.findViewById(R.id.buttonCancel);
+        Button confirmBtn = dialogView.findViewById(R.id.buttonConfirm);
+
+        if (isDelete) {
+            messageTextView.setText("Are you sure you want to delete your account?");
+        } else {
+            messageTextView.setText("Are you sure you want to log out from your account?");
+        }
+
+        AlertDialog dialog = builder.create();
+
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isDelete) {
+                    auth.getCurrentUser().delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        auth.signOut();
+                                        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                        requireActivity().finish();
+                                    } else {
+                                        Toast.makeText(requireContext(), "Failed to delete account", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                } else {
+                    auth.signOut();
+                    Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                }
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     @Override
