@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -25,6 +26,7 @@ public class ScheduleFragment extends Fragment {
 
     private ScheduleViewModel scheduleViewModel;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_schedule, container, false);
 
@@ -38,40 +40,34 @@ public class ScheduleFragment extends Fragment {
 
         scheduleViewModel = new ViewModelProvider(this).get(ScheduleViewModel.class);
 
-        View.OnClickListener dayClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
+        View.OnClickListener dayClickListener = v -> {
+            Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
 
-                TimePickerDialog timePickerDialog = new TimePickerDialog(
-                        requireActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                                String selectedTime = selectedHour + ":" + selectedMinute;
-                                TextView textView = (TextView) v;
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    requireActivity(),
+                    (view, selectedHour, selectedMinute) -> {
+                        String selectedTime = selectedHour + ":" + selectedMinute;
+                        TextView textView = (TextView) v;
 
-                                String currentText = textView.getText().toString().trim();
-                                if (!currentText.isEmpty()) {
-                                    currentText += "\n" + selectedTime;
-                                } else {
-                                    currentText = selectedTime;
-                                }
+                        String currentText = textView.getText().toString().trim();
+                        if (!currentText.isEmpty()) {
+                            currentText += "\n" + selectedTime;
+                        } else {
+                            currentText = selectedTime;
+                        }
 
-                                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-                                textView.setText(currentText);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                        textView.setText(currentText);
 
-                                scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime);
-                            }
-                        },
-                        hour,
-                        minute,
-                        true
-                );
-                timePickerDialog.show();
-            }
+                        scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime);
+                    },
+                    hour,
+                    minute,
+                    true
+            );
+            timePickerDialog.show();
         };
 
         mondayTextView.setOnClickListener(dayClickListener);
@@ -84,6 +80,42 @@ public class ScheduleFragment extends Fragment {
 
         return root;
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        observeScheduleData();
+    }
+
+    private void observeScheduleData() {
+        scheduleViewModel.loadScheduleData().observe(getViewLifecycleOwner(), scheduleMap -> {
+            if (scheduleMap != null) {
+                float textSize = 20;
+
+                mondayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                mondayTextView.setText(scheduleMap.get("monday"));
+
+                tuesdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                tuesdayTextView.setText(scheduleMap.get("tuesday"));
+
+                wednesdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                wednesdayTextView.setText(scheduleMap.get("wednesday"));
+
+                thursdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                thursdayTextView.setText(scheduleMap.get("thursday"));
+
+                fridayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                fridayTextView.setText(scheduleMap.get("friday"));
+
+                saturdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                saturdayTextView.setText(scheduleMap.get("saturday"));
+
+                sundayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                sundayTextView.setText(scheduleMap.get("sunday"));
+            }
+        });
+    }
+
 
     private String getDayOfWeekFromView(View v) {
         String day = "";

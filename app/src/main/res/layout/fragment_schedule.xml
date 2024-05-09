@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Monday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -36,7 +36,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="monday" />
+                    android:tag="monday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
@@ -52,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tuesday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -67,7 +68,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="tuesday" />
+                    android:tag="tuesday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
@@ -93,7 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Wednesday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -108,7 +110,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="wednesday" />
+                    android:tag="wednesday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
@@ -124,7 +127,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Thursday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -139,7 +142,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="thursday" />
+                    android:tag="thursday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
@@ -165,7 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Friday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -180,7 +184,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="friday" />
+                    android:tag="friday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
@@ -196,7 +201,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Saturday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -211,7 +216,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="saturday" />
+                    android:tag="saturday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
@@ -237,7 +243,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sunday"
-                android:textSize="21dp"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -252,7 +258,8 @@
                     android:layout_height="wrap_content"
                     android:hint="No training session today"
                     android:textColor="@color/black"
-                    android:tag="sunday" />
+                    android:tag="sunday"
+                    android:textSize="20dp"/>
 
             </ScrollView>
 
