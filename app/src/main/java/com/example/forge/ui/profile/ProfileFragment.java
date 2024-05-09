@@ -1,4 +1,4 @@
-package com.example.forge.ui;
+package com.example.forge.ui.profile;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.forge.LoginActivity;
 import com.example.forge.R;
@@ -43,6 +46,7 @@ public class ProfileFragment extends Fragment {
         TextView tv_password = view.findViewById(R.id.profilePassword);
         Button logoutButton = view.findViewById(R.id.buttonLogout);
         Button deleteAccountButton = view.findViewById(R.id.buttonDeleteAcc);
+        Button editProfileButton = view.findViewById(R.id.buttonChangePassword);
 
         tv_email.setText(auth.getCurrentUser().getEmail());
         tv_password.setText("******");
@@ -63,6 +67,14 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showConfirmationDialog(true);
+            }
+        });
+
+        editProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.nav_edit);
             }
         });
     }

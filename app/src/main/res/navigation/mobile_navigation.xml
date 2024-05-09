@@ -43,7 +43,7 @@
 
     <fragment
         android:id="@+id/nav_profile"
-        android:name="com.example.forge.ui.ProfileFragment"
+        android:name="com.example.forge.ui.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 
@@ -58,5 +58,11 @@
         android:name="com.example.forge.ui.SearchFragment"
         android:label="Search"
         tools:layout="@layout/fragment_search_users" />
+
+    <fragment
+        android:id="@+id/nav_edit"
+        android:name="com.example.forge.ui.profile.EditProfileFragment"
+        android:label="Edit"
+        tools:layout="@layout/fragment_edit_profile" />
 
 </navigation>
