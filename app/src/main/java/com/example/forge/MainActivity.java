@@ -98,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
                     preferences.edit().putString("UserRole", newRole).apply();
 
                     textWho.setText(newRole);
+
+                    NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
+                    navController.popBackStack(R.id.nav_profile, true);
+                    navController.navigate(R.id.nav_profile);
                 }
             });
 

@@ -1,7 +1,9 @@
 package com.example.forge.ui.profile;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ public class ProfileFragment extends Fragment {
         return binding.getRoot();
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -46,6 +49,7 @@ public class ProfileFragment extends Fragment {
         TextView tv_username = view.findViewById(R.id.profileUsername);
         TextView tv_email = view.findViewById(R.id.profileEmail);
         TextView tv_password = view.findViewById(R.id.profilePassword);
+        TextView tv_userRole = view.findViewById(R.id.profile_ac);
         Button logoutButton = view.findViewById(R.id.buttonLogout);
         Button deleteAccountButton = view.findViewById(R.id.buttonDeleteAcc);
         Button editProfileButton = view.findViewById(R.id.buttonChangePassword);
@@ -57,6 +61,14 @@ public class ProfileFragment extends Fragment {
         String displayName = firebaseUser.getDisplayName();
 
         tv_username.setText(displayName);
+
+        SharedPreferences preferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "");
+        if (userRole.equals("Coach")) {
+            tv_userRole.setText("Coach");
+        } else {
+            tv_userRole.setText("Athlete");
+        }
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
