@@ -12,8 +12,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.forge.LoginActivity;
+import com.example.forge.MainActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,6 +48,7 @@ public class ProfileFragment extends Fragment {
         TextView tv_password = view.findViewById(R.id.profilePassword);
         Button logoutButton = view.findViewById(R.id.buttonLogout);
         Button deleteAccountButton = view.findViewById(R.id.buttonDeleteAcc);
+        Button editProfileButton = view.findViewById(R.id.buttonChangePassword);
 
         tv_email.setText(auth.getCurrentUser().getEmail());
         tv_password.setText("******");
@@ -65,6 +71,15 @@ public class ProfileFragment extends Fragment {
                 showConfirmationDialog(true);
             }
         });
+
+        editProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+                navController.navigate(R.id.nav_edit);
+            }
+        });
+
     }
 
     private void showConfirmationDialog(boolean isDelete) {
