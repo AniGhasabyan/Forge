@@ -1,12 +1,16 @@
 package com.example.forge;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -15,6 +19,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.forge.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +38,22 @@ public class MainActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
 
-        // Set up FAB and Snackbar based on the current destination
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userEmail = currentUser.getEmail();
+        String userDisplayName = currentUser.getDisplayName();
+
+        SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "");
+
+        View headerView = binding.navView.getHeaderView(0);
+        TextView textViewEmail = headerView.findViewById(R.id.textView);
+        TextView textViewDisplayName = headerView.findViewById(R.id.textWho_un);
+        TextView textWho = headerView.findViewById(R.id.textWho_ac);
+
+        textViewEmail.setText(userEmail);
+        textViewDisplayName.setText(userDisplayName);
+        textWho.setText(userRole);
+
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() == R.id.nav_home) {
                 binding.appBarMain.fab.setImageResource(R.drawable.baseline_add);
@@ -70,8 +91,16 @@ public class MainActivity extends AppCompatActivity {
             switchAccountsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                    String currentRole = preferences.getString("UserRole", "");
+
+                    String newRole = currentRole.equals("Athlete") ? "Coach" : "Athlete";
+                    preferences.edit().putString("UserRole", newRole).apply();
+
+                    textWho.setText(newRole);
                 }
             });
+
 
         });
 

@@ -3,6 +3,7 @@ package com.example.forge;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -28,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
     private FirebaseAuth auth;
+    private String userRole = "Athlete";
 
     @Override
     protected void onStart(){
@@ -57,14 +59,14 @@ public class LoginActivity extends AppCompatActivity {
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
                 if (isChecked) {
-
+                    userRole = "Coach";
                 } else {
-
+                    userRole = "Athlete";
                 }
             }
         });
+
 
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +102,11 @@ public class LoginActivity extends AppCompatActivity {
                 if(task.isSuccessful()){
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     if(firebaseUser.isEmailVerified()){
+                        SharedPreferences preferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("UserRole", userRole);
+                        editor.apply();
+
                         finishPreviousActivities(LoginActivity.this);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);

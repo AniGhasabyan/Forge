@@ -13,10 +13,19 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="28dp"/>
 
+    <TextView
+        android:id="@+id/profile_ac"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Athlete/Coach"
+        android:textSize="20sp"
+        android:layout_marginTop="4dp"
+        android:textAlignment="center"/>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="15dp"
         android:layout_marginHorizontal="20dp"
         android:backgroundTint="@color/purple"
         app:cardCornerRadius="15dp">

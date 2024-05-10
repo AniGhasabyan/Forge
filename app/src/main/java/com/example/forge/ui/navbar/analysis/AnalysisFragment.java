@@ -29,6 +29,7 @@ public class AnalysisFragment extends Fragment {
     private List<Message> messages;
     private MessageAdapter messageAdapter;
     private AnalysisViewModel analysisViewModel;
+    private String username;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,8 +39,16 @@ public class AnalysisFragment extends Fragment {
         binding = FragmentAnalysisBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        Bundle args = getArguments();
+        if (args != null) {
+            username = args.getString("username", "");
+        }
+
         final TextView textView = binding.textAnalysis;
         analysisViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        TextView usernameTextView = binding.textUsername;
+        usernameTextView.setText("This is " + username);
 
         messages = new ArrayList<>();
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_analysis);
