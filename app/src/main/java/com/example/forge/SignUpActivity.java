@@ -100,6 +100,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                             Map<String, Object> userData = new HashMap<>();
                             userData.put("username", username);
+                            userData.put("email", email);
 
                             userRef.set(userData)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -110,10 +111,10 @@ public class SignUpActivity extends AppCompatActivity {
 
                                             user.updateProfile(profileUpdates);
 
-                            user.sendEmailVerification();
+                                            user.sendEmailVerification();
 
-                            Dialog dialog = new Dialog(SignUpActivity.this);
-                            dialog.showDialog("Verify Your Email", "Please check your email and click on the verification link to complete the registration process.");
+                                            Dialog dialog = new Dialog(SignUpActivity.this);
+                                            dialog.showDialog("Verify Your Email", "Please check your email and click on the verification link to complete the registration process.");
                                         }
                                     });
                         } else {
