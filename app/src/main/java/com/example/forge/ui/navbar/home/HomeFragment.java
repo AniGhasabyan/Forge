@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentHomeBinding;
+import com.example.forge.ui.UserAdapter;
+import com.example.forge.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -29,21 +31,18 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
+    private List<User> userList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
         recyclerView = root.findViewById(R.id.recycler_view_home);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        userAdapter = new UserAdapter();
+        userList = new ArrayList<>();
+        userAdapter = new UserAdapter(userList);
         recyclerView.setAdapter(userAdapter);
 
         return root;
@@ -63,20 +62,18 @@ public class HomeFragment extends Fragment {
         String currentUserUsername = firebaseUser.getDisplayName();
 
         usersRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            List<String> users = new ArrayList<>();
             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                 String username = document.getString("username");
-                if (username != null && !username.isEmpty() && !username.equals(currentUserUsername)) {
-                    users.add(username);
+                String email = document.getString("email");
+                if (username != null && email != null && !username.isEmpty() && !email.isEmpty() && !username.equals(currentUserUsername)) {
+                    User user = new User(username, email);
+                    userList.add(user);
                 }
             }
-            userAdapter.setUsernames(users);
+            userAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> {
-            // Handle failure
         });
     }
-
-
 
     @Override
     public void onDestroyView() {

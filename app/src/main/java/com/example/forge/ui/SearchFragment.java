@@ -10,28 +10,25 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.SignInMethodQueryResult;
+import com.example.forge.User;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchFragment extends Fragment {
 
     private EditText editTextSearch;
     private Button buttonSearch;
-    private FirebaseAuth mAuth;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-    }
+    private RecyclerView recyclerViewSearch;
+    private UserAdapter userAdapter;
+    private List<User> userList;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -40,6 +37,13 @@ public class SearchFragment extends Fragment {
 
         editTextSearch = root.findViewById(R.id.edit_text_search);
         buttonSearch = root.findViewById(R.id.button_search);
+        recyclerViewSearch = root.findViewById(R.id.recyclerViewSearch);
+
+        userList = new ArrayList<>();
+        userAdapter = new UserAdapter(userList);
+        recyclerViewSearch.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewSearch.setAdapter(userAdapter);
+
         buttonSearch.setOnClickListener(v -> searchUsers());
 
         return root;
@@ -60,9 +64,13 @@ public class SearchFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        if (!task.getResult().isEmpty()) {
-                            Toast.makeText(getContext(), "User with this email exists", Toast.LENGTH_SHORT).show();
-                        } else {
+                        userList.clear(); // Clear previous search results
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            User user = document.toObject(User.class);
+                            userList.add(user);
+                        }
+                        userAdapter.notifyDataSetChanged();
+                        if (userList.isEmpty()) {
                             Toast.makeText(getContext(), "No user with this email exists", Toast.LENGTH_SHORT).show();
                         }
                     } else {
@@ -70,5 +78,4 @@ public class SearchFragment extends Fragment {
                     }
                 });
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.forge.ui.navbar.home;
+package com.example.forge.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +11,18 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
+import com.example.forge.User;
+
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
-    private final List<String> usernames;
+    private final List<User> userList;
 
-    public UserAdapter() {
-        this.usernames = new ArrayList<>();
+    public UserAdapter(List<User> userList) {
+        this.userList = userList;
     }
 
     @NonNull
@@ -33,13 +34,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        String username = usernames.get(position);
-        holder.bind(username);
+        User user = userList.get(position);
+        holder.bind(user);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString("username", username);
+                bundle.putString("username", user.getUsername());
 
                 NavController navController = Navigation.findNavController(view);
                 navController.navigate(R.id.nav_choose, bundle);
@@ -47,18 +48,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         });
     }
 
-
     @Override
     public int getItemCount() {
-        return usernames.size();
-    }
-
-    public void setUsernames(List<String> usernames) {
-        this.usernames.clear();
-        if (usernames != null) {
-            this.usernames.addAll(0, usernames);
-            notifyItemInserted(0);
-        }
+        return userList.size();
     }
 
     public static class UserViewHolder extends RecyclerView.ViewHolder {
@@ -70,8 +62,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             textViewUsername = itemView.findViewById(R.id.text_view_username);
         }
 
-        public void bind(String username) {
-            textViewUsername.setText(username);
+        public void bind(User user) {
+            textViewUsername.setText(user.getUsername());
         }
     }
 }
