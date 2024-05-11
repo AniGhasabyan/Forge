@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -73,21 +76,43 @@ public class ProgressFragment extends Fragment {
 
     private void showAddNoteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Add New Conquest");
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_conquest, null);
+        builder.setView(dialogView);
 
-        final EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
+        final EditText input = dialogView.findViewById(R.id.editTextNote);
+
+        final RadioGroup radioGroupPlaces = dialogView.findViewById(R.id.radioGroupPlaces);
+        final String[] places = {"1st", "2nd", "3rd"};
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newNoteText = input.getText().toString().trim();
+                int selectedRadioButtonId = radioGroupPlaces.getCheckedRadioButtonId();
+                RadioButton selectedRadioButton = dialogView.findViewById(selectedRadioButtonId);
+
+                String place;
+                if (selectedRadioButton != null) {
+                    int radioButtonIndex = radioGroupPlaces.indexOfChild(selectedRadioButton);
+                    if (radioButtonIndex >= 0 && radioButtonIndex < places.length) {
+                        place = " - " + places[radioButtonIndex];
+                    } else {
+                        place = "- Proud of my result";
+                    }
+                } else {
+                    place = "";
+                }
+
                 if (!newNoteText.isEmpty()) {
-                    progressViewModel.addProgressNote(new Message(newNoteText));
+                    progressViewModel.addProgressNote(new Message(newNoteText + place));
+                } else {
+                    Toast.makeText(getContext(), "Conquest text cannot be empty", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

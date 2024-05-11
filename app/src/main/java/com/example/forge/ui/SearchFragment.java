@@ -64,7 +64,7 @@ public class SearchFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        userList.clear(); // Clear previous search results
+                        userList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             User user = document.toObject(User.class);
                             userList.add(user);
