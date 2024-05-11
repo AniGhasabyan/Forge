@@ -15,6 +15,8 @@ import com.example.forge.R;
 import com.example.forge.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -87,35 +89,56 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
 
     private void addSelectedUserToAthleteCollection(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Coaches You're Interested in").document(user.getEmail()).set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        String currentUserUID = getCurrentUserUID();
+        if (currentUserUID != null) {
+            db.collection("users")
+                    .document(currentUserUID)
+                    .collection("Coaches You're Interested in")
+                    .document(user.getEmail())
+                    .set(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void addSelectedUserToCoachCollection(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Your Coaching Requests").document(user.getEmail()).set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        String currentUserUID = getCurrentUserUID();
+        if (currentUserUID != null) {
+            db.collection("users")
+                    .document(currentUserUID)
+                    .collection("Your Coaching Requests")
+                    .document(user.getEmail())
+                    .set(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
+
+    private String getCurrentUserUID() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        return currentUser != null ? currentUser.getUid() : null;
+    }
+
 }
