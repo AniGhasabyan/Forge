@@ -1,5 +1,7 @@
 package com.example.forge.ui.navbar.home;
 
+import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.forge.R;
 import com.example.forge.User;
 
-import android.os.Bundle;
-
 import java.util.List;
 
 public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserViewHolder> {
 
     private final List<User> userList;
+    private final Context context;
 
-    public HomeUserAdapter(List<User> userList) {
+    public HomeUserAdapter(Context context, List<User> userList) {
+        this.context = context;
         this.userList = userList;
     }
 
