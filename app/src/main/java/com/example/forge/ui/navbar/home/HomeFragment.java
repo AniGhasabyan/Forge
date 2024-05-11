@@ -73,6 +73,10 @@ public class HomeFragment extends Fragment {
         recyclerView2.setAdapter(adapter2);
         recyclerView3.setAdapter(adapter3);
 
+        binding.textViewEmpty1.setVisibility(userList1.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.textViewEmpty2.setVisibility(userList2.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.textViewEmpty3.setVisibility(userList3.isEmpty() ? View.VISIBLE : View.GONE);
+
         loadData();
 
         return root;
@@ -82,26 +86,54 @@ public class HomeFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
-            CollectionReference collectionReference;
+            CollectionReference collectionReference1, collectionReference2, collectionReference3;
             if (userRole.equals("Athlete")) {
-                collectionReference = db.collection("users")
-                        .document(currentUserUID)
-                        .collection("Coaches You're Interested in");
+                collectionReference1 = db.collection("users").document(currentUserUID).collection("Your Coaches");
+                collectionReference2 = db.collection("users").document(currentUserUID).collection("Coaches Requested to Train You");
+                collectionReference3 = db.collection("users").document(currentUserUID).collection("Coaches You're Interested in");
             } else {
-                collectionReference = db.collection("users")
-                        .document(currentUserUID)
-                        .collection("Your Coaching Requests");
+                collectionReference1 = db.collection("users").document(currentUserUID).collection("Your Athletes");
+                collectionReference2 = db.collection("users").document(currentUserUID).collection("Athletes Interested in Your Coaching");
+                collectionReference3 = db.collection("users").document(currentUserUID).collection("Your Coaching Requests");
             }
 
-            collectionReference.get().addOnCompleteListener(task -> {
+            collectionReference1.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    userList1.clear();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        User user = document.toObject(User.class);
+                        userList1.add(user);
+                    }
+                    adapter1.notifyDataSetChanged();
+                    binding.textViewEmpty1.setVisibility(userList1.isEmpty() ? View.VISIBLE : View.GONE);
+                } else {
+                    Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            collectionReference2.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    userList2.clear();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        User user = document.toObject(User.class);
+                        userList2.add(user);
+                    }
+                    adapter2.notifyDataSetChanged();
+                    binding.textViewEmpty2.setVisibility(userList2.isEmpty() ? View.VISIBLE : View.GONE);
+                } else {
+                    Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            collectionReference3.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     userList3.clear();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         User user = document.toObject(User.class);
                         userList3.add(user);
-
                     }
                     adapter3.notifyDataSetChanged();
+                    binding.textViewEmpty3.setVisibility(userList3.isEmpty() ? View.VISIBLE : View.GONE);
                 } else {
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }

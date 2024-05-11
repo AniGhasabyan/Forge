@@ -24,7 +24,7 @@ import java.util.List;
 public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.UserViewHolder> {
 
     private final List<User> userList;
-    private final Context context; // Context field
+    private final Context context;
 
     public SearchUserAdapter(Context context, List<User> userList) {
         this.context = context;
@@ -58,9 +58,9 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                         .getString("UserRole", "Athlete");
 
                 if (userRole.equals("Athlete")) {
-                    addSelectedUserToAthleteCollection(user);
+                    addSelectedUserToAthleteCollection3(user);
                 } else if (userRole.equals("Coach")) {
-                    addSelectedUserToCoachCollection(user);
+                    addSelectedUserToCoachCollection3(user);
                 }
             }
         });
@@ -87,7 +87,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
-    private void addSelectedUserToAthleteCollection(User user) {
+    private void addSelectedUserToAthleteCollection3(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
@@ -111,7 +111,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
-    private void addSelectedUserToCoachCollection(User user) {
+    private void addSelectedUserToCoachCollection3(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
