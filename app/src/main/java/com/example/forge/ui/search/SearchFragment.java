@@ -1,4 +1,4 @@
-package com.example.forge.ui;
+package com.example.forge.ui.search;
 
 import android.os.Bundle;
 import android.util.Patterns;
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.User;
+import com.example.forge.ui.search.SearchUserAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -27,7 +28,7 @@ public class SearchFragment extends Fragment {
     private EditText editTextSearch;
     private Button buttonSearch;
     private RecyclerView recyclerViewSearch;
-    private UserAdapter userAdapter;
+    private SearchUserAdapter searchUserAdapter;
     private List<User> userList;
 
     @Override
@@ -40,9 +41,9 @@ public class SearchFragment extends Fragment {
         recyclerViewSearch = root.findViewById(R.id.recyclerViewSearch);
 
         userList = new ArrayList<>();
-        userAdapter = new UserAdapter(userList);
+        searchUserAdapter = new SearchUserAdapter(userList);
         recyclerViewSearch.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewSearch.setAdapter(userAdapter);
+        recyclerViewSearch.setAdapter(searchUserAdapter);
 
         buttonSearch.setOnClickListener(v -> searchUsers());
 
@@ -69,13 +70,14 @@ public class SearchFragment extends Fragment {
                             User user = document.toObject(User.class);
                             userList.add(user);
                         }
-                        userAdapter.notifyDataSetChanged();
+                        searchUserAdapter.notifyDataSetChanged();
                         if (userList.isEmpty()) {
                             Toast.makeText(getContext(), "No user with this email exists", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
+                    editTextSearch.setText("");
                 });
     }
 }

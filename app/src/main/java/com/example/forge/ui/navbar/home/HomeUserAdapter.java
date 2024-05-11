@@ -1,4 +1,4 @@
-package com.example.forge.ui;
+package com.example.forge.ui.navbar.home;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +17,11 @@ import android.os.Bundle;
 
 import java.util.List;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
+public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserViewHolder> {
 
     private final List<User> userList;
 
-    public UserAdapter(List<User> userList) {
+    public HomeUserAdapter(List<User> userList) {
         this.userList = userList;
     }
 
@@ -41,6 +41,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("username", user.getUsername());
+
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.nav_choose, bundle);
             }
         });
     }

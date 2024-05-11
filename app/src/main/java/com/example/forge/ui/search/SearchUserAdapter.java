@@ -1,27 +1,24 @@
-package com.example.forge.ui;
+package com.example.forge.ui.search;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.User;
 
-import android.os.Bundle;
-
 import java.util.List;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
+public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.UserViewHolder> {
 
     private final List<User> userList;
 
-    public UserAdapter(List<User> userList) {
+    public SearchUserAdapter(List<User> userList) {
         this.userList = userList;
     }
 
@@ -36,14 +33,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
         holder.bind(user);
+
+        boolean isSelected = user.isSelected();
+
+        holder.imageViewCheckMark.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putString("username", user.getUsername());
+                user.setSelected(!isSelected);
+
+                holder.imageViewCheckMark.setVisibility(user.isSelected() ? View.VISIBLE : View.GONE);
             }
         });
     }
+
+
+
 
     @Override
     public int getItemCount() {
@@ -53,14 +59,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public static class UserViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textViewUsername;
+        private final ImageView imageViewCheckMark;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewUsername = itemView.findViewById(R.id.text_view_username);
+            imageViewCheckMark = itemView.findViewById(R.id.image_button_check_mark);
         }
 
         public void bind(User user) {
             textViewUsername.setText(user.getUsername());
         }
     }
+
 }
+
