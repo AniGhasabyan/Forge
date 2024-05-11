@@ -1,24 +1,31 @@
 package com.example.forge.ui.search;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.UserViewHolder> {
 
     private final List<User> userList;
+    private final Context context; // Context field
 
-    public SearchUserAdapter(List<User> userList) {
+    public SearchUserAdapter(Context context, List<User> userList) {
+        this.context = context;
         this.userList = userList;
     }
 
@@ -44,12 +51,18 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                 user.setSelected(!isSelected);
 
                 holder.imageViewCheckMark.setVisibility(user.isSelected() ? View.VISIBLE : View.GONE);
+
+                String userRole = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                        .getString("UserRole", "Athlete");
+
+                if (userRole.equals("Athlete")) {
+                    addSelectedUserToAthleteCollection(user);
+                } else if (userRole.equals("Coach")) {
+                    addSelectedUserToCoachCollection(user);
+                }
             }
         });
     }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -72,5 +85,37 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
-}
+    private void addSelectedUserToAthleteCollection(User user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Coaches You're Interested in").document(user.getEmail()).set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
+    private void addSelectedUserToCoachCollection(User user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Your Coaching Requests").document(user.getEmail()).set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+}

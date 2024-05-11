@@ -1,5 +1,6 @@
 package com.example.forge.ui.search;
 
+import android.content.Context; // Add this import statement
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -16,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.User;
-import com.example.forge.ui.search.SearchUserAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -41,7 +41,7 @@ public class SearchFragment extends Fragment {
         recyclerViewSearch = root.findViewById(R.id.recyclerViewSearch);
 
         userList = new ArrayList<>();
-        searchUserAdapter = new SearchUserAdapter(userList);
+        searchUserAdapter = new SearchUserAdapter(getContext(), userList);
         recyclerViewSearch.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewSearch.setAdapter(searchUserAdapter);
 
