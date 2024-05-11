@@ -79,6 +79,7 @@ public class ProgressFragment extends Fragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_conquest, null);
         builder.setView(dialogView);
+        builder.setTitle("Add New Conquest");
 
         final EditText input = dialogView.findViewById(R.id.editTextNote);
 
