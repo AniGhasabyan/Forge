@@ -32,6 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText et_username, et_email, et_password1, et_password2;
     private static final String TAG = "SignUpActivity";
     private FirebaseAuth auth;
+    private String userUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +98,12 @@ public class SignUpActivity extends AppCompatActivity {
 
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             DocumentReference userRef = db.collection("users").document(user.getUid());
+                            userUID = user.getUid();
 
                             Map<String, Object> userData = new HashMap<>();
                             userData.put("username", username);
                             userData.put("email", email);
+                            userData.put("uid", userUID);
 
                             userRef.set(userData)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
