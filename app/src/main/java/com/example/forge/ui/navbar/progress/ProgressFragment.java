@@ -1,7 +1,9 @@
 package com.example.forge.ui.navbar.progress;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -85,6 +87,29 @@ public class ProgressFragment extends Fragment {
 
         final RadioGroup radioGroupPlaces = dialogView.findViewById(R.id.radioGroupPlaces);
         final String[] places = {"1st", "2nd", "3rd"};
+
+        SharedPreferences preferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+        if (userRole.equals("Coach")) {
+            List<String> athleteList = new ArrayList<>();
+
+            if (athleteList.isEmpty()) {
+                TextView textView = new TextView(requireContext());
+                textView.setText("Your athletes will be shown here.");
+                textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                textView.setPadding(80, 40, 0, 40);
+                ((ViewGroup) dialogView.findViewById(R.id.athleteRadioGroupContainer)).addView(textView);
+            } else {
+                RadioGroup athleteRadioGroup = new RadioGroup(requireContext());
+                athleteRadioGroup.setOrientation(RadioGroup.VERTICAL);
+                for (String athlete : athleteList) {
+                    RadioButton radioButton = new RadioButton(requireContext());
+                    radioButton.setText(athlete);
+                    athleteRadioGroup.addView(radioButton);
+                }
+                ((ViewGroup) dialogView.findViewById(R.id.athleteRadioGroupContainer)).addView(athleteRadioGroup);
+            }
+        }
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
