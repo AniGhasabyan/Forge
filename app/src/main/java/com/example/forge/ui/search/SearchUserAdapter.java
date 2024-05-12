@@ -108,7 +108,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                     if (userUID != null) {
                                         db.collection("users")
                                                 .document(userUID)
-                                                .collection("Athletes Interested in Your Coaching")
+                                                .collection("Coaches Requested to Train You")
                                                 .document(currentUserUID)
                                                 .set(user)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -137,6 +137,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
+
     private void addSelectedUserToAthleteCollection(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
@@ -157,7 +158,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                     if (userUID != null) {
                                         db.collection("users")
                                                 .document(userUID)
-                                                .collection("Coaches Requested to Train You")
+                                                .collection("Athletes Interested in Your Coaching")
                                                 .document(currentUserUID)
                                                 .set(user)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
