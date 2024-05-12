@@ -45,10 +45,18 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         User user = userList.get(position);
         holder.bind(user);
 
+        User current = null;
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null) {
+            current = new User(currentUser.getDisplayName(), currentUser.getEmail());
+        }
+
         boolean isSelected = user.isSelected();
 
         holder.imageViewCheckMark.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
+        User finalCurrent = current;
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,9 +68,9 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                         .getString("UserRole", "Athlete");
 
                 if (userRole.equals("Athlete")) {
-                    addSelectedUserToAthleteCollection(user);
+                    addSelectedUserToAthleteCollection(user, finalCurrent);
                 } else if (userRole.equals("Coach")) {
-                    addSelectedUserToCoachCollection(user);
+                    addSelectedUserToCoachCollection(user, finalCurrent);
                 }
             }
         });
@@ -89,7 +97,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
-    private void addSelectedUserToCoachCollection(User user) {
+    private void addSelectedUserToCoachCollection(User user, User current) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
@@ -110,7 +118,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                                 .document(userUID)
                                                 .collection("Coaches Requested to Train You")
                                                 .document(currentUserUID)
-                                                .set(user)
+                                                .set(current)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
@@ -138,7 +146,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
     }
 
 
-    private void addSelectedUserToAthleteCollection(User user) {
+    private void addSelectedUserToAthleteCollection(User user, User current) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
@@ -160,7 +168,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                                 .document(userUID)
                                                 .collection("Athletes Interested in Your Coaching")
                                                 .document(currentUserUID)
-                                                .set(user)
+                                                .set(current)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
