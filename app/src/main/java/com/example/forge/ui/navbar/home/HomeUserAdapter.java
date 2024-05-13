@@ -55,6 +55,12 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         return userList.size();
     }
 
+    public void setUserList(List<User> userList) {
+        this.userList.clear();
+        this.userList.addAll(userList);
+        notifyDataSetChanged();
+    }
+
     public static class UserViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textViewUsername;
