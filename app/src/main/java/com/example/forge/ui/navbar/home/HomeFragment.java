@@ -1,5 +1,7 @@
 package com.example.forge.ui.navbar.home;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,18 @@ public class HomeFragment extends Fragment {
         binding.recyclerViewHome2.setAdapter(adapter2);
         binding.recyclerViewHome3.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerViewHome3.setAdapter(adapter3);
+
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+        if (userRole.equals("Athlete")) {
+            binding.tVHome1.setText("Your Coaches");
+            binding.tVHome2.setText("Coaches Requested to Train You");
+            binding.tVHome3.setText("Coaches You're Interested in");
+        } else if (userRole.equals("Coach")) {
+            binding.tVHome1.setText("Your Athletes");
+            binding.tVHome2.setText("Athletes Interested in Your Coaching");
+            binding.tVHome3.setText("Your Coaching Requests");
+        }
 
         observeViewModel();
 

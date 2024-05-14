@@ -1,5 +1,7 @@
 package com.example.forge.ui.search;
 
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,21 +54,20 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
             current = new User(currentUser.getDisplayName(), currentUser.getEmail());
         }
 
-        boolean isSelected = user.isSelected();
-
-        holder.imageViewCheckMark.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+        holder.imageViewCheckMark.setVisibility(VISIBLE);
 
         User finalCurrent = current;
+
+        String userRole = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                .getString("UserRole", "Athlete");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                user.setSelected(!isSelected);
-
-                holder.imageViewCheckMark.setVisibility(user.isSelected() ? View.VISIBLE : View.GONE);
-
-                String userRole = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                        .getString("UserRole", "Athlete");
-
+            }
+        });
+        holder.imageViewCheckMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if (userRole.equals("Athlete")) {
                     addSelectedUserToAthleteCollection(user, finalCurrent);
                 } else if (userRole.equals("Coach")) {
