@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.forge.User;
 import com.example.forge.databinding.FragmentHomeBinding;
+import com.example.forge.ui.UserAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,9 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
-    private HomeUserAdapter adapter1, adapter2, adapter3;
+    private UserAdapter adapter1;
+    private HomeUserAdapter adapter2;
+    private UserAdapterRequests adapter3;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -34,9 +37,9 @@ public class HomeFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        adapter1 = new HomeUserAdapter(requireContext(), new ArrayList<>());
+        adapter1 = new UserAdapter(new ArrayList<>());
+        adapter3 = new UserAdapterRequests(new ArrayList<>());
         adapter2 = new HomeUserAdapter(requireContext(), new ArrayList<>());
-        adapter3 = new HomeUserAdapter(requireContext(), new ArrayList<>());
 
         binding.recyclerViewHome1.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerViewHome1.setAdapter(adapter1);

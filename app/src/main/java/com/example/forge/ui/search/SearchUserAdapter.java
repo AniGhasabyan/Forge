@@ -196,7 +196,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
-
     private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users")
