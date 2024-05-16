@@ -102,19 +102,19 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
-            db.collection("users")
-                    .document(currentUserUID)
-                    .collection("Your Coaching Requests")
-                    .document(user.getEmail())
-                    .set(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
-                            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                                @Override
-                                public void onSuccess(String userUID) {
-                                    if (userUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        db.collection("users")
+                                .document(currentUserUID)
+                                .collection("Your Coaching Requests")
+                                .document(userUID) // Here use userUID
+                                .set(user)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
                                         db.collection("users")
                                                 .document(userUID)
                                                 .collection("Coaches Requested to Train You")
@@ -123,6 +123,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
+                                                        // Success
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
@@ -131,40 +132,37 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                                         Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
-                                    } else {
                                     }
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            });
         }
     }
-
 
     private void addSelectedUserToAthleteCollection(User user, User current) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
-            db.collection("users")
-                    .document(currentUserUID)
-                    .collection("Coaches You're Interested in")
-                    .document(user.getEmail())
-                    .set(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
-
-                            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                                @Override
-                                public void onSuccess(String userUID) {
-                                    if (userUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        db.collection("users")
+                                .document(currentUserUID)
+                                .collection("Coaches You're Interested in")
+                                .document(userUID)
+                                .set(user)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
                                         db.collection("users")
                                                 .document(userUID)
                                                 .collection("Athletes Interested in Your Coaching")
@@ -181,18 +179,17 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                                         Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
-                                    } else {
                                     }
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            });
         }
     }
 
