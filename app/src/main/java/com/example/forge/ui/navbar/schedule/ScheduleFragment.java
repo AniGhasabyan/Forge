@@ -6,9 +6,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,19 +14,34 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.forge.R;
+import com.example.forge.databinding.FragmentScheduleBinding;
 
 import java.util.Calendar;
 
 public class ScheduleFragment extends Fragment {
-
+    private FragmentScheduleBinding binding;
     private TextView mondayTextView, tuesdayTextView, wednesdayTextView, thursdayTextView,
             fridayTextView, saturdayTextView, sundayTextView;
-
     private ScheduleViewModel scheduleViewModel;
+    private String username;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_schedule, container, false);
+        scheduleViewModel = new ViewModelProvider(this).get(ScheduleViewModel.class);
+
+        binding = FragmentScheduleBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        Bundle args = getArguments();
+        if (args != null) {
+            username = args.getString("username", "");
+        }
+
+        if (username != null) {
+            TextView usernameTextView = binding.textUsername;
+            usernameTextView.setText("This is " + username);
+            usernameTextView.setVisibility(View.VISIBLE);
+        }
 
         mondayTextView = root.findViewById(R.id.mondayText);
         tuesdayTextView = root.findViewById(R.id.tuesdayText);
@@ -37,8 +50,6 @@ public class ScheduleFragment extends Fragment {
         fridayTextView = root.findViewById(R.id.fridayText);
         saturdayTextView = root.findViewById(R.id.saturdayText);
         sundayTextView = root.findViewById(R.id.sundayText);
-
-        scheduleViewModel = new ViewModelProvider(this).get(ScheduleViewModel.class);
 
         View.OnClickListener dayClickListener = v -> {
             Calendar calendar = Calendar.getInstance();

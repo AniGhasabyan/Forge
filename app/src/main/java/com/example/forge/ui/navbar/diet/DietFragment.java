@@ -33,7 +33,7 @@ public class DietFragment extends Fragment {
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
     private DietViewModel dietViewModel;
-
+    private String username;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,8 +43,19 @@ public class DietFragment extends Fragment {
         binding = FragmentDietBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        Bundle args = getArguments();
+        if (args != null) {
+            username = args.getString("username", "");
+        }
+
         final TextView textView = binding.textDiet;
         dietViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        if (username != null) {
+            TextView usernameTextView = binding.textUsername;
+            usernameTextView.setText("This is " + username);
+            usernameTextView.setVisibility(View.VISIBLE);
+        }
 
         recyclerView = root.findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

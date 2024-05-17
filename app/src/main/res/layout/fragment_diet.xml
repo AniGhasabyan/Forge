@@ -6,6 +6,20 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/text_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textStyle="bold"
+        android:background="@color/gray"
+        android:visibility="gone"/>
+
+    <TextView
         android:id="@+id/text_diet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

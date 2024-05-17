@@ -38,6 +38,7 @@ public class TournamentsFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private FirebaseUser user;
+    private String username;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -47,8 +48,19 @@ public class TournamentsFragment extends Fragment {
         binding = FragmentTournamentsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        Bundle args = getArguments();
+        if (args != null) {
+            username = args.getString("username", "");
+        }
+
         final TextView textView = binding.textTournaments;
         tournamentsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        if (username != null) {
+            TextView usernameTextView = binding.textUsername;
+            usernameTextView.setText("This is " + username);
+            usernameTextView.setVisibility(View.VISIBLE);
+        }
 
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_tournaments);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

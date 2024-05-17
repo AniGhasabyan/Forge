@@ -47,8 +47,11 @@ public class AnalysisFragment extends Fragment {
         final TextView textView = binding.textAnalysis;
         analysisViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        TextView usernameTextView = binding.textUsername;
-        usernameTextView.setText("This is " + username);
+        if (username != null) {
+            TextView usernameTextView = binding.textUsername;
+            usernameTextView.setText("This is " + username);
+            usernameTextView.setVisibility(View.VISIBLE);
+        }
 
         messages = new ArrayList<>();
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_analysis);
