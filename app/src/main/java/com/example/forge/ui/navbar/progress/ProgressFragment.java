@@ -38,7 +38,7 @@ public class ProgressFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private ProgressViewModel progressViewModel;
     private String username;
-
+    private String email;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class ProgressFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
+            email = args.getString("email", "");
         }
 
         final TextView textView = binding.textProgress;
@@ -108,7 +109,7 @@ public class ProgressFragment extends Fragment {
 
             if (athleteList.isEmpty()) {
                 TextView textView = new TextView(requireContext());
-                textView.setText("Your athletes will be shown here.");
+                textView.setText("Your athletes will be shown here");
                 textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 textView.setPadding(80, 40, 0, 40);
                 ((ViewGroup) dialogView.findViewById(R.id.athleteRadioGroupContainer)).addView(textView);

@@ -34,6 +34,7 @@ public class DietFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private DietViewModel dietViewModel;
     private String username;
+    private String email;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class DietFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
+            email = args.getString("email", "");
         }
 
         final TextView textView = binding.textDiet;

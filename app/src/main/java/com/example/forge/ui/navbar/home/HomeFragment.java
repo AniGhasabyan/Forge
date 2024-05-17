@@ -50,6 +50,7 @@ public class HomeFragment extends Fragment {
 
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "Athlete");
+
         if (userRole.equals("Athlete")) {
             binding.tVHome1.setText("Your Coaches");
             binding.tVHome2.setText("Coaches Requested to Train You");

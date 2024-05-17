@@ -24,6 +24,7 @@ public class ScheduleFragment extends Fragment {
             fridayTextView, saturdayTextView, sundayTextView;
     private ScheduleViewModel scheduleViewModel;
     private String username;
+    private String email;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class ScheduleFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
+            email = args.getString("email", "");
         }
 
         if (username != null) {

@@ -17,8 +17,8 @@ import androidx.navigation.Navigation;
 import com.example.forge.R;
 
 public class ChooseFragment extends Fragment {
-
     private String username;
+    private String email;
 
     public ChooseFragment() {
     }
@@ -28,6 +28,7 @@ public class ChooseFragment extends Fragment {
                              Bundle savedInstanceState) {
         if (getArguments() != null) {
             username = getArguments().getString("username");
+            email = getArguments().getString("email");
         }
 
         return inflater.inflate(R.layout.fragment_choose, container, false);
@@ -36,16 +37,6 @@ public class ChooseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        TextView usernameTextView = view.findViewById(R.id.text_username);
-
-        if (usernameTextView != null && username != null && !username.isEmpty()) {
-            // Set the username text
-            usernameTextView.setText(username);
-            usernameTextView.setVisibility(View.VISIBLE);
-        } else {
-            Log.e("ChooseFragment", "Username or TextView is null");
-        }
 
         LinearLayout scheduleL = view.findViewById(R.id.ch_schedule);
         LinearLayout progressL = view.findViewById(R.id.ch_progress);
@@ -99,6 +90,7 @@ public class ChooseFragment extends Fragment {
     private void openFragment(int destinationId) {
         Bundle bundle = new Bundle();
         bundle.putString("username", username);
+        bundle.putString("email", email);
 
         NavController navController = Navigation.findNavController(requireView());
         navController.navigate(destinationId, bundle);

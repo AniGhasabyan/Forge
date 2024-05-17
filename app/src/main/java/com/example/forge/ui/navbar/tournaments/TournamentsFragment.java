@@ -39,6 +39,7 @@ public class TournamentsFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private String username;
+    private String email;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class TournamentsFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
+            email = args.getString("email", "");
         }
 
         final TextView textView = binding.textTournaments;

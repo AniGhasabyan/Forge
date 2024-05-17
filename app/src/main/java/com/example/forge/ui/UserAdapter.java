@@ -41,6 +41,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("username", user.getUsername());
+                bundle.putString("email", user.getEmail());
 
                 NavController navController = Navigation.findNavController(view);
                 navController.navigate(R.id.nav_choose, bundle);
