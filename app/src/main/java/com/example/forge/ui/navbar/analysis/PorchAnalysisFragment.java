@@ -36,15 +36,6 @@ public class PorchAnalysisFragment extends Fragment {
             email = args.getString("email", "");
         }
 
-        if (username != null) {
-            Bundle bundle = new Bundle();
-            bundle.putString("username", username);
-            bundle.putString("email", email);
-
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
-            navController.navigate(R.id.nav_porch, bundle);
-        }
-
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "Athlete");
 

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,6 +45,15 @@ public class AnalysisFragment extends Fragment {
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
+        }
+
+        if (username == null) {
+            Bundle bundle = new Bundle();
+            bundle.putString("username", username);
+            bundle.putString("email", email);
+
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.nav_porch, bundle);
         }
 
         final TextView textView = binding.textAnalysis;

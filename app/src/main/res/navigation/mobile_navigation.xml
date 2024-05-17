@@ -19,8 +19,8 @@
 
     <fragment
         android:id="@+id/nav_analysis"
-        android:name="com.example.forge.ui.navbar.analysis.PorchAnalysisFragment"
-        android:label="Porch"
+        android:name="com.example.forge.ui.navbar.analysis.AnalysisFragment"
+        android:label="@string/menu_analysis"
         tools:layout="@layout/fragment_analysis" />
 
     <fragment
@@ -67,8 +67,8 @@
 
     <fragment
         android:id="@+id/nav_porch"
-        android:name="com.example.forge.ui.navbar.analysis.AnalysisFragment"
-        android:label="@string/menu_analysis"
+        android:name="com.example.forge.ui.navbar.analysis.PorchAnalysisFragment"
+        android:label="Porch"
         tools:layout="@layout/fragment_porch_analysis" />
 
 </navigation>
