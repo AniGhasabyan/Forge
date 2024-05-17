@@ -53,7 +53,8 @@ public class DietFragment extends Fragment {
 
         if (username != null) {
             TextView usernameTextView = binding.textUsername;
-            usernameTextView.setText("This is " + username);
+            String menuDiet = getString(R.string.menu_diet);
+            usernameTextView.setText("This is " + username + "'s " + menuDiet);
             usernameTextView.setVisibility(View.VISIBLE);
         }
 

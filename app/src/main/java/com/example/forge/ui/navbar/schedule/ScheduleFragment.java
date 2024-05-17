@@ -39,7 +39,8 @@ public class ScheduleFragment extends Fragment {
 
         if (username != null) {
             TextView usernameTextView = binding.textUsername;
-            usernameTextView.setText("This is " + username);
+            String menuSchedule = getString(R.string.menu_schedule);
+            usernameTextView.setText("This is " + username + "'s " + menuSchedule);
             usernameTextView.setVisibility(View.VISIBLE);
         }
 

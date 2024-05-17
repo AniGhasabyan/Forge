@@ -49,7 +49,8 @@ public class AnalysisFragment extends Fragment {
 
         if (username != null) {
             TextView usernameTextView = binding.textUsername;
-            usernameTextView.setText("This is " + username);
+            String menuAnalysis = getString(R.string.menu_analysis);
+            usernameTextView.setText("This is " + username + "'s " + menuAnalysis);
             usernameTextView.setVisibility(View.VISIBLE);
         }
 

@@ -58,7 +58,8 @@ public class ProgressFragment extends Fragment {
 
         if (username != null) {
             TextView usernameTextView = binding.textUsername;
-            usernameTextView.setText("This is " + username);
+            String menuProgress = getString(R.string.menu_progress);
+            usernameTextView.setText("This is " + username + "'s " + menuProgress);
             usernameTextView.setVisibility(View.VISIBLE);
         }
 

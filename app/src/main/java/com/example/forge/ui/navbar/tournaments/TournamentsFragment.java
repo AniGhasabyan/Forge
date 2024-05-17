@@ -58,7 +58,8 @@ public class TournamentsFragment extends Fragment {
 
         if (username != null) {
             TextView usernameTextView = binding.textUsername;
-            usernameTextView.setText("This is " + username);
+            String menuTournaments = getString(R.string.menu_tournaments);
+            usernameTextView.setText("This is " + username + "'s " + menuTournaments);
             usernameTextView.setVisibility(View.VISIBLE);
         }
 
