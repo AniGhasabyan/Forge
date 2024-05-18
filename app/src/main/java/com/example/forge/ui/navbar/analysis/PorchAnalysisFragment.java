@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -57,6 +59,21 @@ public class PorchAnalysisFragment extends Fragment {
         });
 
         viewModel.loadData(requireContext());
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        NavController navController = NavHostFragment.findNavController(PorchAnalysisFragment.this);
+                        if (navController.popBackStack()) {
+                            navController.popBackStack();
+                        } else {
+                            requireActivity().finish();
+                        }
+                    }
+                }
+        );
 
         return root;
     }
