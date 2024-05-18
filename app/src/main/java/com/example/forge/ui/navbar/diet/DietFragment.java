@@ -1,7 +1,9 @@
 package com.example.forge.ui.navbar.diet;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -38,8 +40,11 @@ public class DietFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dietViewModel =
-                new ViewModelProvider(this).get(DietViewModel.class);
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+
+        dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole))
+                .get(DietViewModel.class);
 
         binding = FragmentDietBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -74,7 +79,7 @@ public class DietFragment extends Fragment {
 
         Button addButton = root.findViewById(R.id.buttonAddNote);
         addButton.setOnClickListener(v -> {
-            showAddNoteDialog();
+            showAddNoteDialog(userRole);
         });
 
         return root;
@@ -86,7 +91,7 @@ public class DietFragment extends Fragment {
         binding = null;
     }
 
-    private void showAddNoteDialog() {
+    private void showAddNoteDialog(String userRole) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Diet Note");
 
@@ -99,7 +104,7 @@ public class DietFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String newNoteText = input.getText().toString().trim();
                 if (!newNoteText.isEmpty()) {
-                    dietViewModel.addDietNote(new Message(newNoteText));
+                    dietViewModel.addDietNote(new Message(newNoteText), userRole);
                 }
             }
         });

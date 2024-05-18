@@ -20,7 +20,7 @@ public class ProgressViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public ProgressViewModel() {
+    public ProgressViewModel(String userRole) {
         progressNotes = new MutableLiveData<>();
         progressNotes.setValue(new ArrayList<>());
 
@@ -31,7 +31,7 @@ public class ProgressViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(user.getUid())
+        db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("progress")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -48,13 +48,13 @@ public class ProgressViewModel extends ViewModel {
         return progressNotes;
     }
 
-    public void addProgressNote(Message note) {
+    public void addProgressNote(Message note, String userRole) {
         List<Message> currentNotes = progressNotes.getValue();
         if (currentNotes != null) {
             currentNotes.add(0, note);
             progressNotes.setValue(currentNotes);
 
-            db.collection("users").document(user.getUid())
+            db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("progress")
                     .add(note);
         }

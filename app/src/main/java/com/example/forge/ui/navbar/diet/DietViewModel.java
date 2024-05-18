@@ -1,5 +1,8 @@
 package com.example.forge.ui.navbar.diet;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,7 +15,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class DietViewModel extends ViewModel {
     private MutableLiveData<List<Message>> dietNotes;
     private MutableLiveData<String> mText;
@@ -20,7 +22,7 @@ public class DietViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public DietViewModel() {
+    public DietViewModel(String userRole) {
         dietNotes = new MutableLiveData<>();
         dietNotes.setValue(new ArrayList<>());
 
@@ -31,7 +33,7 @@ public class DietViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(user.getUid())
+        db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("diets")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -48,13 +50,13 @@ public class DietViewModel extends ViewModel {
         return dietNotes;
     }
 
-    public void addDietNote(Message note) {
+    public void addDietNote(Message note, String userRole) {
         List<Message> currentNotes = dietNotes.getValue();
         if (currentNotes != null) {
             currentNotes.add(0, note);
             dietNotes.setValue(currentNotes);
 
-            db.collection("users").document(user.getUid())
+            db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("diets")
                     .add(note);
         }

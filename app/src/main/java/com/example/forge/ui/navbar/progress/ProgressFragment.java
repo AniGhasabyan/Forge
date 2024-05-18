@@ -26,6 +26,8 @@ import com.example.forge.R;
 import com.example.forge.Message;
 import com.example.forge.databinding.FragmentProgressBinding;
 import com.example.forge.ui.MessageAdapter;
+import com.example.forge.ui.navbar.diet.DietViewModel;
+import com.example.forge.ui.navbar.diet.DietViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +44,11 @@ public class ProgressFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        progressViewModel =
-                new ViewModelProvider(this).get(ProgressViewModel.class);
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+
+        progressViewModel = new ViewModelProvider(this, new ProgressViewModelFactory(userRole))
+                .get(ProgressViewModel.class);
 
         binding = FragmentProgressBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -52,7 +57,7 @@ public class ProgressFragment extends Fragment {
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
-        }
+        };
 
         final TextView textView = binding.textProgress;
         progressViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
@@ -145,7 +150,7 @@ public class ProgressFragment extends Fragment {
                 }
 
                 if (!newNoteText.isEmpty()) {
-                    progressViewModel.addProgressNote(new Message(newNoteText + place));
+                    progressViewModel.addProgressNote(new Message(newNoteText + place), userRole);
                 } else {
                     Toast.makeText(getContext(), "Conquest text cannot be empty", Toast.LENGTH_SHORT).show();
                 }
