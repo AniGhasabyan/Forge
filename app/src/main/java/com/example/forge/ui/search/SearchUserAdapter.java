@@ -1,5 +1,6 @@
 package com.example.forge.ui.search;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
@@ -47,34 +49,47 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         User user = userList.get(position);
         holder.bind(user);
 
-        User current = null;
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
+
+        User current = null;
         if (currentUser != null) {
             current = new User(currentUser.getDisplayName(), currentUser.getEmail());
         }
-
-        holder.imageViewCheckMark.setVisibility(VISIBLE);
-
         User finalCurrent = current;
 
-        String userRole = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                .getString("UserRole", "Athlete");
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
-        holder.imageViewCheckMark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userRole.equals("Athlete")) {
-                    addSelectedUserToAthleteCollection(user, finalCurrent);
-                } else if (userRole.equals("Coach")) {
-                    addSelectedUserToCoachCollection(user, finalCurrent);
+        if (currentUser != null && user.getEmail().equals(currentUser.getEmail())) {
+            holder.imageViewCheckMark.setVisibility(GONE);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Navigation.findNavController(view).navigate(R.id.nav_profile);
                 }
-            }
-        });
+            });
+        } else {
+            holder.imageViewCheckMark.setVisibility(VISIBLE);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
+
+            holder.imageViewCheckMark.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String userRole = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                            .getString("UserRole", "Athlete");
+
+                    if (userRole.equals("Athlete")) {
+                        addSelectedUserToAthleteCollection(user, finalCurrent);
+                    } else if (userRole.equals("Coach")) {
+                        addSelectedUserToCoachCollection(user, finalCurrent);
+                    }
+                }
+            });
+        }
     }
 
     @Override
