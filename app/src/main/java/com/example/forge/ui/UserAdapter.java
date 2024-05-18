@@ -3,6 +3,7 @@ package com.example.forge.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
+
         return new UserViewHolder(view);
     }
 
@@ -69,14 +71,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public static class UserViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textViewUsername;
+        private final ImageView profilePicture;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewUsername = itemView.findViewById(R.id.text_view_username);
+            profilePicture = itemView.findViewById(R.id.profile_picture);
         }
 
         public void bind(User user) {
             textViewUsername.setText(user.getUsername());
+            if ("None".equals(user.getEmail())) {
+                profilePicture.setVisibility(View.GONE);
+            }
         }
     }
 }

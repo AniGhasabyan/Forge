@@ -54,7 +54,9 @@ public class DialogChooseUserViewModel extends ViewModel {
                     User user = document.toObject(User.class);
                     userList1.add(user);
                 }
-                Log.d("PorchAnalysisViewModel", "User list size: " + userList1.size());
+                if (userRole.equals("Athlete")) {
+                    userList1.add(new User("None", "None"));
+                }
                 userList1LiveData.setValue(userList1);
             } else {
                 Log.e("PorchAnalysisViewModel", "Error fetching data: ", task.getException());

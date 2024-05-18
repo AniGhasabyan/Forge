@@ -27,7 +27,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class EditProfileFragment extends Fragment {
 
     private EditText etUsername;
-    private EditText etEmail;
     private EditText etNewPassword;
     private EditText etConfirmPassword;
     private Button btnSave;
@@ -47,7 +46,6 @@ public class EditProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
 
         etUsername = view.findViewById(R.id.editTextUsername);
-        etEmail = view.findViewById(R.id.editTextEmail);
         etNewPassword = view.findViewById(R.id.editTextNewPassword);
         etConfirmPassword = view.findViewById(R.id.editTextConfirmPassword);
         btnSave = view.findViewById(R.id.buttonSave);
@@ -58,7 +56,6 @@ public class EditProfileFragment extends Fragment {
             String currentEmail = currentUser.getEmail();
 
             etUsername.setText(currentUsername);
-            etEmail.setText(currentEmail);
         }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +70,6 @@ public class EditProfileFragment extends Fragment {
 
     private void saveProfileChanges() {
         final String newUsername = etUsername.getText().toString().trim();
-        final String newEmail = etEmail.getText().toString().trim();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {

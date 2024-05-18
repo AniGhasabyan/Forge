@@ -1,5 +1,7 @@
 package com.example.forge.ui.navbar;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +25,8 @@ public class DialogChooseUserFragment extends DialogFragment {
     private DialogChooseUserViewModel viewModel;
     private UserAdapter adapter;
 
-    @Nullable@Override
+    @Nullable
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DialogChooseUserBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -34,8 +37,26 @@ public class DialogChooseUserFragment extends DialogFragment {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(adapter);
 
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+
         viewModel.getUserList1().observe(getViewLifecycleOwner(), userList1 -> {
-            adapter.setUserList(userList1);
+            if (userList1 == null || userList1.isEmpty()) {
+                binding.noUsersText.setVisibility(View.VISIBLE);
+                binding.recyclerView.setVisibility(View.GONE);
+                binding.dialogTitle.setVisibility(View.GONE);
+            } else {
+                binding.noUsersText.setVisibility(View.GONE);
+                binding.recyclerView.setVisibility(View.VISIBLE);
+                binding.dialogTitle.setVisibility(View.VISIBLE);
+                adapter.setUserList(userList1);
+                if(userRole.equals("Athlete")){
+                    binding.dialogTitle.setText("Choose the coach");
+
+                } else if (userRole.equals("Coach")){
+                    binding.dialogTitle.setText("Choose the athlete");
+                }
+            }
         });
 
         viewModel.loadData(requireContext());

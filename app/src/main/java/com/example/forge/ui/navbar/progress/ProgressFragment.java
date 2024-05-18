@@ -116,7 +116,7 @@ public class ProgressFragment extends Fragment {
 
             if (athleteList.isEmpty()) {
                 TextView textView = new TextView(requireContext());
-                textView.setText("Your athletes will be shown here");
+                textView.setText("No users available");
                 textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 textView.setPadding(80, 40, 0, 40);
                 ((ViewGroup) dialogView.findViewById(R.id.athleteRadioGroupContainer)).addView(textView);
