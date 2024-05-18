@@ -55,7 +55,7 @@ public class DialogChooseUserViewModel extends ViewModel {
                     userList1.add(user);
                 }
                 if (userRole.equals("Athlete")) {
-                    userList1.add(new User("None", "None"));
+                    userList1.add(0, new User("None", "None"));
                 }
                 userList1LiveData.setValue(userList1);
             } else {
