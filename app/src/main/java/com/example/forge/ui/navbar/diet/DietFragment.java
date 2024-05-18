@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.forge.databinding.FragmentDietBinding;
+import com.example.forge.ui.navbar.DialogChooseUserFragment;
 
 public class DietFragment extends Fragment {
 
@@ -81,7 +82,7 @@ public class DietFragment extends Fragment {
 
         Button addButton = root.findViewById(R.id.buttonAddNote);
         addButton.setOnClickListener(v -> {
-            showAddNoteDialog(userRole);
+            showAddNoteDialog(userRole, username);
         });
 
         return root;
@@ -93,7 +94,7 @@ public class DietFragment extends Fragment {
         binding = null;
     }
 
-    private void showAddNoteDialog(String userRole) {
+    private void showAddNoteDialog(String userRole, String username2) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Diet Note");
 
@@ -106,7 +107,12 @@ public class DietFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String newNoteText = input.getText().toString().trim();
                 if (!newNoteText.isEmpty()) {
-                    dietViewModel.addDietNote(new Message(newNoteText), userRole);
+                    if(username2 == null && userRole.equals("Coach")){
+                        DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                        dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
+                    } else {
+                        dietViewModel.addDietNote(new Message(newNoteText), userRole);
+                    }
                 }
             }
         });
