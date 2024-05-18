@@ -42,11 +42,11 @@ public class ScheduleViewModel extends ViewModel {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String dayOfWeek = document.getId();
                             String time = document.getString("time");
-                            scheduleMap.put(dayOfWeek, time);
+                            String username = document.getString("username");
+                            scheduleMap.put(dayOfWeek, time + " - " + username);
                         }
                         scheduleData.postValue(scheduleMap);
                     } else {
-                        // Handle failure
                     }
                 });
 
@@ -57,9 +57,10 @@ public class ScheduleViewModel extends ViewModel {
         return mText;
     }
 
-    public void saveTime(String dayOfWeek, String time) {
+    public void saveTime(String dayOfWeek, String time, String username, String userRole) {
         Map<String, Object> scheduleData = new HashMap<>();
         scheduleData.put("time", time);
+        scheduleData.put("username", username);
 
         db.collection("users").document(user.getUid())
                 .collection("schedule")

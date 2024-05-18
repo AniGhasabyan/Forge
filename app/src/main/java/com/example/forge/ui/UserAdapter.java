@@ -45,10 +45,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 bundle.putString("username", user.getUsername());
                 bundle.putString("email", user.getEmail());
 
-                NavController navController = Navigation.findNavController(view);
                 if (currentDestinationId == R.id.nav_home) {
+                    NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_choose, bundle);
                 } else if (currentDestinationId == R.id.nav_porch) {
+                    NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_analysis, bundle);
                 }
             }

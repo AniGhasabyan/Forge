@@ -1,6 +1,9 @@
 package com.example.forge.ui.navbar.schedule;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -12,17 +15,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
+import com.example.forge.User;
 import com.example.forge.databinding.FragmentScheduleBinding;
+import com.example.forge.ui.UserAdapter;
+import com.example.forge.ui.navbar.DialogChooseUserFragment;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class ScheduleFragment extends Fragment {
     private FragmentScheduleBinding binding;
     private TextView mondayTextView, tuesdayTextView, wednesdayTextView, thursdayTextView,
             fridayTextView, saturdayTextView, sundayTextView;
     private ScheduleViewModel scheduleViewModel;
+    private UserAdapter adapter1;
     private String username;
     private String email;
 
@@ -45,6 +58,9 @@ public class ScheduleFragment extends Fragment {
             usernameTextView.setText("This is " + username + "'s " + menuSchedule);
             usernameTextView.setVisibility(View.VISIBLE);
         }
+
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
 
         mondayTextView = root.findViewById(R.id.mondayText);
         tuesdayTextView = root.findViewById(R.id.tuesdayText);
@@ -75,7 +91,13 @@ public class ScheduleFragment extends Fragment {
                         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                         textView.setText(currentText);
 
-                        scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime);
+                        if (username != null) {
+                            scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime, username, userRole);
+                            textView.setText(currentText + " - " + username);
+                        } else {
+                            DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                            dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
+                        }
                     },
                     hour,
                     minute,
@@ -94,6 +116,7 @@ public class ScheduleFragment extends Fragment {
 
         return root;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -129,7 +152,6 @@ public class ScheduleFragment extends Fragment {
             }
         });
     }
-
 
     private String getDayOfWeekFromView(View v) {
         String day = "";
