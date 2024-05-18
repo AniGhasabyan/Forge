@@ -90,19 +90,19 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
-            db.collection("users")
-                    .document(currentUserUID)
-                    .collection("Your Coaches")
-                    .document(user.getEmail())
-                    .set(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(context, "User added to Your Coaches", Toast.LENGTH_SHORT).show();
-                            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                                @Override
-                                public void onSuccess(String userUID) {
-                                    if (userUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        db.collection("users")
+                                .document(currentUserUID)
+                                .collection("Your Coaches")
+                                .document(userUID)
+                                .set(user)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context, "User added to Your Coaches", Toast.LENGTH_SHORT).show();
                                         db.collection("users")
                                                 .document(userUID)
                                                 .collection("Your Athletes")
@@ -127,6 +127,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
+                                                                                        // Handle success
                                                                                     }
                                                                                 })
                                                                                 .addOnFailureListener(new OnFailureListener() {
@@ -152,16 +153,16 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                                                     }
                                                 });
                                     }
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            });
         }
     }
 
@@ -169,19 +170,19 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
-            db.collection("users")
-                    .document(currentUserUID)
-                    .collection("Your Athletes")
-                    .document(user.getEmail())
-                    .set(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(context, "User added to Your Athletes", Toast.LENGTH_SHORT).show();
-                            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                                @Override
-                                public void onSuccess(String userUID) {
-                                    if (userUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        db.collection("users")
+                                .document(currentUserUID)
+                                .collection("Your Athletes")
+                                .document(userUID)
+                                .set(user)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context, "User added to Your Athletes", Toast.LENGTH_SHORT).show();
                                         db.collection("users")
                                                 .document(userUID)
                                                 .collection("Your Coaches")
@@ -206,6 +207,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
+                                                                                        // Handle success
                                                                                     }
                                                                                 })
                                                                                 .addOnFailureListener(new OnFailureListener() {
@@ -231,16 +233,16 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                                                     }
                                                 });
                                     }
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            });
         }
     }
 
@@ -276,6 +278,11 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                         } else {
                             onSuccessListener.onSuccess(null);
                         }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                     }
                 });
     }

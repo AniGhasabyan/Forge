@@ -124,7 +124,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                         db.collection("users")
                                 .document(currentUserUID)
                                 .collection("Your Coaching Requests")
-                                .document(userUID) // Here use userUID
+                                .document(userUID)
                                 .set(user)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -138,7 +138,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
-                                                        // Success
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
