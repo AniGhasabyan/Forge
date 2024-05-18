@@ -15,9 +15,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 public class DietViewModel extends ViewModel {
     private MutableLiveData<List<Message>> dietNotes;
     private MutableLiveData<String> mText;
+    private MutableLiveData<Map<String, String>> dietData;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -33,6 +36,10 @@ public class DietViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
+        loadDietNotes(userRole);
+    }
+
+    public void loadDietNotes(String userRole) {
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("diets")
                 .get()

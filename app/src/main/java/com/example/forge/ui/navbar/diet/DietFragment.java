@@ -77,6 +77,8 @@ public class DietFragment extends Fragment {
             messageAdapter.notifyDataSetChanged();
         });
 
+        dietViewModel.loadDietNotes(userRole);
+
         Button addButton = root.findViewById(R.id.buttonAddNote);
         addButton.setOnClickListener(v -> {
             showAddNoteDialog(userRole);

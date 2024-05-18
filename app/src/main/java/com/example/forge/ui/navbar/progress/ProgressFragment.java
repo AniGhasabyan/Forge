@@ -86,6 +86,8 @@ public class ProgressFragment extends Fragment {
             showAddNoteDialog();
         });
 
+        progressViewModel.loadProgressNotes(userRole);
+
         return root;
     }
 

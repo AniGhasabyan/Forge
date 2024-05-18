@@ -20,7 +20,7 @@ public class ScheduleViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public ScheduleViewModel() {
+    public ScheduleViewModel(String userRole) {
         mText = new MutableLiveData<>();
         mText.setValue("This is training schedule fragment");
 
@@ -29,11 +29,11 @@ public class ScheduleViewModel extends ViewModel {
         db = FirebaseFirestore.getInstance();
 
         scheduleData = new MutableLiveData<>();
-        loadScheduleData();
+        loadScheduleData(userRole);
     }
 
-    public LiveData<Map<String, String>> loadScheduleData() {
-        db.collection("users").document(user.getUid())
+    public LiveData<Map<String, String>> loadScheduleData(String userRole) {
+        db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -62,7 +62,7 @@ public class ScheduleViewModel extends ViewModel {
         scheduleData.put("time", time);
         scheduleData.put("username", username);
 
-        db.collection("users").document(user.getUid())
+        db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
                 .document(dayOfWeek)
                 .set(scheduleData);

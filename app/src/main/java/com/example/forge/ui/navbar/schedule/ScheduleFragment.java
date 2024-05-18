@@ -25,6 +25,8 @@ import com.example.forge.User;
 import com.example.forge.databinding.FragmentScheduleBinding;
 import com.example.forge.ui.UserAdapter;
 import com.example.forge.ui.navbar.DialogChooseUserFragment;
+import com.example.forge.ui.navbar.diet.DietViewModel;
+import com.example.forge.ui.navbar.diet.DietViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,7 +43,11 @@ public class ScheduleFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        scheduleViewModel = new ViewModelProvider(this).get(ScheduleViewModel.class);
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+
+        scheduleViewModel = new ViewModelProvider(this, new ScheduleViewModelFactory(userRole))
+                .get(ScheduleViewModel.class);
 
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -58,9 +64,6 @@ public class ScheduleFragment extends Fragment {
             usernameTextView.setText("This is " + username + "'s " + menuSchedule);
             usernameTextView.setVisibility(View.VISIBLE);
         }
-
-        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String userRole = preferences.getString("UserRole", "Athlete");
 
         mondayTextView = root.findViewById(R.id.mondayText);
         tuesdayTextView = root.findViewById(R.id.tuesdayText);
@@ -121,11 +124,14 @@ public class ScheduleFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        observeScheduleData();
+
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+        observeScheduleData(userRole);
     }
 
-    private void observeScheduleData() {
-        scheduleViewModel.loadScheduleData().observe(getViewLifecycleOwner(), scheduleMap -> {
+    private void observeScheduleData(String userRole) {
+        scheduleViewModel.loadScheduleData(userRole).observe(getViewLifecycleOwner(), scheduleMap -> {
             if (scheduleMap != null) {
                 float textSize = 20;
 

@@ -1,7 +1,9 @@
 package com.example.forge.ui.navbar.tournaments;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +75,9 @@ public class TournamentsFragment extends Fragment {
 
         CalendarView calendarView = binding.calendarView;
 
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             boolean doubleClick = false;
             long lastDateClicked = 0;
@@ -82,7 +87,7 @@ public class TournamentsFragment extends Fragment {
                 long currentDateClicked = view.getDate();
 
                 if (currentDateClicked == lastDateClicked && doubleClick) {
-                    showDialogPrompt(year, month, dayOfMonth);
+                    showDialogPrompt(year, month, dayOfMonth, userRole);
                 }
 
                 lastDateClicked = currentDateClicked;
@@ -96,7 +101,7 @@ public class TournamentsFragment extends Fragment {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(user.getUid())
+        db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("tournaments").get().addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String noteContent = document.getString("note");
@@ -109,7 +114,7 @@ public class TournamentsFragment extends Fragment {
         return root;
     }
 
-    private void showDialogPrompt(int year, int month, int dayOfMonth) {
+    private void showDialogPrompt(int year, int month, int dayOfMonth, String userRole) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Tournament Day");
         final EditText input = new EditText(requireContext());
@@ -128,7 +133,7 @@ public class TournamentsFragment extends Fragment {
 
                     noteData.put("note", date  + "\n" + "\n" + tournament);
 
-                    db.collection("users").document(user.getUid())
+                    db.collection(userRole.toLowerCase()).document(user.getUid())
                             .collection("tournaments")
                             .add(noteData);
                 }

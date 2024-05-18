@@ -31,6 +31,10 @@ public class ProgressViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
+        loadProgressNotes(userRole);
+    }
+
+    public void loadProgressNotes(String userRole) {
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("progress")
                 .get()
@@ -43,6 +47,7 @@ public class ProgressViewModel extends ViewModel {
                     progressNotes.postValue(notes);
                 });
     }
+
 
     public LiveData<List<Message>> getProgressNotes() {
         return progressNotes;
