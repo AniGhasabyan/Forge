@@ -48,7 +48,6 @@ public class ProgressViewModel extends ViewModel {
                 });
     }
 
-
     public LiveData<List<Message>> getProgressNotes() {
         return progressNotes;
     }

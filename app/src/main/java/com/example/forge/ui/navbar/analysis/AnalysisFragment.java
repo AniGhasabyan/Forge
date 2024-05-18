@@ -1,5 +1,7 @@
 package com.example.forge.ui.navbar.analysis;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.example.forge.R;
 import com.example.forge.databinding.FragmentAnalysisBinding;
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
+import com.example.forge.ui.navbar.progress.ProgressViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +38,11 @@ public class AnalysisFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
         analysisViewModel =
-                new ViewModelProvider(this).get(AnalysisViewModel.class);
+                new ViewModelProvider(this, new AnalysisViewModelFactory(userRole))
+                        .get(AnalysisViewModel.class);
 
         binding = FragmentAnalysisBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -83,17 +89,19 @@ public class AnalysisFragment extends Fragment {
         });
 
         Button sendButton = binding.buttonSend;
-        sendButton.setOnClickListener(view -> onSendButtonClicked());
+        sendButton.setOnClickListener(view -> onSendButtonClicked(userRole));
+
+        analysisViewModel.loadAnalysisData(userRole);
 
         return root;
     }
 
-    private void onSendButtonClicked() {
+    private void onSendButtonClicked(String userRole) {
         EditText editTextMessage = binding.editTextMessage;
         String messageText = editTextMessage.getText().toString().trim();
 
         if (!messageText.isEmpty()) {
-            analysisViewModel.addMessage(new Message(messageText));
+            analysisViewModel.addMessage(new Message(messageText), userRole);
             editTextMessage.setText("");
         }
     }

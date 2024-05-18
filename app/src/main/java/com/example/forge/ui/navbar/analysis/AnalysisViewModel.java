@@ -22,7 +22,7 @@ public class AnalysisViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public AnalysisViewModel() {
+    public AnalysisViewModel(String userRole) {
         message = new MutableLiveData<>();
         message.setValue(new ArrayList<>());
 
@@ -33,7 +33,11 @@ public class AnalysisViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(user.getUid())
+        loadAnalysisData(userRole);
+    }
+
+    public void loadAnalysisData(String userRole){
+        db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("analyses")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -50,13 +54,13 @@ public class AnalysisViewModel extends ViewModel {
         return message;
     }
 
-    public void addMessage(Message note) {
+    public void addMessage(Message note, String userRole) {
         List<Message> currentNotes = message.getValue();
         if (currentNotes != null) {
             currentNotes.add(0, note);
             message.setValue(currentNotes);
 
-            db.collection("users").document(user.getUid())
+            db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("analyses")
                     .add(note);
         }
