@@ -37,7 +37,6 @@ public class ScheduleFragment extends Fragment {
     private TextView mondayTextView, tuesdayTextView, wednesdayTextView, thursdayTextView,
             fridayTextView, saturdayTextView, sundayTextView;
     private ScheduleViewModel scheduleViewModel;
-    private UserAdapter adapter1;
     private String username;
     private String email;
 

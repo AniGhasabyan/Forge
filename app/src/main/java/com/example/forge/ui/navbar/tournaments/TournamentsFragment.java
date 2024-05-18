@@ -18,47 +18,41 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.forge.R;
 import com.example.forge.Message;
+import com.example.forge.R;
 import com.example.forge.ui.MessageAdapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TournamentsFragment extends Fragment {
 
     private FragmentTournamentsBinding binding;
     private List<Message> tournamentList;
     private MessageAdapter messageAdapter;
-    private FirebaseFirestore db;
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+    private TournamentsViewModel tournamentsViewModel;
     private String username;
     private String email;
+    private String userRole;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        TournamentsViewModel tournamentsViewModel =
-                new ViewModelProvider(this).get(TournamentsViewModel.class);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
 
         binding = FragmentTournamentsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        binding.textTournaments.setText("Double click on a date in the calendar to add a tournament");
 
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
         }
-
-        final TextView textView = binding.textTournaments;
-        tournamentsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         if (username != null) {
             TextView usernameTextView = binding.textUsername;
@@ -67,16 +61,13 @@ public class TournamentsFragment extends Fragment {
             usernameTextView.setVisibility(View.VISIBLE);
         }
 
-        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view_tournaments);
+        RecyclerView recyclerView = binding.recyclerViewTournaments;
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         tournamentList = new ArrayList<>();
         messageAdapter = new MessageAdapter(tournamentList);
         recyclerView.setAdapter(messageAdapter);
 
         CalendarView calendarView = binding.calendarView;
-
-        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String userRole = preferences.getString("UserRole", "Athlete");
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             boolean doubleClick = false;
@@ -87,7 +78,7 @@ public class TournamentsFragment extends Fragment {
                 long currentDateClicked = view.getDate();
 
                 if (currentDateClicked == lastDateClicked && doubleClick) {
-                    showDialogPrompt(year, month, dayOfMonth, userRole);
+                    showDialogPrompt(year, month, dayOfMonth);
                 }
 
                 lastDateClicked = currentDateClicked;
@@ -97,24 +88,28 @@ public class TournamentsFragment extends Fragment {
             }
         });
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        db = FirebaseFirestore.getInstance();
+        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(preferences.getString("UserRole", "Athlete")))
+                .get(TournamentsViewModel.class);
 
-        db.collection(userRole.toLowerCase()).document(user.getUid())
-                .collection("tournaments").get().addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String noteContent = document.getString("note");
-                        tournamentList.add(new Message(noteContent));
-                    }
+        tournamentsViewModel.getTournamentList().observe(getViewLifecycleOwner(), tournaments -> {
+            tournamentList.clear();
+            for (String tournament : tournaments) {
+                tournamentList.add(new Message(tournament));
+            }
+            messageAdapter.notifyDataSetChanged();
+        });
 
-                    messageAdapter.notifyItemInserted(0);
-                });
+        preferences.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+            if (key.equals("UserRole")) {
+                userRole = sharedPreferences.getString("UserRole", "Athlete");
+                tournamentsViewModel.loadTournaments(userRole);
+            }
+        });
 
         return root;
     }
 
-    private void showDialogPrompt(int year, int month, int dayOfMonth, String userRole) {
+    private void showDialogPrompt(int year, int month, int dayOfMonth) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Tournament Day");
         final EditText input = new EditText(requireContext());
@@ -125,17 +120,9 @@ public class TournamentsFragment extends Fragment {
                 String tournament = input.getText().toString().trim();
                 String date = dayOfMonth + "/" + (month + 1) + "/" + year;
 
-                Map<String, Object> noteData = new HashMap<>();
-
                 if (!tournament.isEmpty()) {
-                    tournamentList.add(0, new Message(date + "\n" + "\n" + tournament));
-                    messageAdapter.notifyItemInserted(0);
-
-                    noteData.put("note", date  + "\n" + "\n" + tournament);
-
-                    db.collection(userRole.toLowerCase()).document(user.getUid())
-                            .collection("tournaments")
-                            .add(noteData);
+                    String tournamentDetails = date + "\n\n" + tournament;
+                    tournamentsViewModel.addTournament(tournamentDetails, userRole);
                 }
             }
         });
