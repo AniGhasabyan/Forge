@@ -12,14 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.forge.User;
+import com.example.forge.R;
 import com.example.forge.databinding.FragmentHomeBinding;
 import com.example.forge.ui.UserAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -37,7 +38,10 @@ public class HomeFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        adapter1 = new UserAdapter(new ArrayList<>());
+        NavController navController = NavHostFragment.findNavController(this);
+        int currentDestinationId = navController.getCurrentDestination().getId();
+
+        adapter1 = new UserAdapter(new ArrayList<>(), currentDestinationId);
         adapter3 = new UserAdapterRequests(new ArrayList<>());
         adapter2 = new HomeUserAdapter(requireContext(), new ArrayList<>());
 

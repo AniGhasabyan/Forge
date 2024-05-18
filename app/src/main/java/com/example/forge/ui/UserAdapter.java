@@ -20,9 +20,11 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
     private List<User> userList;
+    private int currentDestinationId;
 
-    public UserAdapter(List<User> userList) {
+    public UserAdapter(List<User> userList, int currentDestinationId) {
         this.userList = userList;
+        this.currentDestinationId = currentDestinationId;
     }
 
     @NonNull
@@ -44,7 +46,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 bundle.putString("email", user.getEmail());
 
                 NavController navController = Navigation.findNavController(view);
-                navController.navigate(R.id.nav_choose, bundle);
+                if (currentDestinationId == R.id.nav_home) {
+                    navController.navigate(R.id.nav_choose, bundle);
+                } else if (currentDestinationId == R.id.nav_porch) {
+                    navController.navigate(R.id.nav_analysis, bundle);
+                }
             }
         });
     }

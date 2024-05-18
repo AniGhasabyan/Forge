@@ -38,12 +38,7 @@ public class HomeViewModel extends ViewModel {
         return userList3LiveData;
     }
 
-    public LiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-
     public void loadData(Context context) {
-        isLoading.setValue(true);
 
         SharedPreferences preferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "");
