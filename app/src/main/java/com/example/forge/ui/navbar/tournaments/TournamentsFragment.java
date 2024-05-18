@@ -22,6 +22,7 @@ import com.example.forge.Message;
 import com.example.forge.R;
 import com.example.forge.ui.MessageAdapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
+import com.example.forge.ui.navbar.DialogChooseUserFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,6 +43,11 @@ public class TournamentsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+
+        userRole = preferences.getString("UserRole", "Athlete");
+
+        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole))
+                .get(TournamentsViewModel.class);
 
         binding = FragmentTournamentsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -78,7 +84,7 @@ public class TournamentsFragment extends Fragment {
                 long currentDateClicked = view.getDate();
 
                 if (currentDateClicked == lastDateClicked && doubleClick) {
-                    showDialogPrompt(year, month, dayOfMonth);
+                    showDialogPrompt(year, month, dayOfMonth, username);
                 }
 
                 lastDateClicked = currentDateClicked;
@@ -87,9 +93,6 @@ public class TournamentsFragment extends Fragment {
                 view.postDelayed(() -> doubleClick = false, 1000);
             }
         });
-
-        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(preferences.getString("UserRole", "Athlete")))
-                .get(TournamentsViewModel.class);
 
         tournamentsViewModel.getTournamentList().observe(getViewLifecycleOwner(), tournaments -> {
             tournamentList.clear();
@@ -109,7 +112,7 @@ public class TournamentsFragment extends Fragment {
         return root;
     }
 
-    private void showDialogPrompt(int year, int month, int dayOfMonth) {
+    private void showDialogPrompt(int year, int month, int dayOfMonth, String username2) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Tournament Day");
         final EditText input = new EditText(requireContext());
@@ -122,7 +125,12 @@ public class TournamentsFragment extends Fragment {
 
                 if (!tournament.isEmpty()) {
                     String tournamentDetails = date + "\n\n" + tournament;
-                    tournamentsViewModel.addTournament(tournamentDetails, userRole);
+                    if(username2 == null && userRole.equals("Coach")){
+                        DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                        dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
+                    } else {
+                        tournamentsViewModel.addTournament(tournamentDetails, userRole);
+                    }
                 }
             }
         });

@@ -12,6 +12,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TournamentsViewModel extends ViewModel {
 
@@ -33,7 +34,7 @@ public class TournamentsViewModel extends ViewModel {
     }
 
     public void loadTournaments(String userRole) {
-        if (db == null || user == null) return;
+        if (db == null || user == null || userRole == null) return;
 
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("tournaments").get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -47,7 +48,7 @@ public class TournamentsViewModel extends ViewModel {
     }
 
     public void addTournament(String tournamentDetails, String userRole) {
-        if (db != null && user != null) {
+        if (db != null && user != null && userRole != null) {
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("tournaments")
                     .add(new HashMap<String, Object>() {{
