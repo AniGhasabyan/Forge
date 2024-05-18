@@ -92,6 +92,32 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
+    private void checkIfUserExistsInCollection(String collectionName, String userUID, OnSuccessListener<Boolean> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserUID = getCurrentUserUID();
+        if (currentUserUID != null) {
+            db.collection("users")
+                    .document(currentUserUID)
+                    .collection(collectionName)
+                    .document(userUID)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            boolean exists = documentSnapshot.exists();
+                            onSuccessListener.onSuccess(exists);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            onSuccessListener.onSuccess(false);
+                        }
+                    });
+        }
+    }
+
+
     @Override
     public int getItemCount() {
         return userList.size();
