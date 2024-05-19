@@ -26,6 +26,7 @@ import com.example.forge.R;
 import com.example.forge.Message;
 import com.example.forge.databinding.FragmentProgressBinding;
 import com.example.forge.ui.MessageAdapter;
+import com.example.forge.ui.navbar.DialogChooseUserFragment;
 import com.example.forge.ui.navbar.diet.DietViewModel;
 import com.example.forge.ui.navbar.diet.DietViewModelFactory;
 
@@ -83,7 +84,7 @@ public class ProgressFragment extends Fragment {
 
         Button addButton = root.findViewById(R.id.buttonAddConquest);
         addButton.setOnClickListener(v -> {
-            showAddNoteDialog();
+            showAddNoteDialog(username);
         });
 
         progressViewModel.loadProgressNotes(userRole);
@@ -97,7 +98,7 @@ public class ProgressFragment extends Fragment {
         binding = null;
     }
 
-    private void showAddNoteDialog() {
+    private void showAddNoteDialog(String username2) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_conquest, null);
@@ -111,26 +112,8 @@ public class ProgressFragment extends Fragment {
 
         SharedPreferences preferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "Athlete");
-        if (userRole.equals("Coach")) {
-            List<String> athleteList = new ArrayList<>();
 
-            if (athleteList.isEmpty()) {
-                TextView textView = new TextView(requireContext());
-                textView.setText("No users available");
-                textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                textView.setPadding(80, 40, 0, 40);
-                ((ViewGroup) dialogView.findViewById(R.id.athleteRadioGroupContainer)).addView(textView);
-            } else {
-                RadioGroup athleteRadioGroup = new RadioGroup(requireContext());
-                athleteRadioGroup.setOrientation(RadioGroup.VERTICAL);
-                for (String athlete : athleteList) {
-                    RadioButton radioButton = new RadioButton(requireContext());
-                    radioButton.setText(athlete);
-                    athleteRadioGroup.addView(radioButton);
-                }
-                ((ViewGroup) dialogView.findViewById(R.id.athleteRadioGroupContainer)).addView(athleteRadioGroup);
-            }
-        }
+
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
@@ -152,7 +135,12 @@ public class ProgressFragment extends Fragment {
                 }
 
                 if (!newNoteText.isEmpty()) {
-                    progressViewModel.addProgressNote(new Message(newNoteText + place), userRole);
+                    if(username2 == null && userRole.equals("Coach")){
+                        DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                        dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
+                    } else {
+                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole);
+                    }
                 } else {
                     Toast.makeText(getContext(), "Conquest text cannot be empty", Toast.LENGTH_SHORT).show();
                 }
