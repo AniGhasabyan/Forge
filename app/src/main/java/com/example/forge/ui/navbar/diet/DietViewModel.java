@@ -65,11 +65,25 @@ public class DietViewModel extends ViewModel {
             currentNotes.add(0, note);
             dietNotes.setValue(currentNotes);
 
+            String oppositeRole = "";
+            if(userRole.equals("Athlete")){
+                oppositeRole = "Coach";
+            } else if(userRole.equals("Coach")){
+                oppositeRole = "Athlete";
+            }
+
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("diets")
                     .document(userUID)
                     .collection("diet notes")
                     .add(note);
+            if(!userUID.equals(user.getUid())) {
+                db.collection(oppositeRole.toLowerCase()).document(userUID)
+                        .collection("diets")
+                        .document(user.getUid())
+                        .collection("diet notes")
+                        .add(note);
+            }
         }
     }
 
