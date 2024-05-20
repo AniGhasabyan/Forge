@@ -83,6 +83,9 @@ public class DietFragment extends Fragment {
         dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole, userUID.get()))
                 .get(DietViewModel.class);
 
+        final TextView textView = binding.textDiet;
+        dietViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         recyclerView = root.findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         dietNotesList = new ArrayList<>();
