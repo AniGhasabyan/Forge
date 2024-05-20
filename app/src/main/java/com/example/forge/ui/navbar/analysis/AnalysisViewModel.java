@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.forge.Message;
-import com.example.forge.ui.MessageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -22,7 +21,7 @@ public class AnalysisViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public AnalysisViewModel(String userRole) {
+    public AnalysisViewModel(String userRole, String userUID) {
         message = new MutableLiveData<>();
         message.setValue(new ArrayList<>());
 
@@ -33,12 +32,14 @@ public class AnalysisViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        loadAnalysisData(userRole);
+        loadAnalysisData(userRole, userUID);
     }
 
-    public void loadAnalysisData(String userRole){
-        db.collection(userRole.toLowerCase()).document(user.getUid())
+    public void loadAnalysisData(String userRole, String userUID){
+        db.collection(userRole.toLowerCase()).document(userUID)
                 .collection("analyses")
+                .document(user.getUid())
+                .collection("message")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Message> notes = new ArrayList<>();
@@ -54,15 +55,31 @@ public class AnalysisViewModel extends ViewModel {
         return message;
     }
 
-    public void addMessage(Message note, String userRole) {
+    public void addMessage(Message note, String userRole, String userUID) {
         List<Message> currentNotes = message.getValue();
         if (currentNotes != null) {
             currentNotes.add(0, note);
             message.setValue(currentNotes);
 
-            db.collection(userRole.toLowerCase()).document(user.getUid())
+            String oppositeRole = "";
+            if(userRole.equals("Athlete")){
+                oppositeRole = "Coach";
+            } else if(userRole.equals("Coach")){
+                oppositeRole = "Athlete";
+            }
+
+            db.collection(userRole.toLowerCase()).document(userUID)
                     .collection("analyses")
+                    .document(user.getUid())
+                    .collection("message")
                     .add(note);
+            if(!userUID.equals(user.getUid())) {
+                db.collection(oppositeRole.toLowerCase()).document(user.getUid())
+                        .collection("analyses")
+                        .document(userUID)
+                        .collection("message")
+                        .add(note);
+            }
         }
     }
 

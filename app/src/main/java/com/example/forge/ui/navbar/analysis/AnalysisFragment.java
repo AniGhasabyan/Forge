@@ -22,10 +22,15 @@ import com.example.forge.R;
 import com.example.forge.databinding.FragmentAnalysisBinding;
 import com.example.forge.Message;
 import com.example.forge.ui.MessageAdapter;
-import com.example.forge.ui.navbar.progress.ProgressViewModelFactory;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AnalysisFragment extends Fragment {
 
@@ -33,24 +38,43 @@ public class AnalysisFragment extends Fragment {
     private List<Message> messages;
     private MessageAdapter messageAdapter;
     private AnalysisViewModel analysisViewModel;
-    private String username;
-    private String email;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private String username, email, userRole;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String userRole = preferences.getString("UserRole", "Athlete");
-        analysisViewModel =
-                new ViewModelProvider(this, new AnalysisViewModelFactory(userRole))
-                        .get(AnalysisViewModel.class);
+        userRole = preferences.getString("UserRole", "Athlete");
 
         binding = FragmentAnalysisBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
 
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
+
+            TextView usernameTextView = binding.textUsername;
+            String menuAnalysis = getString(R.string.menu_analysis);
+            usernameTextView.setText("This is " + username + "'s " + menuAnalysis);
+            usernameTextView.setVisibility(View.VISIBLE);
+
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+                initializeViewModel(userUID.get());
+            });
+        } else {
+            username = null;
+            email = null;
+            initializeViewModel(userUID.get());
         }
 
         if (username == null) {
@@ -60,16 +84,6 @@ public class AnalysisFragment extends Fragment {
 
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
             navController.navigate(R.id.nav_porch, bundle);
-        }
-
-        final TextView textView = binding.textAnalysis;
-        analysisViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
-        if (username != null) {
-            TextView usernameTextView = binding.textUsername;
-            String menuAnalysis = getString(R.string.menu_analysis);
-            usernameTextView.setText("This is " + username + "'s " + menuAnalysis);
-            usernameTextView.setVisibility(View.VISIBLE);
         }
 
         messages = new ArrayList<>();
@@ -82,28 +96,52 @@ public class AnalysisFragment extends Fragment {
         messageAdapter = new MessageAdapter(messages);
         recyclerView.setAdapter(messageAdapter);
 
+        Button sendButton = binding.buttonSend;
+        sendButton.setOnClickListener(view -> onSendButtonClicked(userRole, userUID.get()));
+
+        return root;
+    }
+
+    private void initializeViewModel(String userUID) {
+        analysisViewModel = new ViewModelProvider(this, new AnalysisViewModelFactory(userRole, userUID))
+                .get(AnalysisViewModel.class);
+
+        final TextView textView = binding.textAnalysis;
+        analysisViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         analysisViewModel.getMessage().observe(getViewLifecycleOwner(), dietNotes -> {
             messages.clear();
             messages.addAll(dietNotes);
             messageAdapter.notifyDataSetChanged();
         });
 
-        Button sendButton = binding.buttonSend;
-        sendButton.setOnClickListener(view -> onSendButtonClicked(userRole));
-
-        analysisViewModel.loadAnalysisData(userRole);
-
-        return root;
+        analysisViewModel.loadAnalysisData(userRole, userUID);
     }
 
-    private void onSendButtonClicked(String userRole) {
+    private void onSendButtonClicked(String userRole, String userUID) {
         EditText editTextMessage = binding.editTextMessage;
         String messageText = editTextMessage.getText().toString().trim();
 
         if (!messageText.isEmpty()) {
-            analysisViewModel.addMessage(new Message(messageText), userRole);
+            analysisViewModel.addMessage(new Message(messageText), userRole, userUID);
             editTextMessage.setText("");
         }
+    }
+
+    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String userUID = documentSnapshot.getString("uid");
+                        onSuccessListener.onSuccess(userUID);
+                    } else {
+                        onSuccessListener.onSuccess(null);
+                    }
+                });
     }
 
     @Override
