@@ -61,6 +61,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         }
 
         holder.imageViewCheckMark.setVisibility(VISIBLE);
+        holder.imageButtonReject.setVisibility(VISIBLE);
 
         User finalCurrent = current;
 
@@ -79,11 +80,118 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                 navController.navigate(R.id.nav_home, bundle);
             }
         });
+        holder.imageButtonReject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (userRole.equals("Athlete")) {
+                    rejectAthleteOffer(user, finalCurrent);
+                } else if (userRole.equals("Coach")) {
+                    rejectCoachOffer(user, finalCurrent);
+                }
+
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.nav_home, bundle);
+            }
+        });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
         });
+    }
+
+    private void rejectAthleteOffer(User user, User current) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserUID = getCurrentUserUID();
+        if (currentUserUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        db.collection("users")
+                                .document(currentUserUID)
+                                .collection("Coaches Requested to Train You")
+                                .document(userUID)
+                                .delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        db.collection("users")
+                                                .document(userUID)
+                                                .collection("Your Coaching Requests")
+                                                .document(currentUserUID)
+                                                .delete()
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        // Handle success
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            });
+        }
+    }
+
+    private void rejectCoachOffer(User user, User current) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserUID = getCurrentUserUID();
+        if (currentUserUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        db.collection("users")
+                                .document(currentUserUID)
+                                .collection("Athletes Interested in Your Coaching")
+                                .document(userUID)
+                                .delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        db.collection("users")
+                                                .document(userUID)
+                                                .collection("Coaches You're Interested in")
+                                                .document(currentUserUID)
+                                                .delete()
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        // Handle success
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            });
+        }
     }
 
     private void foo1(User user, User current) {
@@ -291,11 +399,13 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
 
         private final TextView textViewUsername;
         private final ImageButton imageViewCheckMark;
+        private final ImageButton imageButtonReject;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewUsername = itemView.findViewById(R.id.text_view_username);
             imageViewCheckMark = itemView.findViewById(R.id.image_button_check_mark);
+            imageButtonReject = itemView.findViewById(R.id.image_button_reject);
         }
 
         public void bind(User user) {

@@ -41,6 +41,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/mondayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
@@ -73,6 +74,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/tuesdayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
@@ -115,6 +117,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/wednesdayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
@@ -147,6 +150,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/thursdayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
@@ -189,6 +193,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/fridayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
@@ -221,6 +226,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/saturdayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
@@ -263,6 +269,7 @@
                 android:gravity="center" />
 
             <ScrollView
+                android:id="@+id/sundayScroll"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="8dp">
