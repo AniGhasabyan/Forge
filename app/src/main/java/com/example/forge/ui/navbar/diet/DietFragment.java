@@ -25,9 +25,15 @@ import com.example.forge.ui.MessageAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.example.forge.databinding.FragmentDietBinding;
 import com.example.forge.ui.navbar.DialogChooseUserFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DietFragment extends Fragment {
 
@@ -36,35 +42,46 @@ public class DietFragment extends Fragment {
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
     private DietViewModel dietViewModel;
-    private String username;
-    private String email;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "Athlete");
 
-        dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole))
-                .get(DietViewModel.class);
-
         binding = FragmentDietBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
+        String username, email;
 
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
-        }
 
-        final TextView textView = binding.textDiet;
-        dietViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
-        if (username != null) {
             TextView usernameTextView = binding.textUsername;
             String menuDiet = getString(R.string.menu_diet);
             usernameTextView.setText("This is " + username + "'s " + menuDiet);
             usernameTextView.setVisibility(View.VISIBLE);
+
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+            });
+
+        } else {
+            username = null;
+            email = null;
         }
+
+        dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole, userUID.get()))
+                .get(DietViewModel.class);
 
         recyclerView = root.findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -78,11 +95,11 @@ public class DietFragment extends Fragment {
             messageAdapter.notifyDataSetChanged();
         });
 
-        dietViewModel.loadDietNotes(userRole);
+        dietViewModel.loadDietNotes(userRole, userUID.get());
 
         Button addButton = root.findViewById(R.id.buttonAddNote);
         addButton.setOnClickListener(v -> {
-            showAddNoteDialog(userRole, username);
+            showAddNoteDialog(userRole, username, userUID.get());
         });
 
         return root;
@@ -94,7 +111,7 @@ public class DietFragment extends Fragment {
         binding = null;
     }
 
-    private void showAddNoteDialog(String userRole, String username2) {
+    private void showAddNoteDialog(String userRole, String username2, String userUID) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Diet Note");
 
@@ -110,8 +127,10 @@ public class DietFragment extends Fragment {
                     if(username2 == null && userRole.equals("Coach")){
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
+                    } else if (username2 != null){
+                        dietViewModel.addDietNote(new Message(newNoteText), userRole, userUID);
                     } else {
-                        dietViewModel.addDietNote(new Message(newNoteText), userRole);
+                        dietViewModel.addDietNote(new Message(newNoteText), userRole, user.getUid());
                     }
                 }
             }
@@ -124,5 +143,21 @@ public class DietFragment extends Fragment {
         });
 
         builder.show();
+    }
+
+    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String userUID = documentSnapshot.getString("uid");
+                        onSuccessListener.onSuccess(userUID);
+                    } else {
+                        onSuccessListener.onSuccess(null);
+                    }
+                });
     }
 }

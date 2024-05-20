@@ -25,7 +25,7 @@ public class DietViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public DietViewModel(String userRole) {
+    public DietViewModel(String userRole, String userUID) {
         dietNotes = new MutableLiveData<>();
         dietNotes.setValue(new ArrayList<>());
 
@@ -36,12 +36,14 @@ public class DietViewModel extends ViewModel {
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        loadDietNotes(userRole);
+        loadDietNotes(userRole, userUID);
     }
 
-    public void loadDietNotes(String userRole) {
+    public void loadDietNotes(String userRole, String userUID) {
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("diets")
+                .document(userUID)
+                .collection("diet notes")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Message> notes = new ArrayList<>();
@@ -57,7 +59,7 @@ public class DietViewModel extends ViewModel {
         return dietNotes;
     }
 
-    public void addDietNote(Message note, String userRole) {
+    public void addDietNote(Message note, String userRole, String userUID) {
         List<Message> currentNotes = dietNotes.getValue();
         if (currentNotes != null) {
             currentNotes.add(0, note);
@@ -65,6 +67,8 @@ public class DietViewModel extends ViewModel {
 
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("diets")
+                    .document(userUID)
+                    .collection("diet notes")
                     .add(note);
         }
     }
