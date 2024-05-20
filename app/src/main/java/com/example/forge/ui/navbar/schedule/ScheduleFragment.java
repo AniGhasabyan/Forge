@@ -27,42 +27,62 @@ import com.example.forge.ui.UserAdapter;
 import com.example.forge.ui.navbar.DialogChooseUserFragment;
 import com.example.forge.ui.navbar.diet.DietViewModel;
 import com.example.forge.ui.navbar.diet.DietViewModelFactory;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ScheduleFragment extends Fragment {
     private FragmentScheduleBinding binding;
     private TextView mondayTextView, tuesdayTextView, wednesdayTextView, thursdayTextView,
             fridayTextView, saturdayTextView, sundayTextView;
     private ScheduleViewModel scheduleViewModel;
-    private String username;
-    private String email;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "Athlete");
 
-        scheduleViewModel = new ViewModelProvider(this, new ScheduleViewModelFactory(userRole))
-                .get(ScheduleViewModel.class);
-
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
+        String username, email;
 
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
-        }
 
-        if (username != null) {
             TextView usernameTextView = binding.textUsername;
             String menuSchedule = getString(R.string.menu_schedule);
             usernameTextView.setText("This is " + username + "'s " + menuSchedule);
             usernameTextView.setVisibility(View.VISIBLE);
+
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+            });
+        } else {
+            username = null;
+            email = null;
         }
+
+        scheduleViewModel = new ViewModelProvider(this, new ScheduleViewModelFactory(userRole, userUID.get()))
+                .get(ScheduleViewModel.class);
 
         mondayTextView = root.findViewById(R.id.mondayText);
         tuesdayTextView = root.findViewById(R.id.tuesdayText);
@@ -94,7 +114,7 @@ public class ScheduleFragment extends Fragment {
                         textView.setText(currentText);
 
                         if (username != null) {
-                            scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime, username, userRole);
+                            scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime, username, userRole, userUID.get());
                             textView.setText(currentText + " - " + username);
                         } else {
                             DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
@@ -126,11 +146,31 @@ public class ScheduleFragment extends Fragment {
 
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "Athlete");
-        observeScheduleData(userRole);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
+        String email;
+
+        Bundle args = getArguments();
+        if (args != null) {
+            email = args.getString("email", "");
+
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+            });
+        } else {
+            email = null;
+        }
+
+        observeScheduleData(userRole, userUID.get());
     }
 
-    private void observeScheduleData(String userRole) {
-        scheduleViewModel.loadScheduleData(userRole).observe(getViewLifecycleOwner(), scheduleMap -> {
+    private void observeScheduleData(String userRole, String userUID) {
+        scheduleViewModel.loadScheduleData(userRole, userUID).observe(getViewLifecycleOwner(), scheduleMap -> {
             if (scheduleMap != null) {
                 float textSize = 20;
 
@@ -167,5 +207,21 @@ public class ScheduleFragment extends Fragment {
         }
 
         return day;
+    }
+
+    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String userUID = documentSnapshot.getString("uid");
+                        onSuccessListener.onSuccess(userUID);
+                    } else {
+                        onSuccessListener.onSuccess(null);
+                    }
+                });
     }
 }

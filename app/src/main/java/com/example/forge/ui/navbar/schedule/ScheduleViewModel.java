@@ -20,7 +20,7 @@ public class ScheduleViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public ScheduleViewModel(String userRole) {
+    public ScheduleViewModel(String userRole, String userUID) {
         mText = new MutableLiveData<>();
         mText.setValue("This is training schedule fragment");
 
@@ -29,12 +29,14 @@ public class ScheduleViewModel extends ViewModel {
         db = FirebaseFirestore.getInstance();
 
         scheduleData = new MutableLiveData<>();
-        loadScheduleData(userRole);
+        loadScheduleData(userRole, userUID);
     }
 
-    public LiveData<Map<String, String>> loadScheduleData(String userRole) {
+    public LiveData<Map<String, String>> loadScheduleData(String userRole, String userUID) {
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
+                .document(userUID)
+                .collection("times")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -57,14 +59,29 @@ public class ScheduleViewModel extends ViewModel {
         return mText;
     }
 
-    public void saveTime(String dayOfWeek, String time, String username, String userRole) {
+    public void saveTime(String dayOfWeek, String time, String username, String userRole, String userUID) {
         Map<String, Object> scheduleData = new HashMap<>();
         scheduleData.put("time", time);
         scheduleData.put("username", username);
 
+        String oppositeRole = "";
+        if(userRole.equals("Athlete")){
+            oppositeRole = "Coach";
+        } else if(userRole.equals("Coach")){
+            oppositeRole = "Athlete";
+        }
+
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
-                .document(dayOfWeek)
-                .set(scheduleData);
+                .document(userUID)
+                .collection("times")
+                .add(scheduleData);
+        if(!userUID.equals(user.getUid())) {
+            db.collection(oppositeRole.toLowerCase()).document(userUID)
+                    .collection("schedule")
+                    .document(user.getUid())
+                    .collection("times")
+                    .add(scheduleData);
+        }
     }
 }
