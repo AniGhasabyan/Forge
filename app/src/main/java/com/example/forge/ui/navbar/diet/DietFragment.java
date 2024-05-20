@@ -57,7 +57,7 @@ public class DietFragment extends Fragment {
         user = auth.getCurrentUser();
 
         AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
-        String username, email;
+        String username, email = null;
 
         Bundle args = getArguments();
         if (args != null) {
@@ -73,25 +73,29 @@ public class DietFragment extends Fragment {
                 if (useruid != null) {
                     userUID.set(useruid);
                 }
+                initializeViewModel(userRole, userUID.get(), username);
             });
 
         } else {
             username = null;
-            email = null;
+            initializeViewModel(userRole, userUID.get(), username);
         }
 
-        dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole, userUID.get()))
+        return root;
+    }
+
+    private void initializeViewModel(String userRole, String userUID, String username) {
+        dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole, userUID))
                 .get(DietViewModel.class);
 
         final TextView textView = binding.textDiet;
         dietViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        recyclerView = root.findViewById(R.id.recycler_view_diet);
+        recyclerView = binding.getRoot().findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         dietNotesList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(dietNotesList, getContext(), userRole, userUID.get());
+        messageAdapter = new MessageAdapter(dietNotesList, getContext(), userRole, userUID);
         recyclerView.setAdapter(messageAdapter);
-
 
         dietViewModel.getDietNotes().observe(getViewLifecycleOwner(), dietNotes -> {
             dietNotesList.clear();
@@ -99,14 +103,10 @@ public class DietFragment extends Fragment {
             messageAdapter.notifyDataSetChanged();
         });
 
-        dietViewModel.loadDietNotes(userRole, userUID.get());
+        dietViewModel.loadDietNotes(userRole, userUID);
 
-        Button addButton = root.findViewById(R.id.buttonAddNote);
-        addButton.setOnClickListener(v -> {
-            showAddNoteDialog(userRole, username, userUID.get());
-        });
-
-        return root;
+        Button addButton = binding.buttonAddNote;
+        addButton.setOnClickListener(v -> showAddNoteDialog(userRole, username, userUID));
     }
 
     @Override

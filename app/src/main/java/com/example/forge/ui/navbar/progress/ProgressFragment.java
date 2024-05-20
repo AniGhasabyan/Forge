@@ -27,10 +27,11 @@ import com.example.forge.Message;
 import com.example.forge.databinding.FragmentProgressBinding;
 import com.example.forge.ui.MessageAdapter;
 import com.example.forge.ui.navbar.DialogChooseUserFragment;
-import com.example.forge.ui.navbar.diet.DietViewModel;
-import com.example.forge.ui.navbar.diet.DietViewModelFactory;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ProgressFragment extends Fragment {
 
-    private @NonNull FragmentProgressBinding binding;
+    private FragmentProgressBinding binding;
     private List<Message> progressNotesList;
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
@@ -58,7 +59,8 @@ public class ProgressFragment extends Fragment {
         user = auth.getCurrentUser();
 
         AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
-        String username, email;
+        String username;
+        String email = null;
 
         Bundle args = getArguments();
         if (args != null) {
@@ -70,51 +72,43 @@ public class ProgressFragment extends Fragment {
             usernameTextView.setText("This is " + username + "'s " + menuProgress);
             usernameTextView.setVisibility(View.VISIBLE);
 
-
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+                initializeViewModel(userRole, userUID.get());
+            });
         } else {
             username = null;
-            email = null;
+            initializeViewModel(userRole, userUID.get());
         }
 
-        progressViewModel = new ViewModelProvider(this, new ProgressViewModelFactory(userRole, userUID.get()))
+        progressNotesList = new ArrayList<>();
+        recyclerView = binding.getRoot().findViewById(R.id.recyclerViewConquests);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        messageAdapter = new MessageAdapter(progressNotesList, getContext(), userRole, userUID.get());
+        recyclerView.setAdapter(messageAdapter);
+
+        Button addButton = binding.buttonAddConquest;
+        addButton.setOnClickListener(v -> showAddNoteDialog(userRole, username, userUID.get()));
+
+        return root;
+    }
+
+    private void initializeViewModel(String userRole, String userUID) {
+        progressViewModel = new ViewModelProvider(this, new ProgressViewModelFactory(userRole, userUID))
                 .get(ProgressViewModel.class);
 
         final TextView textView = binding.textProgress;
         progressViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        if (username != null) {
-            TextView usernameTextView = binding.textUsername;
-            String menuProgress = getString(R.string.menu_progress);
-            usernameTextView.setText("This is " + username + "'s " + menuProgress);
-            usernameTextView.setVisibility(View.VISIBLE);
-        }
-
-        recyclerView = root.findViewById(R.id.recyclerViewConquests);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        progressNotesList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(progressNotesList, getContext(), userRole, userUID.get());
-        recyclerView.setAdapter(messageAdapter);
-
-        progressViewModel.getProgressNotes().observe(getViewLifecycleOwner(), dietNotes -> {
+        progressViewModel.getProgressNotes().observe(getViewLifecycleOwner(), progressNotes -> {
             progressNotesList.clear();
-            progressNotesList.addAll(dietNotes);
+            progressNotesList.addAll(progressNotes);
             messageAdapter.notifyDataSetChanged();
         });
 
-        progressViewModel.loadProgressNotes(userRole, userUID.get());
-
-        Button addButton = root.findViewById(R.id.buttonAddConquest);
-        addButton.setOnClickListener(v -> {
-            showAddNoteDialog(userRole, username, userUID.get());
-        });
-
-        return root;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+        progressViewModel.loadProgressNotes(userRole, userUID);
     }
 
     private void showAddNoteDialog(String userRole, String username2, String userUID) {
@@ -149,10 +143,10 @@ public class ProgressFragment extends Fragment {
                 }
 
                 if (!newNoteText.isEmpty()) {
-                    if(username2 == null && userRole.equals("Coach")){
+                    if (username2 == null && userRole.equals("Coach")) {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
-                    } else if (username2 != null){
+                    } else if (username2 != null) {
                         progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, userUID);
                     } else {
                         progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, user.getUid());
@@ -163,14 +157,29 @@ public class ProgressFragment extends Fragment {
             }
         });
 
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
+    }
+
+    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String userUID = documentSnapshot.getString("uid");
+                        onSuccessListener.onSuccess(userUID);
+                    } else {
+                        onSuccessListener.onSuccess(null);
+                    }
+                });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
