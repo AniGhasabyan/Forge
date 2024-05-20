@@ -92,7 +92,7 @@ public class ProgressFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recyclerViewConquests);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         progressNotesList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(progressNotesList);
+        messageAdapter = new MessageAdapter(progressNotesList, getContext(), userRole, userUID.get());
         recyclerView.setAdapter(messageAdapter);
 
         progressViewModel.getProgressNotes().observe(getViewLifecycleOwner(), dietNotes -> {

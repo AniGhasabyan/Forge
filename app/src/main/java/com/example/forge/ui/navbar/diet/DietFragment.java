@@ -89,8 +89,9 @@ public class DietFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         dietNotesList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(dietNotesList);
+        messageAdapter = new MessageAdapter(dietNotesList, getContext(), userRole, userUID.get());
         recyclerView.setAdapter(messageAdapter);
+
 
         dietViewModel.getDietNotes().observe(getViewLifecycleOwner(), dietNotes -> {
             dietNotesList.clear();

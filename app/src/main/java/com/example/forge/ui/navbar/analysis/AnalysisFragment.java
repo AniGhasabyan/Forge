@@ -93,7 +93,7 @@ public class AnalysisFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        messageAdapter = new MessageAdapter(messages);
+        messageAdapter = new MessageAdapter(messages, getContext(), userRole, userUID.get());
         recyclerView.setAdapter(messageAdapter);
 
         Button sendButton = binding.buttonSend;

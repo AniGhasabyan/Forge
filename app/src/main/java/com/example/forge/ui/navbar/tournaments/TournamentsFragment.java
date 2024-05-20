@@ -85,7 +85,7 @@ public class TournamentsFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerViewTournaments;
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         tournamentList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(tournamentList);
+        messageAdapter = new MessageAdapter(tournamentList, getContext(), userRole, userUID.get());
         recyclerView.setAdapter(messageAdapter);
 
         CalendarView calendarView = binding.calendarView;
