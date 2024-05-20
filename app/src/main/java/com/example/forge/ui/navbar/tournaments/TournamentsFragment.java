@@ -23,12 +23,15 @@ import com.example.forge.R;
 import com.example.forge.ui.MessageAdapter;
 import com.example.forge.databinding.FragmentTournamentsBinding;
 import com.example.forge.ui.navbar.DialogChooseUserFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TournamentsFragment extends Fragment {
 
@@ -36,36 +39,48 @@ public class TournamentsFragment extends Fragment {
     private List<Message> tournamentList;
     private MessageAdapter messageAdapter;
     private TournamentsViewModel tournamentsViewModel;
-    private String username;
-    private String email;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
     private String userRole;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-
         userRole = preferences.getString("UserRole", "Athlete");
-
-        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole))
-                .get(TournamentsViewModel.class);
 
         binding = FragmentTournamentsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.textTournaments.setText("Double click on a date in the calendar to add a tournament");
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
+        String username, email;
 
         Bundle args = getArguments();
         if (args != null) {
             username = args.getString("username", "");
             email = args.getString("email", "");
-        }
 
-        if (username != null) {
             TextView usernameTextView = binding.textUsername;
             String menuTournaments = getString(R.string.menu_tournaments);
             usernameTextView.setText("This is " + username + "'s " + menuTournaments);
             usernameTextView.setVisibility(View.VISIBLE);
+
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+            });
+        } else {
+            username = null;
+            email = null;
         }
+
+        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole, userUID.get()))
+                .get(TournamentsViewModel.class);
+
+        binding.textTournaments.setText("Double click on a date in the calendar to add a tournament");
 
         RecyclerView recyclerView = binding.recyclerViewTournaments;
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -84,7 +99,7 @@ public class TournamentsFragment extends Fragment {
                 long currentDateClicked = view.getDate();
 
                 if (currentDateClicked == lastDateClicked && doubleClick) {
-                    showDialogPrompt(year, month, dayOfMonth, username);
+                    showDialogPrompt(year, month, dayOfMonth, username, userUID.get());
                 }
 
                 lastDateClicked = currentDateClicked;
@@ -105,14 +120,14 @@ public class TournamentsFragment extends Fragment {
         preferences.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
             if (key.equals("UserRole")) {
                 userRole = sharedPreferences.getString("UserRole", "Athlete");
-                tournamentsViewModel.loadTournaments(userRole);
+                tournamentsViewModel.loadTournaments(userRole, userUID.get());
             }
         });
 
         return root;
     }
 
-    private void showDialogPrompt(int year, int month, int dayOfMonth, String username2) {
+    private void showDialogPrompt(int year, int month, int dayOfMonth, String username2, String userUID) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Tournament Day");
         final EditText input = new EditText(requireContext());
@@ -129,13 +144,29 @@ public class TournamentsFragment extends Fragment {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else {
-                        tournamentsViewModel.addTournament(tournamentDetails, userRole);
+                        tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID);
                     }
                 }
             }
         });
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String userUID = documentSnapshot.getString("uid");
+                        onSuccessListener.onSuccess(userUID);
+                    } else {
+                        onSuccessListener.onSuccess(null);
+                    }
+                });
     }
 
     @Override

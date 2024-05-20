@@ -21,23 +21,27 @@ public class TournamentsViewModel extends ViewModel {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
-    public TournamentsViewModel(String userRole) {
+    public TournamentsViewModel(String userRole, String userUID) {
         tournamentList = new MutableLiveData<>();
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        loadTournaments(userRole);
+
+        loadTournaments(userRole, userUID);
     }
 
     public LiveData<List<String>> getTournamentList() {
         return tournamentList;
     }
 
-    public void loadTournaments(String userRole) {
+    public void loadTournaments(String userRole, String userUID) {
         if (db == null || user == null || userRole == null) return;
 
         db.collection(userRole.toLowerCase()).document(user.getUid())
-                .collection("tournaments").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                .collection("tournaments")
+                .document(userUID)
+                .collection("date")
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
                     List<String> tournaments = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String tournament = document.getString("note");
@@ -47,14 +51,33 @@ public class TournamentsViewModel extends ViewModel {
                 });
     }
 
-    public void addTournament(String tournamentDetails, String userRole) {
+    public void addTournament(String tournamentDetails, String userRole, String userUID) {
         if (db != null && user != null && userRole != null) {
+
+            String oppositeRole = "";
+            if(userRole.equals("Athlete")){
+                oppositeRole = "Coach";
+            } else if(userRole.equals("Coach")){
+                oppositeRole = "Athlete";
+            }
+
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("tournaments")
+                    .document(userUID)
+                    .collection("date")
                     .add(new HashMap<String, Object>() {{
                         put("note", tournamentDetails);
                     }});
-            loadTournaments(userRole);
+            if(!userUID.equals(user.getUid())) {
+                db.collection(oppositeRole.toLowerCase()).document(userUID)
+                        .collection("tournaments")
+                        .document(user.getUid())
+                        .collection("date")
+                        .add(new HashMap<String, Object>() {{
+                            put("note", tournamentDetails);
+                        }});
+            }
+            loadTournaments(userRole, userUID);
         }
     }
 }
