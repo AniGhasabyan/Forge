@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +20,7 @@ import com.example.forge.Message;
 import com.example.forge.R;
 import com.example.forge.User;
 import com.example.forge.ui.navbar.diet.DietViewModel;
+import com.example.forge.ui.navbar.diet.DietViewModelFactory;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +34,7 @@ import android.os.Bundle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
@@ -84,6 +88,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     db = FirebaseFirestore.getInstance();
                     String currentUserUID = getCurrentUserUID();
                     Map<String, Object> noteMap = new HashMap<>();
+                    String noteId = UUID.randomUUID().toString();
+                    noteMap.put("id", noteId);
+                    noteMap.put("text", note);
                     noteMap.put("note", note);
 
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
@@ -100,6 +107,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .document(currentUserUID)
                                     .collection("diet notes")
                                     .add(noteMap);
+
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);

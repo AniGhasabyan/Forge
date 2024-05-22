@@ -40,6 +40,7 @@ public class DietViewModel extends ViewModel {
     }
 
     public void loadDietNotes(String userRole, String userUID) {
+        dietNotes.setValue(new ArrayList<>());
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("diets")
                 .document(userUID)
