@@ -29,20 +29,25 @@ public class ScheduleViewModel extends ViewModel {
         db = FirebaseFirestore.getInstance();
 
         scheduleData = new MutableLiveData<>();
-        loadScheduleData(userRole, userUID);
+        loadScheduleData(userRole, userUID, "monday");
+        loadScheduleData(userRole, userUID, "tuesday");
+        loadScheduleData(userRole, userUID, "wednesday");
+        loadScheduleData(userRole, userUID, "thursday");
+        loadScheduleData(userRole, userUID, "friday");
+        loadScheduleData(userRole, userUID, "saturday");
+        loadScheduleData(userRole, userUID, "sunday");
     }
 
-    public LiveData<Map<String, String>> loadScheduleData(String userRole, String userUID) {
+    public LiveData<Map<String, String>> loadScheduleData(String userRole, String userUID, String dayOfWeek) {
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
                 .document(userUID)
-                .collection("times")
+                .collection(dayOfWeek)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Map<String, String> scheduleMap = new HashMap<>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String dayOfWeek = document.getId();
                             String time = document.getString("time");
                             String username = document.getString("username");
                             scheduleMap.put(dayOfWeek, time + " - " + username);
@@ -74,13 +79,13 @@ public class ScheduleViewModel extends ViewModel {
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
                 .document(userUID)
-                .collection("times")
+                .collection(dayOfWeek)
                 .add(scheduleData);
         if(!userUID.equals(user.getUid())) {
             db.collection(oppositeRole.toLowerCase()).document(userUID)
                     .collection("schedule")
                     .document(user.getUid())
-                    .collection("times")
+                    .collection(dayOfWeek)
                     .add(scheduleData);
         }
     }

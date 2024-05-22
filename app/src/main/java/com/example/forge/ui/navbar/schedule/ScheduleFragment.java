@@ -174,31 +174,40 @@ public class ScheduleFragment extends Fragment {
     }
 
     private void observeScheduleData(String userRole, String userUID) {
-        scheduleViewModel.loadScheduleData(userRole, userUID).observe(getViewLifecycleOwner(), scheduleMap -> {
-            if (scheduleMap != null) {
-                float textSize = 20;
+        float textSize = 20;
+        scheduleViewModel.loadScheduleData(userRole, userUID, "monday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            mondayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            mondayTextView.setText(scheduleMap.get("monday"));
+        });
 
-                mondayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                mondayTextView.setText(scheduleMap.get("monday"));
+        scheduleViewModel.loadScheduleData(userRole, userUID, "tuesday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            tuesdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            tuesdayTextView.setText(scheduleMap.get("tuesday"));
+        });
 
-                tuesdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                tuesdayTextView.setText(scheduleMap.get("tuesday"));
+        scheduleViewModel.loadScheduleData(userRole, userUID, "wednesday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            wednesdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            wednesdayTextView.setText(scheduleMap.get("wednesday"));
+        });
 
-                wednesdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                wednesdayTextView.setText(scheduleMap.get("wednesday"));
+        scheduleViewModel.loadScheduleData(userRole, userUID, "thursday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            thursdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            thursdayTextView.setText(scheduleMap.get("thursday"));
+        });
 
-                thursdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                thursdayTextView.setText(scheduleMap.get("thursday"));
+        scheduleViewModel.loadScheduleData(userRole, userUID, "friday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            fridayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            fridayTextView.setText(scheduleMap.get("friday"));
+        });
 
-                fridayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                fridayTextView.setText(scheduleMap.get("friday"));
+        scheduleViewModel.loadScheduleData(userRole, userUID, "saturday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            saturdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            saturdayTextView.setText(scheduleMap.get("saturday"));
+        });
 
-                saturdayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                saturdayTextView.setText(scheduleMap.get("saturday"));
-
-                sundayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-                sundayTextView.setText(scheduleMap.get("sunday"));
-            }
+        scheduleViewModel.loadScheduleData(userRole, userUID, "sunday").observe(getViewLifecycleOwner(), scheduleMap -> {
+            sundayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            sundayTextView.setText(scheduleMap.get("sunday"));
         });
     }
 

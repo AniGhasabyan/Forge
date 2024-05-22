@@ -164,6 +164,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     navController.navigate(R.id.nav_tournaments);
                 } else if (currentDestinationId == R.id.nav_schedule){
 
+
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_schedule);
                 }
