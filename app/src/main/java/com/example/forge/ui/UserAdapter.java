@@ -91,7 +91,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
                     noteMap.put("text", note);
-                    noteMap.put("note", note);
 
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
@@ -112,6 +111,61 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_diet);
+                } else if (currentDestinationId == R.id.nav_progress){
+                    db = FirebaseFirestore.getInstance();
+                    String currentUserUID = getCurrentUserUID();
+                    Map<String, Object> noteMap = new HashMap<>();
+                    String noteId = UUID.randomUUID().toString();
+                    noteMap.put("id", noteId);
+                    noteMap.put("text", note);
+
+                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String userUID) {
+                            db.collection("coach")
+                                    .document(currentUserUID)
+                                    .collection("progress")
+                                    .document(userUID)
+                                    .collection("conquests")
+                                    .add(noteMap);
+                            db.collection("athlete")
+                                    .document(userUID).collection("progress")
+                                    .document(currentUserUID)
+                                    .collection("conquests")
+                                    .add(noteMap);
+
+                        }
+                    });
+                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.navigate(R.id.nav_progress);
+                } else if (currentDestinationId == R.id.nav_tournaments){
+                    db = FirebaseFirestore.getInstance();
+                    String currentUserUID = getCurrentUserUID();
+                    Map<String, Object> noteData = new HashMap<>();
+                    noteData.put("note", note);
+                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String userUID) {
+                            db.collection("coach")
+                                    .document(currentUserUID)
+                                    .collection("tournaments")
+                                    .document(userUID)
+                                    .collection("date")
+                                    .add(noteData);
+                            db.collection("athlete")
+                                    .document(userUID).collection("tournaments")
+                                    .document(currentUserUID)
+                                    .collection("date")
+                                    .add(noteData);
+
+                        }
+                    });
+                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.navigate(R.id.nav_tournaments);
+                } else if (currentDestinationId == R.id.nav_schedule){
+
+                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.navigate(R.id.nav_schedule);
                 }
             }
         });

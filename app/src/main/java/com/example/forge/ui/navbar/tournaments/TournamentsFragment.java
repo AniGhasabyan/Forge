@@ -137,11 +137,14 @@ public class TournamentsFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String tournament = input.getText().toString().trim();
                 String date = dayOfMonth + "/" + (month + 1) + "/" + year;
-
+                String tournamentDetails = date + "\n\n" + tournament;
+                Bundle bundle = new Bundle();
+                bundle.putString("newNoteText", tournamentDetails);
+                bundle.putInt("destinationId", R.id.nav_tournaments);
                 if (!tournament.isEmpty()) {
-                    String tournamentDetails = date + "\n\n" + tournament;
                     if(username2 == null && userRole.equals("Coach")){
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                        dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else {
                         tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID);

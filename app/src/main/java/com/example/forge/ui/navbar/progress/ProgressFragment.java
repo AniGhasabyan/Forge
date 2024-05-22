@@ -143,8 +143,12 @@ public class ProgressFragment extends Fragment {
                 }
 
                 if (!newNoteText.isEmpty()) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("newNoteText", newNoteText + place);
+                    bundle.putInt("destinationId", R.id.nav_progress);
                     if (username2 == null && userRole.equals("Coach")) {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                        dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null) {
                         progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, userUID);

@@ -113,11 +113,15 @@ public class ScheduleFragment extends Fragment {
                         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                         textView.setText(currentText);
 
+                        Bundle bundle = new Bundle();
+                        bundle.putString("newNoteText", currentText + " - " + username);
+                        bundle.putInt("destinationId", R.id.nav_schedule);
                         if (username != null) {
                             scheduleViewModel.saveTime(getDayOfWeekFromView(v), selectedTime, username, userRole, userUID.get());
                             textView.setText(currentText + " - " + username);
                         } else {
                             DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                            dialogFragment.setArguments(bundle);
                             dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                         }
                     },
