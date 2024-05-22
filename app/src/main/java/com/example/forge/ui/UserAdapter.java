@@ -1,5 +1,8 @@
 package com.example.forge.ui;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +14,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.forge.Message;
 import com.example.forge.R;
 import com.example.forge.User;
+import com.example.forge.ui.navbar.diet.DietViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import android.os.Bundle;
 
@@ -22,10 +30,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private List<User> userList;
     private int currentDestinationId;
+    private String note;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
+    private Context context;
 
     public UserAdapter(List<User> userList, int currentDestinationId) {
         this.userList = userList;
         this.currentDestinationId = currentDestinationId;
+    }
+
+    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context) {
+        this.userList = userList;
+        this.currentDestinationId = currentDestinationId;
+        this.note = note;
+        this.context = context;
     }
 
     @NonNull
@@ -53,6 +73,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 } else if (currentDestinationId == R.id.nav_porch) {
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_analysis, bundle);
+                } else if (currentDestinationId == R.id.nav_diet){
+
+                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.navigate(R.id.nav_diet);
                 }
             }
         });

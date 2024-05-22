@@ -33,7 +33,15 @@ public class DialogChooseUserFragment extends DialogFragment {
 
         viewModel = new ViewModelProvider(this).get(DialogChooseUserViewModel.class);
 
-        adapter = new UserAdapter(new ArrayList<>(), R.id.nav_dialog);
+        String newNoteText = null;
+        int destinationId = 0;
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            newNoteText = arguments.getString("newNoteText");
+            destinationId = arguments.getInt("destinationId");
+        }
+
+        adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext());
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(adapter);
 

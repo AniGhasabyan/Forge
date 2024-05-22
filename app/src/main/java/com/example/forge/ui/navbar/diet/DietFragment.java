@@ -127,9 +127,13 @@ public class DietFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newNoteText = input.getText().toString().trim();
+                Bundle bundle = new Bundle();
+                bundle.putString("newNoteText", newNoteText);
+                bundle.putInt("destinationId", R.id.nav_diet);
                 if (!newNoteText.isEmpty()) {
-                    if(username2 == null && userRole.equals("Coach")){
+                    if (username2 == null && userRole.equals("Coach")) {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
+                        dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null){
                         dietViewModel.addDietNote(new Message(newNoteText), userRole, userUID);
