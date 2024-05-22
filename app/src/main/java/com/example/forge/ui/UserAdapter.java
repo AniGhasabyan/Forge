@@ -18,13 +18,19 @@ import com.example.forge.Message;
 import com.example.forge.R;
 import com.example.forge.User;
 import com.example.forge.ui.navbar.diet.DietViewModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import android.os.Bundle;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
@@ -60,6 +66,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
         holder.bind(user);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,12 +81,62 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_analysis, bundle);
                 } else if (currentDestinationId == R.id.nav_diet){
+                    db = FirebaseFirestore.getInstance();
+                    String currentUserUID = getCurrentUserUID();
+                    Map<String, Object> noteMap = new HashMap<>();
+                    noteMap.put("note", note);
 
+                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String userUID) {
+                            db.collection("coach")
+                                    .document(currentUserUID)
+                                    .collection("diets")
+                                    .document(userUID)
+                                    .collection("diet notes")
+                                    .add(noteMap);
+                            db.collection("athlete")
+                                    .document(userUID).collection("diets")
+                                    .document(currentUserUID)
+                                    .collection("diet notes")
+                                    .add(noteMap);
+                        }
+                    });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_diet);
                 }
             }
         });
+    }
+
+    private String getCurrentUserUID() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        return currentUser != null ? currentUser.getUid() : null;
+    }
+
+    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                            String userUID = documentSnapshot.getString("uid");
+                            onSuccessListener.onSuccess(userUID);
+                        } else {
+                            onSuccessListener.onSuccess(null);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                });
     }
 
     @Override

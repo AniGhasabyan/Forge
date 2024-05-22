@@ -84,9 +84,9 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
             @Override
             public void onClick(View view) {
                 if (userRole.equals("Athlete")) {
-                    rejectAthleteOffer(user, finalCurrent);
+                    rejectAthleteOffer(user);
                 } else if (userRole.equals("Coach")) {
-                    rejectCoachOffer(user, finalCurrent);
+                    rejectCoachOffer(user);
                 }
 
                 NavController navController = Navigation.findNavController(view);
@@ -100,7 +100,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         });
     }
 
-    private void rejectAthleteOffer(User user, User current) {
+    private void rejectAthleteOffer(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
@@ -147,7 +147,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         }
     }
 
-    private void rejectCoachOffer(User user, User current) {
+    private void rejectCoachOffer(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
