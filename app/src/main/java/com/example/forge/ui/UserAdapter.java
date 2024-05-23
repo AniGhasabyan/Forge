@@ -45,6 +45,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private Context context;
+    private String userRole;
+    private String dayOfWeek;
 
     public UserAdapter(List<User> userList, int currentDestinationId) {
         this.userList = userList;
@@ -56,6 +58,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         this.currentDestinationId = currentDestinationId;
         this.note = note;
         this.context = context;
+    }
+
+    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, String userRole, String dayOfWeek) {
+        this.userList = userList;
+        this.currentDestinationId = currentDestinationId;
+        this.note = note;
+        this.context = context;
+        this.userRole = userRole;
+        this.dayOfWeek = dayOfWeek;
     }
 
     @NonNull
@@ -78,6 +89,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 bundle.putString("username", user.getUsername());
                 bundle.putString("email", user.getEmail());
 
+                db = FirebaseFirestore.getInstance();
+                String currentUserUID = getCurrentUserUID();
+
                 if (currentDestinationId == R.id.nav_home) {
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_choose, bundle);
@@ -85,8 +99,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_analysis, bundle);
                 } else if (currentDestinationId == R.id.nav_diet){
-                    db = FirebaseFirestore.getInstance();
-                    String currentUserUID = getCurrentUserUID();
                     Map<String, Object> noteMap = new HashMap<>();
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
@@ -112,8 +124,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_diet);
                 } else if (currentDestinationId == R.id.nav_progress){
-                    db = FirebaseFirestore.getInstance();
-                    String currentUserUID = getCurrentUserUID();
                     Map<String, Object> noteMap = new HashMap<>();
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
@@ -139,8 +149,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_progress);
                 } else if (currentDestinationId == R.id.nav_tournaments){
-                    db = FirebaseFirestore.getInstance();
-                    String currentUserUID = getCurrentUserUID();
                     Map<String, Object> noteData = new HashMap<>();
                     noteData.put("note", note);
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
@@ -163,7 +171,27 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_tournaments);
                 } else if (currentDestinationId == R.id.nav_schedule){
+                    Map<String, Object> scheduleData = new HashMap<>();
+                    scheduleData.put("time", note);
 
+                    String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
+                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String userUID) {
+                            db.collection(userRole.toLowerCase())
+                                    .document(currentUserUID)
+                                    .collection("schedule")
+                                    .document(userUID)
+                                    .collection(dayOfWeek)
+                                    .add(scheduleData);
+                            db.collection(oppositeRole.toLowerCase())
+                                    .document(userUID).collection("schedule")
+                                    .document(currentUserUID)
+                                    .collection(dayOfWeek)
+                                    .add(scheduleData);
+
+                        }
+                    });
 
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_schedule);

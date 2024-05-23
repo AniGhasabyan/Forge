@@ -35,13 +35,20 @@ public class DialogChooseUserFragment extends DialogFragment {
 
         String newNoteText = null;
         int destinationId = 0;
+        String userRoleArg = null;
+        String dayOfWeek = null;
         Bundle arguments = getArguments();
         if (arguments != null) {
             newNoteText = arguments.getString("newNoteText");
             destinationId = arguments.getInt("destinationId");
+            userRoleArg = arguments.getString("userRole");
+            dayOfWeek = arguments.getString("dayOfWeek");
         }
 
         adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext());
+        if(destinationId == R.id.nav_schedule){
+            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), userRoleArg, dayOfWeek);
+        }
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(adapter);
 
