@@ -14,54 +14,49 @@ import java.util.Map;
 
 public class ScheduleViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
     private MutableLiveData<Map<String, String>> scheduleData;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private FirebaseUser user;
 
     public ScheduleViewModel(String userRole, String userUID) {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is training schedule fragment");
-
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
         scheduleData = new MutableLiveData<>();
-        loadScheduleData(userRole, userUID, "monday");
-        loadScheduleData(userRole, userUID, "tuesday");
-        loadScheduleData(userRole, userUID, "wednesday");
-        loadScheduleData(userRole, userUID, "thursday");
-        loadScheduleData(userRole, userUID, "friday");
-        loadScheduleData(userRole, userUID, "saturday");
-        loadScheduleData(userRole, userUID, "sunday");
+        loadScheduleData(userRole, userUID);
     }
 
-    public LiveData<Map<String, String>> loadScheduleData(String userRole, String userUID, String dayOfWeek) {
-        db.collection(userRole.toLowerCase()).document(user.getUid())
-                .collection("schedule")
-                .document(userUID)
-                .collection(dayOfWeek)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Map<String, String> scheduleMap = new HashMap<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String time = document.getString("time");
-                            String username = document.getString("username");
-                            scheduleMap.put(dayOfWeek, time + " - " + username);
-                        }
-                        scheduleData.postValue(scheduleMap);
-                    } else {
-                    }
-                });
-
+    public LiveData<Map<String, String>> getScheduleData() {
         return scheduleData;
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public void loadScheduleData(String userRole, String userUID) {
+        Map<String, String> scheduleMap = new HashMap<>();
+
+        String[] daysOfWeek = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
+        for (String dayOfWeek : daysOfWeek) {
+            db.collection(userRole.toLowerCase()).document(user.getUid())
+                    .collection("schedule")
+                    .document(userUID)
+                    .collection(dayOfWeek)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        StringBuilder times = new StringBuilder();
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            String time = document.getString("time");
+                            if (time != null) {
+                                if (times.length() > 0) {
+                                    times.append("\n");
+                                }
+                                times.append(time);
+                            }
+                        }
+                        scheduleMap.put(dayOfWeek, times.toString());
+                        scheduleData.postValue(scheduleMap);
+                    });
+        }
     }
 
     public void saveTime(String dayOfWeek, String time, String username, String userRole, String userUID) {
@@ -69,19 +64,15 @@ public class ScheduleViewModel extends ViewModel {
         scheduleData.put("time", time);
         scheduleData.put("username", username);
 
-        String oppositeRole = "";
-        if(userRole.equals("Athlete")){
-            oppositeRole = "Coach";
-        } else if(userRole.equals("Coach")){
-            oppositeRole = "Athlete";
-        }
+        String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
 
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("schedule")
                 .document(userUID)
                 .collection(dayOfWeek)
                 .add(scheduleData);
-        if(!userUID.equals(user.getUid())) {
+
+        if (!userUID.equals(user.getUid())) {
             db.collection(oppositeRole.toLowerCase()).document(userUID)
                     .collection("schedule")
                     .document(user.getUid())
