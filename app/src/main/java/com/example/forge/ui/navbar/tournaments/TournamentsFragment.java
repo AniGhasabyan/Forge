@@ -41,12 +41,11 @@ public class TournamentsFragment extends Fragment {
     private TournamentsViewModel tournamentsViewModel;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private String userRole;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        userRole = preferences.getString("UserRole", "Athlete");
+        AtomicReference<String> userRole = new AtomicReference<>(preferences.getString("UserRole", "Athlete"));
 
         binding = FragmentTournamentsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -70,6 +69,7 @@ public class TournamentsFragment extends Fragment {
             getUserUIDByEmail(email, useruid -> {
                 if (useruid != null) {
                     userUID.set(useruid);
+                    tournamentsViewModel.loadTournaments(userRole.get(), useruid);
                 }
             });
         } else {
@@ -77,7 +77,7 @@ public class TournamentsFragment extends Fragment {
             email = null;
         }
 
-        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole, userUID.get()))
+        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole.get(), userUID.get()))
                 .get(TournamentsViewModel.class);
 
         binding.textTournaments.setText("Double click on a date in the calendar to add a tournament");
@@ -85,11 +85,10 @@ public class TournamentsFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerViewTournaments;
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         tournamentList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(tournamentList, getContext(), userRole, userUID.get());
+        messageAdapter = new MessageAdapter(tournamentList, getContext(), userRole.get(), userUID.get());
         recyclerView.setAdapter(messageAdapter);
 
         CalendarView calendarView = binding.calendarView;
-
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             boolean doubleClick = false;
             long lastDateClicked = 0;
@@ -99,7 +98,7 @@ public class TournamentsFragment extends Fragment {
                 long currentDateClicked = view.getDate();
 
                 if (currentDateClicked == lastDateClicked && doubleClick) {
-                    showDialogPrompt(year, month, dayOfMonth, username, userUID.get());
+                    showDialogPrompt(year, month, dayOfMonth, username, userUID.get(), userRole.get());
                 }
 
                 lastDateClicked = currentDateClicked;
@@ -119,15 +118,15 @@ public class TournamentsFragment extends Fragment {
 
         preferences.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
             if (key.equals("UserRole")) {
-                userRole = sharedPreferences.getString("UserRole", "Athlete");
-                tournamentsViewModel.loadTournaments(userRole, userUID.get());
+                userRole.set(sharedPreferences.getString("UserRole", "Athlete"));
+                tournamentsViewModel.loadTournaments(userRole.get(), userUID.get());
             }
         });
 
         return root;
     }
 
-    private void showDialogPrompt(int year, int month, int dayOfMonth, String username2, String userUID) {
+    private void showDialogPrompt(int year, int month, int dayOfMonth, String username2, String userUID, String userRole) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Tournament Day");
         final EditText input = new EditText(requireContext());

@@ -35,7 +35,7 @@ public class TournamentsViewModel extends ViewModel {
     }
 
     public void loadTournaments(String userRole, String userUID) {
-        if (db == null || user == null || userRole == null) return;
+        tournamentList.setValue(new ArrayList<>());
 
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("tournaments")
@@ -67,7 +67,15 @@ public class TournamentsViewModel extends ViewModel {
                     .collection("date")
                     .add(new HashMap<String, Object>() {{
                         put("note", tournamentDetails);
-                    }});
+                    }}).addOnSuccessListener(documentReference -> {
+                        List<String> updatedTournaments = tournamentList.getValue();
+                        if (updatedTournaments == null) {
+                            updatedTournaments = new ArrayList<>();
+                        }
+                        updatedTournaments.add(tournamentDetails);
+                        tournamentList.setValue(updatedTournaments);
+                    });
+
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
                         .collection("tournaments")
@@ -77,7 +85,7 @@ public class TournamentsViewModel extends ViewModel {
                             put("note", tournamentDetails);
                         }});
             }
-            loadTournaments(userRole, userUID);
         }
     }
+
 }
