@@ -118,11 +118,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .document(currentUserUID)
                                     .collection("diet notes")
                                     .add(noteMap);
+                            db.collection("coach").document(currentUserUID)
+                                    .collection("diets")
+                                    .document(currentUserUID)
+                                    .collection("diet notes")
+                                    .add(noteMap);
 
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
                     navController.navigate(R.id.nav_diet);
+
                 } else if (currentDestinationId == R.id.nav_progress){
                     Map<String, Object> noteMap = new HashMap<>();
                     String noteId = UUID.randomUUID().toString();
@@ -143,7 +149,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .document(currentUserUID)
                                     .collection("conquests")
                                     .add(noteMap);
-
+                            db.collection("coach")
+                                    .document(currentUserUID)
+                                    .collection("progress")
+                                    .document(currentUserUID)
+                                    .collection("conquests")
+                                    .add(noteMap);
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
@@ -165,7 +176,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .document(currentUserUID)
                                     .collection("date")
                                     .add(noteData);
-
+                            db.collection("coach")
+                                    .document(currentUserUID)
+                                    .collection("tournaments")
+                                    .document(currentUserUID)
+                                    .collection("date")
+                                    .add(noteData);
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
@@ -189,7 +205,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .document(currentUserUID)
                                     .collection(dayOfWeek)
                                     .add(scheduleData);
-
+                            db.collection(userRole.toLowerCase())
+                                    .document(currentUserUID)
+                                    .collection("schedule")
+                                    .document(currentUserUID)
+                                    .collection(dayOfWeek)
+                                    .add(scheduleData);
                         }
                     });
 

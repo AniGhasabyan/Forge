@@ -84,6 +84,20 @@ public class TournamentsViewModel extends ViewModel {
                         .add(new HashMap<String, Object>() {{
                             put("note", tournamentDetails);
                         }});
+                db.collection(userRole.toLowerCase()).document(user.getUid())
+                        .collection("tournaments")
+                        .document(user.getUid())
+                        .collection("date")
+                        .add(new HashMap<String, Object>() {{
+                            put("note", tournamentDetails);
+                        }}).addOnSuccessListener(documentReference -> {
+                            List<String> updatedTournaments = tournamentList.getValue();
+                            if (updatedTournaments == null) {
+                                updatedTournaments = new ArrayList<>();
+                            }
+                            updatedTournaments.add(tournamentDetails);
+                            tournamentList.setValue(updatedTournaments);
+                        });
             }
         }
     }

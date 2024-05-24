@@ -78,6 +78,11 @@ public class ProgressViewModel extends ViewModel {
                         .document(user.getUid())
                         .collection("conquests")
                         .add(note);
+                db.collection(userRole.toLowerCase()).document(user.getUid())
+                        .collection("progress")
+                        .document(user.getUid())
+                        .collection("conquests")
+                        .add(note);
             }
         }
     }

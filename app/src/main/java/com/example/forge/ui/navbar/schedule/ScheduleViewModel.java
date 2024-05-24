@@ -78,6 +78,11 @@ public class ScheduleViewModel extends ViewModel {
                     .document(user.getUid())
                     .collection(dayOfWeek)
                     .add(scheduleData);
+            db.collection(userRole.toLowerCase()).document(user.getUid())
+                    .collection("schedule")
+                    .document(user.getUid())
+                    .collection(dayOfWeek)
+                    .add(scheduleData);
         }
     }
 }

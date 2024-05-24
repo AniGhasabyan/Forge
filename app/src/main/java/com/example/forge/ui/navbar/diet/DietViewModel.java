@@ -8,10 +8,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.forge.Message;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +84,11 @@ public class DietViewModel extends ViewModel {
                     .add(note);
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
+                        .collection("diets")
+                        .document(user.getUid())
+                        .collection("diet notes")
+                        .add(note);
+                db.collection(userRole.toLowerCase()).document(user.getUid())
                         .collection("diets")
                         .document(user.getUid())
                         .collection("diet notes")
