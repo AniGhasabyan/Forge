@@ -8,7 +8,7 @@
     android:background="@drawable/user_item_background"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.example.customviews.CircleImageView
+    <com.example.forge.ui.CircleImageView
         android:id="@+id/profile_picture"
         android:layout_width="60dp"
         android:layout_height="60dp"
