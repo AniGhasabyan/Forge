@@ -145,8 +145,10 @@ public class TournamentsFragment extends Fragment {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
+                    } else if (username2 != null) {
+                        tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, " - " + username2);
                     } else {
-                        tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID);
+                        tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, "");
                     }
                 }
             }

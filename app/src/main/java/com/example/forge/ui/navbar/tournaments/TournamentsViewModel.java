@@ -51,7 +51,7 @@ public class TournamentsViewModel extends ViewModel {
                 });
     }
 
-    public void addTournament(String tournamentDetails, String userRole, String userUID) {
+    public void addTournament(String tournamentDetails, String userRole, String userUID, String username) {
         if (db != null && user != null && userRole != null) {
 
             String oppositeRole = "";
@@ -67,14 +67,7 @@ public class TournamentsViewModel extends ViewModel {
                     .collection("date")
                     .add(new HashMap<String, Object>() {{
                         put("note", tournamentDetails);
-                    }}).addOnSuccessListener(documentReference -> {
-                        List<String> updatedTournaments = tournamentList.getValue();
-                        if (updatedTournaments == null) {
-                            updatedTournaments = new ArrayList<>();
-                        }
-                        updatedTournaments.add(tournamentDetails);
-                        tournamentList.setValue(updatedTournaments);
-                    });
+                    }});
 
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
@@ -98,6 +91,13 @@ public class TournamentsViewModel extends ViewModel {
                             updatedTournaments.add(tournamentDetails);
                             tournamentList.setValue(updatedTournaments);
                         });
+                db.collection(oppositeRole.toLowerCase()).document(userUID)
+                        .collection("tournaments")
+                        .document(userUID)
+                        .collection("date")
+                        .add(new HashMap<String, Object>() {{
+                            put("note", tournamentDetails);
+                        }});
             }
         }
     }

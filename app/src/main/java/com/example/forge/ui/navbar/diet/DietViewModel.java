@@ -69,10 +69,8 @@ public class DietViewModel extends ViewModel {
         List<Message> currentNotes = dietNotes.getValue();
         if (currentNotes != null) {
             String noteContent = note.getText();
-            String noteWithUsername = noteContent + username;
-            Message noteWithUsernameObj = new Message(noteWithUsername);
 
-            currentNotes.add(0, noteWithUsernameObj);
+            currentNotes.add(0, note);
             dietNotes.setValue(currentNotes);
 
             String oppositeRole = "";
@@ -86,19 +84,21 @@ public class DietViewModel extends ViewModel {
             noteData_m.put("text", noteContent + username);
             Map<String, Object> noteData_y = new HashMap<>();
             noteData_y.put("text", noteContent + " - " + user.getDisplayName());
+            Map<String, Object> noteData = new HashMap<>();
+            noteData.put("text", noteContent);
 
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("diets")
                     .document(userUID)
                     .collection("diet notes")
-                    .add(noteData_m);
+                    .add(noteData);
 
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
                         .collection("diets")
                         .document(user.getUid())
                         .collection("diet notes")
-                        .add(noteData_y);
+                        .add(noteData);
                 db.collection(userRole.toLowerCase()).document(user.getUid())
                         .collection("diets")
                         .document(user.getUid())

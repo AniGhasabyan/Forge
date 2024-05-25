@@ -62,7 +62,10 @@ public class ScheduleViewModel extends ViewModel {
     public void saveTime(String dayOfWeek, String time, String username, String userRole, String userUID) {
         Map<String, Object> scheduleData = new HashMap<>();
         scheduleData.put("time", time);
-        scheduleData.put("username", username);
+        Map<String, Object> scheduleData_m = new HashMap<>();
+        scheduleData_m.put("time", time + " - " + username);
+        Map<String, Object> scheduleData_y = new HashMap<>();
+        scheduleData_y.put("time", time + " - " + user.getDisplayName());
 
         String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
 
@@ -82,7 +85,12 @@ public class ScheduleViewModel extends ViewModel {
                     .collection("schedule")
                     .document(user.getUid())
                     .collection(dayOfWeek)
-                    .add(scheduleData);
+                    .add(scheduleData_m);
+            db.collection(oppositeRole.toLowerCase()).document(userUID)
+                    .collection("schedule")
+                    .document(userUID)
+                    .collection(dayOfWeek)
+                    .add(scheduleData_y);
         }
     }
 }

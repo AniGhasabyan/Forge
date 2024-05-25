@@ -11,7 +11,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProgressViewModel extends ViewModel {
     private MutableLiveData<List<Message>> progressNotes;
@@ -54,9 +56,11 @@ public class ProgressViewModel extends ViewModel {
         return progressNotes;
     }
 
-    public void addProgressNote(Message note, String userRole, String userUID) {
+    public void addProgressNote(Message note, String userRole, String userUID, String username) {
         List<Message> currentNotes = progressNotes.getValue();
         if (currentNotes != null) {
+            String noteContent = note.getText();
+
             currentNotes.add(0, note);
             progressNotes.setValue(currentNotes);
 
@@ -67,22 +71,34 @@ public class ProgressViewModel extends ViewModel {
                 oppositeRole = "Athlete";
             }
 
+            Map<String, Object> noteProgress_m = new HashMap<>();
+            noteProgress_m.put("text", noteContent + " - " + username);
+            Map<String, Object> noteProgress_y = new HashMap<>();
+            noteProgress_y.put("text", noteContent + " - " + user.getDisplayName());
+            Map<String, Object> noteProgress = new HashMap<>();
+            noteProgress.put("text", noteContent);
+
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("progress")
                     .document(userUID)
                     .collection("conquests")
-                    .add(note);
+                    .add(noteProgress);
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
                         .collection("progress")
                         .document(user.getUid())
                         .collection("conquests")
-                        .add(note);
+                        .add(noteProgress);
                 db.collection(userRole.toLowerCase()).document(user.getUid())
                         .collection("progress")
                         .document(user.getUid())
                         .collection("conquests")
-                        .add(note);
+                        .add(noteProgress_m);
+                db.collection(oppositeRole.toLowerCase()).document(userUID)
+                        .collection("progress")
+                        .document(userUID)
+                        .collection("conquests")
+                        .add(noteProgress_y);
             }
         }
     }
