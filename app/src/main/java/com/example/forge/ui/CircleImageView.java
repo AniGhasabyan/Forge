@@ -1,4 +1,4 @@
-package com.example.customviews;
+package com.example.forge.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
