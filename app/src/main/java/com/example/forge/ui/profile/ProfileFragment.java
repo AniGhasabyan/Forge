@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +65,7 @@ public class ProfileFragment extends Fragment {
         Button deleteAccountButton = view.findViewById(R.id.buttonDeleteAcc);
         Button editProfileButton = view.findViewById(R.id.buttonChangePassword);
         ImageButton addImage = view.findViewById(R.id.add_image);
+        ImageView profilePicture = view.findViewById(R.id.imageViewAvatar);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         String displayName = firebaseUser.getDisplayName();
@@ -98,8 +100,8 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    private void openGallery() {
-        galleryLauncher.launch("image/*");
+    public void uploadImage(Uri imageUri) {
+        uploadImageToFirebaseStorage(imageUri);
     }
 
     public void uploadImageToFirebaseStorage(Uri imageUri) {
@@ -107,8 +109,6 @@ public class ProfileFragment extends Fragment {
 
         storageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> {
-                    Toast.makeText(requireContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-
                     storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageUrl = uri.toString();
                         saveImageUrlToFirestore(imageUrl);
@@ -127,7 +127,7 @@ public class ProfileFragment extends Fragment {
         db.collection("users").document(userId)
                 .update("profileImageUrl", imageUrl)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(requireContext(), "Image URL saved to Firestore", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Profile picture updated successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(requireContext(), "Failed to save image URL to Firestore", Toast.LENGTH_SHORT).show();
@@ -187,16 +187,6 @@ public class ProfileFragment extends Fragment {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         requireActivity().finish();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_GALLERY_PICK && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri selectedImageUri = data.getData();
-            uploadImageToFirebaseStorage(selectedImageUri);
-        }
     }
 
     @Override

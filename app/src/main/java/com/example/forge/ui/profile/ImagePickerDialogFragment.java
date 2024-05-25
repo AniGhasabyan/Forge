@@ -19,11 +19,6 @@ public class ImagePickerDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         openGallery();
     }
 
@@ -35,14 +30,9 @@ public class ImagePickerDialogFragment extends DialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REQUEST_GALLERY_PICK && resultCode == RESULT_OK && data != null) {
             Uri selectedImageUri = data.getData();
-            if (getTargetFragment() != null) {
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, data);
-            }
-            dismiss();
-        } else {
+            ((ProfileFragment) getParentFragment()).uploadImage(selectedImageUri);
             dismiss();
         }
     }
