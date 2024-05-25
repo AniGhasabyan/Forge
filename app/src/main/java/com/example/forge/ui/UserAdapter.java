@@ -16,6 +16,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.forge.Message;
 import com.example.forge.R;
 import com.example.forge.User;
@@ -28,6 +29,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import android.os.Bundle;
 
@@ -227,7 +230,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return currentUser != null ? currentUser.getUid() : null;
     }
 
-    private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+    public static void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users")
                 .whereEqualTo("email", email)
@@ -276,6 +279,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             textViewUsername.setText(user.getUsername());
             if ("None".equals(user.getEmail())) {
                 profilePicture.setVisibility(View.GONE);
+            } else {
+                Context context = itemView.getContext();
+
+                getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                    @Override
+                    public void onSuccess(String userUID) {
+                        if (userUID != null) {
+                            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + userUID);
+                            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                String imageUrl = uri.toString();
+                                Glide.with(context).load(imageUrl).into(profilePicture);
+                            }).addOnFailureListener(e -> {
+                            });
+                        }
+                    }
+                });
             }
         }
     }
