@@ -18,6 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,10 +65,14 @@ public class DietViewModel extends ViewModel {
         return dietNotes;
     }
 
-    public void addDietNote(Message note, String userRole, String userUID) {
+    public void addDietNote(Message note, String userRole, String userUID, String username) {
         List<Message> currentNotes = dietNotes.getValue();
         if (currentNotes != null) {
-            currentNotes.add(0, note);
+            String noteContent = note.getText();
+            String noteWithUsername = noteContent + username;
+            Message noteWithUsernameObj = new Message(noteWithUsername);
+
+            currentNotes.add(0, noteWithUsernameObj);
             dietNotes.setValue(currentNotes);
 
             String oppositeRole = "";
@@ -77,25 +82,37 @@ public class DietViewModel extends ViewModel {
                 oppositeRole = "Athlete";
             }
 
+            Map<String, Object> noteData_m = new HashMap<>();
+            noteData_m.put("text", noteContent + username);
+            Map<String, Object> noteData_y = new HashMap<>();
+            noteData_y.put("text", noteContent + " - " + user.getDisplayName());
+
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("diets")
                     .document(userUID)
                     .collection("diet notes")
-                    .add(note);
+                    .add(noteData_m);
+
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
                         .collection("diets")
                         .document(user.getUid())
                         .collection("diet notes")
-                        .add(note);
+                        .add(noteData_y);
                 db.collection(userRole.toLowerCase()).document(user.getUid())
                         .collection("diets")
                         .document(user.getUid())
                         .collection("diet notes")
-                        .add(note);
+                        .add(noteData_m);
+                db.collection(oppositeRole.toLowerCase()).document(userUID)
+                        .collection("diets")
+                        .document(userUID)
+                        .collection("diet notes")
+                        .add(noteData_y);
             }
         }
     }
+
 
     public LiveData<String> getText() {
         return mText;

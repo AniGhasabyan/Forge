@@ -136,9 +136,9 @@ public class DietFragment extends Fragment {
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null){
-                        dietViewModel.addDietNote(new Message(newNoteText), userRole, userUID);
+                        dietViewModel.addDietNote(new Message(newNoteText), userRole, userUID, " - " + username2);
                     } else {
-                        dietViewModel.addDietNote(new Message(newNoteText), userRole, user.getUid());
+                        dietViewModel.addDietNote(new Message(newNoteText), userRole, user.getUid(), "");
                     }
                 }
             }

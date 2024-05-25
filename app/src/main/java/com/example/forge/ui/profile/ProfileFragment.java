@@ -120,9 +120,9 @@ public class ProfileFragment extends Fragment {
 
         confirmBtn.setOnClickListener(v -> {
             if (isDelete) {
-                viewModel.deleteUserAccount();
+                viewModel.deleteUserAccount(requireActivity());
             } else {
-                viewModel.logoutUser();
+                viewModel.logoutUser(requireActivity());
             }
             dialog.dismiss();
         });
