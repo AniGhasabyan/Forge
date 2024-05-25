@@ -37,6 +37,7 @@ import android.os.Bundle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
@@ -94,6 +95,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
                 db = FirebaseFirestore.getInstance();
                 String currentUserUID = getCurrentUserUID();
+                String currentUserUsername = getCurrentUserUsername();
 
                 if (currentDestinationId == R.id.nav_home) {
                     NavController navController = Navigation.findNavController(view);
@@ -106,6 +108,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
                     noteMap.put("text", note);
+
+                    Map<String, Object> noteData_m = new HashMap<>();
+                    noteData_m.put("text", note + " - " + user.getUsername());
+                    Map<String, Object> noteData_y = new HashMap<>();
+                    noteData_y.put("text", note + " - " + currentUserUsername);
 
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
@@ -125,8 +132,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .collection("diets")
                                     .document(currentUserUID)
                                     .collection("diet notes")
-                                    .add(noteMap);
-
+                                    .add(noteData_m);
+                            db.collection("athlete")
+                                    .document(userUID).collection("diets")
+                                    .document(userUID)
+                                    .collection("diet notes")
+                                    .add(noteData_y);
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
@@ -137,6 +148,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
                     noteMap.put("text", note);
+
+                    Map<String, Object> noteData_m = new HashMap<>();
+                    noteData_m.put("text", note + " - " + user.getUsername());
+                    Map<String, Object> noteData_y = new HashMap<>();
+                    noteData_y.put("text", note + " - " + currentUserUsername);
 
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
@@ -157,7 +173,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .collection("progress")
                                     .document(currentUserUID)
                                     .collection("conquests")
-                                    .add(noteMap);
+                                    .add(noteData_m);
+                            db.collection("athlete")
+                                    .document(userUID).collection("progress")
+                                    .document(userUID)
+                                    .collection("conquests")
+                                    .add(noteData_y);
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
@@ -165,6 +186,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 } else if (currentDestinationId == R.id.nav_tournaments){
                     Map<String, Object> noteData = new HashMap<>();
                     noteData.put("note", note);
+
+                    Map<String, Object> tournamentsData_m = new HashMap<>();
+                    tournamentsData_m.put("note", note + " - " + user.getUsername());
+                    Map<String, Object> tournamentsData_y = new HashMap<>();
+                    tournamentsData_y.put("note", note + " - " + currentUserUsername);
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
                         public void onSuccess(String userUID) {
@@ -184,7 +210,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                                     .collection("tournaments")
                                     .document(currentUserUID)
                                     .collection("date")
-                                    .add(noteData);
+                                    .add(tournamentsData_m);
+                            db.collection("athlete")
+                                    .document(userUID).collection("tournaments")
+                                    .document(userUID)
+                                    .collection("date")
+                                    .add(tournamentsData_y);
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
@@ -193,6 +224,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     Map<String, Object> scheduleData = new HashMap<>();
                     scheduleData.put("time", note);
 
+                    Map<String, Object> scheduleData_m = new HashMap<>();
+                    if(Objects.equals(user.getEmail(), "None")){
+                        scheduleData_m.put("time", note);
+                    } else{
+                        scheduleData_m.put("time", note + " - " + user.getUsername());
+                    }
+                    Map<String, Object> scheduleData_y = new HashMap<>();
+                    scheduleData_y.put("time", note + " - " + currentUserUsername);
+
                     String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
@@ -200,20 +240,27 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                             db.collection(userRole.toLowerCase())
                                     .document(currentUserUID)
                                     .collection("schedule")
-                                    .document(userUID)
-                                    .collection(dayOfWeek)
-                                    .add(scheduleData);
-                            db.collection(oppositeRole.toLowerCase())
-                                    .document(userUID).collection("schedule")
                                     .document(currentUserUID)
                                     .collection(dayOfWeek)
-                                    .add(scheduleData);
-                            db.collection(userRole.toLowerCase())
-                                    .document(currentUserUID)
-                                    .collection("schedule")
-                                    .document(currentUserUID)
-                                    .collection(dayOfWeek)
-                                    .add(scheduleData);
+                                    .add(scheduleData_m);
+                            if(!Objects.equals(user.getEmail(), "None")) {
+                                db.collection(userRole.toLowerCase())
+                                        .document(currentUserUID)
+                                        .collection("schedule")
+                                        .document(userUID)
+                                        .collection(dayOfWeek)
+                                        .add(scheduleData);
+                                db.collection(oppositeRole.toLowerCase())
+                                        .document(userUID).collection("schedule")
+                                        .document(currentUserUID)
+                                        .collection(dayOfWeek)
+                                        .add(scheduleData);
+                                db.collection(oppositeRole.toLowerCase())
+                                        .document(userUID).collection("schedule")
+                                        .document(userUID)
+                                        .collection(dayOfWeek)
+                                        .add(scheduleData_y);
+                            }
                         }
                     });
 
@@ -228,6 +275,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         return currentUser != null ? currentUser.getUid() : null;
+    }
+
+    private String getCurrentUserUsername(){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        return currentUser != null ? currentUser.getDisplayName() : null;
     }
 
     public static void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
