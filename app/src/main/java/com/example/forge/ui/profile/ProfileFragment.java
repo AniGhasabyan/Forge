@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.example.forge.LoginActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
@@ -42,8 +43,7 @@ public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
     private FirebaseAuth auth;
     private ActivityResultLauncher<String> galleryLauncher;
-    private static final int REQUEST_GALLERY_PERMISSION = 102;
-    private static final int REQUEST_GALLERY_PICK = 104;
+    private ImageView profilePicture;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
         Button deleteAccountButton = view.findViewById(R.id.buttonDeleteAcc);
         Button editProfileButton = view.findViewById(R.id.buttonChangePassword);
         ImageButton addImage = view.findViewById(R.id.add_image);
-        ImageView profilePicture = view.findViewById(R.id.imageViewAvatar);
+        profilePicture = view.findViewById(R.id.imageViewAvatar);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         String displayName = firebaseUser.getDisplayName();
@@ -112,6 +112,7 @@ public class ProfileFragment extends Fragment {
                     storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageUrl = uri.toString();
                         saveImageUrlToFirestore(imageUrl);
+                        Glide.with(requireContext()).load(imageUrl).into(profilePicture);
                     }).addOnFailureListener(e -> {
                         Toast.makeText(requireContext(), "Failed to get image URL", Toast.LENGTH_SHORT).show();
                     });
@@ -120,6 +121,7 @@ public class ProfileFragment extends Fragment {
                     Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void saveImageUrlToFirestore(String imageUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
