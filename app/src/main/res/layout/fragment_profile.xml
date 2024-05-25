@@ -13,7 +13,7 @@
             android:id="@+id/imageViewAvatar"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/baseline_downloading"
             android:scaleType="centerCrop"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"/>

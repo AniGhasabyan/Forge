@@ -78,6 +78,8 @@ public class ProfileFragment extends Fragment {
         String userRole = preferences.getString("UserRole", "");
         tv_userRole.setText(userRole);
 
+        loadProfilePicture();
+
         addImage.setOnClickListener(v -> {
             ImagePickerDialogFragment dialogFragment = new ImagePickerDialogFragment();
             dialogFragment.show(getChildFragmentManager(), "ImagePickerDialogFragment");
@@ -122,6 +124,15 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
+    private void loadProfilePicture() {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            String imageUrl = uri.toString();
+            Glide.with(requireContext()).load(imageUrl).into(profilePicture);
+        }).addOnFailureListener(e -> {
+        });
+    }
 
     private void saveImageUrlToFirestore(String imageUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
