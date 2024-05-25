@@ -1,24 +1,24 @@
 package com.example.forge.ui.profile;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
+import androidx.lifecycle.ViewModelProvider;
 import static android.app.Activity.RESULT_OK;
 
 public class ImagePickerDialogFragment extends DialogFragment {
 
     private static final int REQUEST_GALLERY_PICK = 104;
+    private ProfileViewModel viewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireParentFragment()).get(ProfileViewModel.class);
         openGallery();
     }
 
@@ -32,8 +32,9 @@ public class ImagePickerDialogFragment extends DialogFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_GALLERY_PICK && resultCode == RESULT_OK && data != null) {
             Uri selectedImageUri = data.getData();
-            ((ProfileFragment) getParentFragment()).uploadImage(selectedImageUri);
+            viewModel.uploadImageToFirebaseStorage(selectedImageUri);
             dismiss();
         }
     }
 }
+

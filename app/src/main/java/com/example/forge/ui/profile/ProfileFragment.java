@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,32 +14,25 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
 import com.bumptech.glide.Glide;
 import com.example.forge.LoginActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import static android.app.Activity.RESULT_OK;
 
 public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
     private FirebaseAuth auth;
+    private ProfileViewModel viewModel;
     private ActivityResultLauncher<String> galleryLauncher;
     private ImageView profilePicture;
 
@@ -56,6 +47,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         auth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
         TextView tv_username = view.findViewById(R.id.profileUsername);
         TextView tv_email = view.findViewById(R.id.profileEmail);
@@ -78,7 +70,11 @@ public class ProfileFragment extends Fragment {
         String userRole = preferences.getString("UserRole", "");
         tv_userRole.setText(userRole);
 
-        loadProfilePicture();
+        viewModel.getProfileImageUrl().observe(getViewLifecycleOwner(), imageUrl -> {
+            Glide.with(requireContext()).load(imageUrl).into(profilePicture);
+        });
+
+        viewModel.loadProfilePicture();
 
         addImage.setOnClickListener(v -> {
             ImagePickerDialogFragment dialogFragment = new ImagePickerDialogFragment();
@@ -97,53 +93,8 @@ public class ProfileFragment extends Fragment {
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 result -> {
                     if (result != null) {
-                        uploadImageToFirebaseStorage(result);
+                        viewModel.uploadImageToFirebaseStorage(result);
                     }
-                });
-    }
-
-    public void uploadImage(Uri imageUri) {
-        uploadImageToFirebaseStorage(imageUri);
-    }
-
-    public void uploadImageToFirebaseStorage(Uri imageUri) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-        storageRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String imageUrl = uri.toString();
-                        saveImageUrlToFirestore(imageUrl);
-                        Glide.with(requireContext()).load(imageUrl).into(profilePicture);
-                    }).addOnFailureListener(e -> {
-                        Toast.makeText(requireContext(), "Failed to get image URL", Toast.LENGTH_SHORT).show();
-                    });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    private void loadProfilePicture() {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            String imageUrl = uri.toString();
-            Glide.with(requireContext()).load(imageUrl).into(profilePicture);
-        }).addOnFailureListener(e -> {
-        });
-    }
-
-    private void saveImageUrlToFirestore(String imageUrl) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        db.collection("users").document(userId)
-                .update("profileImageUrl", imageUrl)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(requireContext(), "Profile picture updated successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Failed to save image URL to Firestore", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -169,37 +120,14 @@ public class ProfileFragment extends Fragment {
 
         confirmBtn.setOnClickListener(v -> {
             if (isDelete) {
-                deleteUserAccount();
+                viewModel.deleteUserAccount();
             } else {
-                logoutUser();
+                viewModel.logoutUser();
             }
             dialog.dismiss();
         });
 
         dialog.show();
-    }
-
-    private void deleteUserAccount() {
-        auth.getCurrentUser().delete()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        auth.signOut();
-                        Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        requireActivity().finish();
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to delete account", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    private void logoutUser() {
-        auth.signOut();
-        Intent intent = new Intent(requireActivity(), LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        requireActivity().finish();
     }
 
     @Override
