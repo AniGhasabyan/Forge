@@ -4,8 +4,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -21,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.forge.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,10 +53,13 @@ public class MainActivity extends AppCompatActivity {
         TextView textViewEmail = headerView.findViewById(R.id.textView);
         TextView textViewDisplayName = headerView.findViewById(R.id.textWho_un);
         TextView textWho = headerView.findViewById(R.id.textWho_ac);
+        ImageView navHeaderImageView = headerView.findViewById(R.id.imageView);
 
         textViewEmail.setText(userEmail);
         textViewDisplayName.setText(userDisplayName);
         textWho.setText(userRole);
+
+        loadProfilePicture(navHeaderImageView);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() == R.id.nav_home) {
@@ -67,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 });
                 binding.appBarMain.fab.setVisibility(View.VISIBLE);
             } else {
-                // If not on the home destination, hide the FAB
                 binding.appBarMain.fab.setVisibility(View.GONE);
             }
 
@@ -111,8 +117,6 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top-level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_schedule, R.id.nav_analysis,
                 R.id.nav_tournaments, R.id.nav_diet, R.id.nav_progress, R.id.nav_porch)
@@ -122,6 +126,19 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+    }
+
+    private void loadProfilePicture(ImageView imageView) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            String imageUrl = uri.toString();
+            Glide.with(this).load(imageUrl)
+                    .fitCenter()
+                    .circleCrop()
+                    .into(imageView);
+        }).addOnFailureListener(e -> {
+        });
     }
 
     @Override
