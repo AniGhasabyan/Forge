@@ -5,8 +5,15 @@ import java.util.UUID;
 public class Message {
     private String id;
     private String text;
+    private boolean sent;
 
     public Message() {
+    }
+
+    public Message(String text, boolean sent) {
+        this.id = UUID.randomUUID().toString();
+        this.text = text;
+        this.sent = sent;
     }
 
     public Message(String text) {
@@ -33,5 +40,8 @@ public class Message {
 
     public void setText(String text) {
         this.text = text;
+    }
+    public boolean isSent() {
+        return sent;
     }
 }

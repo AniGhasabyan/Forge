@@ -36,7 +36,7 @@ public class ChosenAnalysisFragment extends Fragment {
 
     private FragmentAnalysisBinding binding;
     private List<Message> messages;
-    private MessageAdapter messageAdapter;
+    private AnalysisAdapter messageAdapter;
     private AnalysisViewModel analysisViewModel;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -93,7 +93,7 @@ public class ChosenAnalysisFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        messageAdapter = new MessageAdapter(messages, getContext(), userRole, userUID.get());
+        messageAdapter = new AnalysisAdapter(messages, getContext(), userRole, userUID.get());
         recyclerView.setAdapter(messageAdapter);
 
         Button sendButton = binding.buttonSend;
@@ -123,7 +123,7 @@ public class ChosenAnalysisFragment extends Fragment {
         String messageText = editTextMessage.getText().toString().trim();
 
         if (!messageText.isEmpty()) {
-            analysisViewModel.addMessage(new Message(messageText), userRole, userUID);
+            analysisViewModel.addMessage(new Message(messageText, true), userRole, userUID);
             editTextMessage.setText("");
         }
     }

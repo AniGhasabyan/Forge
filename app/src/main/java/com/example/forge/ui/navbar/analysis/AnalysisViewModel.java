@@ -50,9 +50,9 @@ public class AnalysisViewModel extends ViewModel {
                         String noteContent = document.getString("text");
                         String noteSender = document.getString("sender");
                         if(!Objects.equals(noteSender, user.getDisplayName())){
-                            notes.add(new Message(noteSender + "\n" + noteContent));
+                            notes.add(new Message(noteSender + "\n" + noteContent, false));
                         } else {
-                            notes.add(new Message(noteContent));
+                            notes.add(new Message(noteContent, true));
                         }
                     }
                     message.postValue(notes);
