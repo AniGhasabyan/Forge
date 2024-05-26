@@ -101,7 +101,8 @@
                 android:id="@+id/buttonChangePassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit Profile"
+                android:text="Change password"
+                android:textSize="11sp"
                 android:layout_gravity="end"/>
         </LinearLayout>
 

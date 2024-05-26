@@ -62,7 +62,7 @@
     <fragment
         android:id="@+id/nav_edit"
         android:name="com.example.forge.ui.profile.EditProfileFragment"
-        android:label="Edit"
+        android:label="Change Password"
         tools:layout="@layout/fragment_edit_profile" />
 
     <fragment

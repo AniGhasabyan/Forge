@@ -45,18 +45,9 @@ public class EditProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
 
-        etUsername = view.findViewById(R.id.editTextUsername);
         etNewPassword = view.findViewById(R.id.editTextNewPassword);
         etConfirmPassword = view.findViewById(R.id.editTextConfirmPassword);
         btnSave = view.findViewById(R.id.buttonSave);
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String currentUsername = currentUser.getDisplayName();
-            String currentEmail = currentUser.getEmail();
-
-            etUsername.setText(currentUsername);
-        }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,62 +60,27 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void saveProfileChanges() {
-        final String newUsername = etUsername.getText().toString().trim();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            if (!newUsername.equals(currentUser.getDisplayName())) {
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(newUsername)
-                        .build();
 
-                currentUser.updateProfile(profileUpdates)
+        String newPassword = etNewPassword.getText().toString().trim();
+        String confirmPassword = etConfirmPassword.getText().toString().trim();
+
+        if (!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(confirmPassword)) {
+            if (newPassword.equals(confirmPassword)) {
+                currentUser.updatePassword(newPassword)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                    DocumentReference userRef = db.collection("users").document(currentUser.getUid());
-
-                                    userRef.update("username", newUsername)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(getContext(), "Username updated successfully", Toast.LENGTH_SHORT).show();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(getContext(), "Failed to update username: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                                    Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(getContext(), "Failed to update username: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Failed to update password: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
-            }
-
-            String newPassword = etNewPassword.getText().toString().trim();
-            String confirmPassword = etConfirmPassword.getText().toString().trim();
-
-            if (!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(confirmPassword)) {
-                if (newPassword.equals(confirmPassword)) {
-                    currentUser.updatePassword(newPassword)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(getContext(), "Failed to update password: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                } else {
-                    Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
-                }
+            } else {
+                Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
             }
         }
     }

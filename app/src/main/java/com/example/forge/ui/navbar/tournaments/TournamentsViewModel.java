@@ -51,8 +51,11 @@ public class TournamentsViewModel extends ViewModel {
                 });
     }
 
-    public void addTournament(String tournamentDetails, String userRole, String userUID, String username) {
+    public void addTournament(String note, String userRole, String userUID, String username) {
         if (db != null && user != null && userRole != null) {
+
+            Map<String, Object> noteData = new HashMap<>();
+            noteData.put("note", note);
 
             String oppositeRole = "";
             if(userRole.equals("Athlete")){
@@ -61,43 +64,41 @@ public class TournamentsViewModel extends ViewModel {
                 oppositeRole = "Athlete";
             }
 
+            Map<String, Object> tournamentsData_m = new HashMap<>();
+            tournamentsData_m.put("note", note + username);
+            Map<String, Object> tournamentsData_y = new HashMap<>();
+            tournamentsData_y.put("note", note + " - " + user.getDisplayName());
+
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("tournaments")
                     .document(userUID)
                     .collection("date")
-                    .add(new HashMap<String, Object>() {{
-                        put("note", tournamentDetails);
-                    }});
+                    .add(noteData);
 
             if(!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
                         .collection("tournaments")
                         .document(user.getUid())
                         .collection("date")
-                        .add(new HashMap<String, Object>() {{
-                            put("note", tournamentDetails);
-                        }});
+                        .add(noteData);
                 db.collection(userRole.toLowerCase()).document(user.getUid())
                         .collection("tournaments")
                         .document(user.getUid())
                         .collection("date")
-                        .add(new HashMap<String, Object>() {{
-                            put("note", tournamentDetails);
-                        }}).addOnSuccessListener(documentReference -> {
+                        .add(tournamentsData_m)
+                        .addOnSuccessListener(documentReference -> {
                             List<String> updatedTournaments = tournamentList.getValue();
                             if (updatedTournaments == null) {
                                 updatedTournaments = new ArrayList<>();
                             }
-                            updatedTournaments.add(tournamentDetails);
+                            updatedTournaments.add(note);
                             tournamentList.setValue(updatedTournaments);
                         });
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
                         .collection("tournaments")
                         .document(userUID)
                         .collection("date")
-                        .add(new HashMap<String, Object>() {{
-                            put("note", tournamentDetails);
-                        }});
+                        .add(tournamentsData_y);
             }
         }
     }
