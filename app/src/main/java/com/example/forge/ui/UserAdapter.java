@@ -141,6 +141,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.popBackStack();
                     navController.navigate(R.id.nav_diet);
 
                 } else if (currentDestinationId == R.id.nav_progress){
@@ -182,6 +183,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.popBackStack();
                     navController.navigate(R.id.nav_progress);
                 } else if (currentDestinationId == R.id.nav_tournaments){
                     Map<String, Object> noteData = new HashMap<>();
@@ -219,6 +221,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                         }
                     });
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.popBackStack();
                     navController.navigate(R.id.nav_tournaments);
                 } else if (currentDestinationId == R.id.nav_schedule){
                     Map<String, Object> scheduleData = new HashMap<>();
@@ -265,6 +268,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     });
 
                     NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                    navController.popBackStack();
                     navController.navigate(R.id.nav_schedule);
                 }
             }

@@ -11,28 +11,28 @@ public class Message {
 
     public Message() {
         this.id = UUID.randomUUID().toString();
-        this.timestamp = new Date(); // Initialize with current date if not set
+        this.timestamp = new Date();
     }
 
     public Message(String text, boolean sent, Date timestamp) {
         this.id = UUID.randomUUID().toString();
         this.text = text;
         this.sent = sent;
-        this.timestamp = timestamp != null ? timestamp : new Date(); // Default to current date if null
+        this.timestamp = timestamp != null ? timestamp : new Date();
     }
 
     public Message(String text, boolean sent) {
-        this(text, sent, new Date()); // Use current date if no timestamp provided
+        this(text, sent, new Date());
     }
 
     public Message(String text) {
-        this(text, true, new Date()); // Default to sent and current date
+        this(text, true, new Date());
     }
 
     public Message(String id, String text) {
         this.id = id;
         this.text = text;
-        this.timestamp = new Date(); // Initialize with current date if not set
+        this.timestamp = new Date();
     }
 
     public String getId() {
