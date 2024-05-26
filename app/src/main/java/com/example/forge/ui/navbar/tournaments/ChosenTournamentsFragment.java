@@ -1,5 +1,6 @@
 package com.example.forge.ui.navbar.tournaments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -69,12 +72,12 @@ public class ChosenTournamentsFragment extends Fragment {
             getUserUIDByEmail(email, useruid -> {
                 if (useruid != null) {
                     userUID.set(useruid);
-                    tournamentsViewModel.loadTournaments(userRole.get(), useruid);
                 }
+                initializeViewModel(String.valueOf(userRole), userUID.get());
             });
         } else {
             username = null;
-            email = null;
+            initializeViewModel(String.valueOf(userRole), userUID.get());
         }
 
         tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole.get(), userUID.get()))
@@ -87,6 +90,13 @@ public class ChosenTournamentsFragment extends Fragment {
         tournamentList = new ArrayList<>();
         messageAdapter = new MessageAdapter(tournamentList, getContext(), userRole.get(), userUID.get());
         recyclerView.setAdapter(messageAdapter);
+
+        preferences.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+            if (key.equals("UserRole")) {
+                userRole.set(sharedPreferences.getString("UserRole", "Athlete"));
+                tournamentsViewModel.loadTournaments(userRole.get(), userUID.get());
+            }
+        });
 
         CalendarView calendarView = binding.calendarView;
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -108,7 +118,14 @@ public class ChosenTournamentsFragment extends Fragment {
             }
         });
 
-        tournamentsViewModel.loadTournaments(userRole.get(), userUID.get());
+        return root;
+    }
+
+    private void initializeViewModel(String userRole, String userUID) {
+        tournamentsViewModel = new ViewModelProvider(this, new TournamentsViewModelFactory(userRole, userUID))
+                .get(TournamentsViewModel.class);
+
+        tournamentsViewModel.loadTournaments(userRole, userUID);
 
         tournamentsViewModel.getTournamentList().observe(getViewLifecycleOwner(), tournaments -> {
             tournamentList.clear();
@@ -117,15 +134,6 @@ public class ChosenTournamentsFragment extends Fragment {
             }
             messageAdapter.notifyDataSetChanged();
         });
-
-        preferences.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
-            if (key.equals("UserRole")) {
-                userRole.set(sharedPreferences.getString("UserRole", "Athlete"));
-                tournamentsViewModel.loadTournaments(userRole.get(), userUID.get());
-            }
-        });
-
-        return root;
     }
 
     private void showDialogPrompt(int year, int month, int dayOfMonth, String username2, String userUID, String userRole) {
@@ -149,8 +157,14 @@ public class ChosenTournamentsFragment extends Fragment {
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null) {
                         tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, " - " + username2);
+                        NavController navController = Navigation.findNavController(requireView());
+                        navController.popBackStack();
+                        navController.navigate(R.id.nav_tournaments);
                     } else {
                         tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, "");
+                        NavController navController = Navigation.findNavController(requireView());
+                        navController.popBackStack();
+                        navController.navigate(R.id.nav_tournaments);
                     }
                 }
             }
