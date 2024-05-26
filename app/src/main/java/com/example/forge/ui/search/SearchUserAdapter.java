@@ -117,7 +117,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         }
     }
 
-
     @Override
     public int getItemCount() {
         return userList.size();
@@ -147,39 +146,80 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                 @Override
                 public void onSuccess(String userUID) {
                     if (userUID != null) {
-                        db.collection("users")
-                                .document(currentUserUID)
-                                .collection("Your Coaching Requests")
-                                .document(userUID)
-                                .set(user)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
-                                        db.collection("users")
-                                                .document(userUID)
-                                                .collection("Coaches Requested to Train You")
-                                                .document(currentUserUID)
-                                                .set(current)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        // Check if user is already in "Your Coaching Requests"
+                        checkIfUserExistsInCollection("Your Coaching Requests", userUID, new OnSuccessListener<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean existsInRequests) {
+                                if (existsInRequests) {
+                                    Toast.makeText(context, "User is already in Your Coaching Requests", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Check if user is already in "Your Athletes"
+                                    checkIfUserExistsInCollection("Your Athletes", userUID, new OnSuccessListener<Boolean>() {
+                                        @Override
+                                        public void onSuccess(Boolean existsInAthletes) {
+                                            if (existsInAthletes) {
+                                                Toast.makeText(context, "User is already in Your Athletes", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                // Check if user is already in "Athletes Interested in Your Coaching"
+                                                db.collection("users")
+                                                        .document(userUID)
+                                                        .collection("Athletes Interested in Your Coaching")
+                                                        .document(currentUserUID)
+                                                        .get()
+                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                if (documentSnapshot.exists()) {
+                                                                    Toast.makeText(context, "User is already in Athletes Interested in Your Coaching", Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    db.collection("users")
+                                                                            .document(currentUserUID)
+                                                                            .collection("Your Coaching Requests")
+                                                                            .document(userUID)
+                                                                            .set(user)
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    Toast.makeText(context, "User added to Your Coaching Requests", Toast.LENGTH_SHORT).show();
+                                                                                    db.collection("users")
+                                                                                            .document(userUID)
+                                                                                            .collection("Coaches Requested to Train You")
+                                                                                            .document(currentUserUID)
+                                                                                            .set(current)
+                                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onSuccess(Void aVoid) {
+                                                                                                }
+                                                                                            })
+                                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                                @Override
+                                                                                                public void onFailure(@NonNull Exception e) {
+                                                                                                    Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                }
+                                                                                            });
+                                                                                }
+                                                                            })
+                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                @Override
+                                                                                public void onFailure(@NonNull Exception e) {
+                                                                                    Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                }
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -194,39 +234,80 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                 @Override
                 public void onSuccess(String userUID) {
                     if (userUID != null) {
-                        db.collection("users")
-                                .document(currentUserUID)
-                                .collection("Coaches You're Interested in")
-                                .document(userUID)
-                                .set(user)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
-                                        db.collection("users")
-                                                .document(userUID)
-                                                .collection("Athletes Interested in Your Coaching")
-                                                .document(currentUserUID)
-                                                .set(current)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        // Check if user is already in "Coaches You're Interested in"
+                        checkIfUserExistsInCollection("Coaches You're Interested in", userUID, new OnSuccessListener<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean existsInInterests) {
+                                if (existsInInterests) {
+                                    Toast.makeText(context, "User is already in Coaches You're Interested in", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Check if user is already in "Your Coaches"
+                                    checkIfUserExistsInCollection("Your Coaches", userUID, new OnSuccessListener<Boolean>() {
+                                        @Override
+                                        public void onSuccess(Boolean existsInCoaches) {
+                                            if (existsInCoaches) {
+                                                Toast.makeText(context, "User is already in Your Coaches", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                // Check if user is already in "Coaches Requested to Train You"
+                                                db.collection("users")
+                                                        .document(userUID)
+                                                        .collection("Coaches Requested to Train You")
+                                                        .document(currentUserUID)
+                                                        .get()
+                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                if (documentSnapshot.exists()) {
+                                                                    Toast.makeText(context, "User is already in Coaches Requested to Train You", Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    db.collection("users")
+                                                                            .document(currentUserUID)
+                                                                            .collection("Coaches You're Interested in")
+                                                                            .document(userUID)
+                                                                            .set(user)
+                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @Override
+                                                                                public void onSuccess(Void aVoid) {
+                                                                                    Toast.makeText(context, "User added to Coaches You're Interested in", Toast.LENGTH_SHORT).show();
+                                                                                    db.collection("users")
+                                                                                            .document(userUID)
+                                                                                            .collection("Athletes Interested in Your Coaching")
+                                                                                            .document(currentUserUID)
+                                                                                            .set(current)
+                                                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onSuccess(Void aVoid) {
+                                                                                                }
+                                                                                            })
+                                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                                @Override
+                                                                                                public void onFailure(@NonNull Exception e) {
+                                                                                                    Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                }
+                                                                                            });
+                                                                                }
+                                                                            })
+                                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                                @Override
+                                                                                public void onFailure(@NonNull Exception e) {
+                                                                                    Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                }
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -252,11 +333,9 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
                 });
     }
 
-
     private String getCurrentUserUID() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
         return currentUser != null ? currentUser.getUid() : null;
     }
-
 }
