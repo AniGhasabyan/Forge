@@ -2,8 +2,10 @@ package com.example.forge.ui.navbar.home;
 
 import static android.view.View.VISIBLE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +82,15 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                     foo2(user, finalCurrent);
                 }
 
+                int removedPosition = holder.getAdapterPosition();
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userList.remove(removedPosition);
+                        notifyItemRemoved(removedPosition);
+                    }
+                });
+
                 NavController navController = Navigation.findNavController(view);
                 navController.navigate(R.id.nav_home, bundle);
             }
@@ -92,6 +103,15 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                 } else if (userRole.equals("Coach")) {
                     rejectCoachOffer(user);
                 }
+
+                int removedPosition = holder.getAdapterPosition();
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userList.remove(removedPosition);
+                        notifyItemRemoved(removedPosition);
+                    }
+                });
 
                 NavController navController = Navigation.findNavController(view);
                 navController.navigate(R.id.nav_home, bundle);

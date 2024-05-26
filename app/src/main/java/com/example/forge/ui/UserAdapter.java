@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.navigation.NavController;
@@ -52,34 +53,38 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private String userRole;
     private String dayOfWeek;
     private int place;
+    private MutableLiveData<List<Message>> dietNotesLiveData;
 
     public UserAdapter(List<User> userList, int currentDestinationId) {
         this.userList = userList;
         this.currentDestinationId = currentDestinationId;
     }
 
-    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context) {
+    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, MutableLiveData<List<Message>> dietNotesLiveData) {
         this.userList = userList;
         this.currentDestinationId = currentDestinationId;
         this.note = note;
         this.context = context;
+        this.dietNotesLiveData = dietNotesLiveData;
     }
 
-    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, int place) {
+    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, int place, MutableLiveData<List<Message>> dietNotesLiveData) {
         this.userList = userList;
         this.currentDestinationId = currentDestinationId;
         this.note = note;
         this.context = context;
         this.place = place;
+        this.dietNotesLiveData = dietNotesLiveData;
     }
 
-    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, String userRole, String dayOfWeek) {
+    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, String userRole, String dayOfWeek, MutableLiveData<List<Message>> dietNotesLiveData) {
         this.userList = userList;
         this.currentDestinationId = currentDestinationId;
         this.note = note;
         this.context = context;
         this.userRole = userRole;
         this.dayOfWeek = dayOfWeek;
+        this.dietNotesLiveData = dietNotesLiveData;
     }
 
     @NonNull
@@ -113,6 +118,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.nav_analysis, bundle);
                 } else if (currentDestinationId == R.id.nav_diet){
+                    List<Message> currentNotes = dietNotesLiveData.getValue();
+                    if (currentNotes != null) {
+                        currentNotes.add(0, new Message(note));
+                        dietNotesLiveData.setValue(currentNotes);
+                    }
+
                     Map<String, Object> noteMap = new HashMap<>();
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);

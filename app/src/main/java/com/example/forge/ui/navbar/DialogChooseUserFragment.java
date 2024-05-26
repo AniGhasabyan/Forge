@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -47,11 +48,11 @@ public class DialogChooseUserFragment extends DialogFragment {
             place = arguments.getInt("place");
         }
 
-        adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext());
+        adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), new MutableLiveData<>());
         if(destinationId == R.id.nav_schedule){
-            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), userRoleArg, dayOfWeek);
+            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), userRoleArg, dayOfWeek, new MutableLiveData<>());
         } else if(destinationId == R.id.nav_progress){
-            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), place);
+            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), place, new MutableLiveData<>());
         }
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(adapter);
