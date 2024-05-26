@@ -1,5 +1,6 @@
 package com.example.forge;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -48,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String userRole = preferences.getString("UserRole", "");
+        String addNewAthleteOrCoach = "";
+
+        if(userRole.equals("Athlete")){
+            addNewAthleteOrCoach = "add new coach";
+        } else if(userRole.equals("Coach")){
+            addNewAthleteOrCoach = "add new athlete";
+        }
 
         View headerView = binding.navView.getHeaderView(0);
         TextView textViewEmail = headerView.findViewById(R.id.textView);
@@ -61,14 +69,16 @@ public class MainActivity extends AppCompatActivity {
 
         loadProfilePicture(navHeaderImageView);
 
+        String finalAddNewAthleteOrCoach = addNewAthleteOrCoach;
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() == R.id.nav_home) {
                 binding.appBarMain.fab.setImageResource(R.drawable.baseline_add);
                 binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Snackbar.make(view, "Add new athlete/coach", Snackbar.LENGTH_LONG)
+                        Snackbar.make(view, finalAddNewAthleteOrCoach, Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
+
                         navController.navigate(R.id.nav_search);
                     }
                 });

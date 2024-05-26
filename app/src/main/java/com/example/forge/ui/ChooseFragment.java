@@ -43,46 +43,39 @@ public class ChooseFragment extends Fragment {
         LinearLayout analysisL = view.findViewById(R.id.ch_analysis);
         LinearLayout tournamentsL = view.findViewById(R.id.ch_tournaments);
         LinearLayout dietL = view.findViewById(R.id.ch_diet);
-        LinearLayout homeL = view.findViewById(R.id.ch_home);
 
         scheduleL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFragment(R.id.nav_schedule);
+                openFragment(R.id.nav_chosen_schedule);
             }
         });
 
         progressL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFragment(R.id.nav_progress);
+                openFragment(R.id.nav_chosen_progress);
             }
         });
 
         analysisL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFragment(R.id.nav_analysis);
+                openFragment(R.id.nav_chosen_analysis);
             }
         });
 
         tournamentsL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFragment(R.id.nav_tournaments);
+                openFragment(R.id.nav_chosen_tournaments);
             }
         });
 
         dietL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFragment(R.id.nav_diet);
-            }
-        });
-        homeL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFragment(R.id.nav_home);
+                openFragment(R.id.nav_chosen_diet);
             }
         });
     }

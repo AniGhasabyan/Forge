@@ -77,4 +77,34 @@
         android:label="Choose user"
         tools:layout="@layout/dialog_choose_user" />
 
+    <fragment
+        android:id="@+id/nav_chosen_schedule"
+        android:name="com.example.forge.ui.navbar.schedule.ChosenScheduleFragment"
+        android:label="@string/menu_schedule"
+        tools:layout="@layout/fragment_schedule" />
+
+    <fragment
+        android:id="@+id/nav_chosen_analysis"
+        android:name="com.example.forge.ui.navbar.analysis.ChosenAnalysisFragment"
+        android:label="@string/menu_analysis"
+        tools:layout="@layout/fragment_analysis" />
+
+    <fragment
+        android:id="@+id/nav_chosen_tournaments"
+        android:name="com.example.forge.ui.navbar.tournaments.ChosenTournamentsFragment"
+        android:label="@string/menu_tournaments"
+        tools:layout="@layout/fragment_tournaments" />
+
+    <fragment
+        android:id="@+id/nav_chosen_diet"
+        android:name="com.example.forge.ui.navbar.diet.ChosenDietFragment"
+        android:label="@string/menu_diet"
+        tools:layout="@layout/fragment_diet" />
+
+    <fragment
+        android:id="@+id/nav_chosen_progress"
+        android:name="com.example.forge.ui.navbar.progress.ChosenProgressFragment"
+        android:label="@string/menu_progress"
+        tools:layout="@layout/fragment_progress" />
+
 </navigation>
