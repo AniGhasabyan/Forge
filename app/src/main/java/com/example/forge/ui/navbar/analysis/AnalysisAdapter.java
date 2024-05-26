@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.forge.Message;
 import com.example.forge.R;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class AnalysisAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -43,11 +45,7 @@ public class AnalysisAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemViewType(int position) {
         Message message = messages.get(position);
-        if (message.isSent()) {
-            return VIEW_TYPE_SENT;
-        } else {
-            return VIEW_TYPE_RECEIVED;
-        }
+        return message.isSent() ? VIEW_TYPE_SENT : VIEW_TYPE_RECEIVED;
     }
 
     @NonNull
@@ -72,20 +70,23 @@ public class AnalysisAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ((ReceivedMessageViewHolder) holder).bind(message);
         }
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (messageDeleteListener != null) {
-                    messageDeleteListener.onMessageDeleted(message, userRole, userUID);
-                }
-                return true;
+        holder.itemView.setOnLongClickListener(v -> {
+            if (messageDeleteListener != null) {
+                messageDeleteListener.onMessageDeleted(message, userRole, userUID);
             }
+            return true;
         });
     }
 
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    public void setMessages(List<Message> messages) {
+        Collections.sort(messages, Comparator.comparing(Message::getTimestamp).reversed());
+        this.messages = messages;
+        notifyDataSetChanged();
     }
 
     private static class SentMessageViewHolder extends RecyclerView.ViewHolder {

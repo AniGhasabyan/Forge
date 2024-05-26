@@ -51,19 +51,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         final Message message = messages.get(position);
         holder.bind(message);
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                showDeleteDialog(message);
-                return true;
-            }
+        holder.itemView.setOnLongClickListener(v -> {
+            showDeleteDialog(message);
+            return true;
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle click event if needed
-            }
+        holder.itemView.setOnClickListener(v -> {
+            // Handle click event if needed
         });
     }
 
@@ -71,25 +65,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Delete Message");
         builder.setMessage("Are you sure you want to delete this message?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                int position = messages.indexOf(message);
-                messages.remove(position);
-                notifyItemRemoved(position);
-                Toast.makeText(context, "Message deleted", Toast.LENGTH_SHORT).show();
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            int position = messages.indexOf(message);
+            messages.remove(position);
+            notifyItemRemoved(position);
+            Toast.makeText(context, "Message deleted", Toast.LENGTH_SHORT).show();
 
-                if (messageDeleteListener != null) {
-                    messageDeleteListener.onMessageDeleted(message, userRole, userUID);
-                }
+            if (messageDeleteListener != null) {
+                messageDeleteListener.onMessageDeleted(message, userRole, userUID);
             }
         });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
