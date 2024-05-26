@@ -156,14 +156,17 @@ public class ChosenProgressFragment extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putString("newNoteText", newNoteText + place);
                     bundle.putInt("destinationId", R.id.nav_progress);
+                    bundle.putInt("place", placeInt);
                     if (username2 == null && userRole.equals("Coach")) {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null) {
-                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, userUID, username2, placeInt);
+                        // Add new progress note using the ViewModel
+                        progressViewModel.addProgressNote(new Message(newNoteText + place, placeInt), userRole, userUID, username2, placeInt);
                     } else {
-                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, user.getUid(), "", placeInt);
+                        // Add new progress note using the ViewModel
+                        progressViewModel.addProgressNote(new Message(newNoteText + place, placeInt), userRole, user.getUid(), "", placeInt);
                     }
                 } else {
                     Toast.makeText(getContext(), "Conquest text cannot be empty", Toast.LENGTH_SHORT).show();

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -51,15 +52,49 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         final Message message = messages.get(position);
         holder.bind(message);
 
+        int place = message.getPlace();
+        switch (place) {
+            case 1:
+                holder.firstPlace.setVisibility(View.VISIBLE);
+                holder.secondPlace.setVisibility(View.GONE);
+                holder.thirdPlace.setVisibility(View.GONE);
+                holder.proudPlace.setVisibility(View.GONE);
+                break;
+            case 2:
+                holder.firstPlace.setVisibility(View.GONE);
+                holder.secondPlace.setVisibility(View.VISIBLE);
+                holder.thirdPlace.setVisibility(View.GONE);
+                holder.proudPlace.setVisibility(View.GONE);
+                break;
+            case 3:
+                holder.firstPlace.setVisibility(View.GONE);
+                holder.secondPlace.setVisibility(View.GONE);
+                holder.thirdPlace.setVisibility(View.VISIBLE);
+                holder.proudPlace.setVisibility(View.GONE);
+                break;
+            case 4:
+                holder.firstPlace.setVisibility(View.GONE);
+                holder.secondPlace.setVisibility(View.GONE);
+                holder.thirdPlace.setVisibility(View.GONE);
+                holder.proudPlace.setVisibility(View.VISIBLE);
+                break;
+            default:
+                holder.firstPlace.setVisibility(View.GONE);
+                holder.secondPlace.setVisibility(View.GONE);
+                holder.thirdPlace.setVisibility(View.GONE);
+                holder.proudPlace.setVisibility(View.GONE);
+                break;
+        }
+
         holder.itemView.setOnLongClickListener(v -> {
             showDeleteDialog(message);
             return true;
         });
 
         holder.itemView.setOnClickListener(v -> {
-            // Handle click event if needed
         });
     }
+
 
     private void showDeleteDialog(final Message message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -87,10 +122,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     static class MessageViewHolder extends RecyclerView.ViewHolder {
 
         TextView messageText;
+        ImageView firstPlace;
+        ImageView secondPlace;
+        ImageView thirdPlace;
+        ImageView proudPlace;
 
         MessageViewHolder(@NonNull View itemView) {
             super(itemView);
             messageText = itemView.findViewById(R.id.text_view_message);
+            firstPlace = itemView.findViewById(R.id.firstPlace);
+            secondPlace = itemView.findViewById(R.id.secondPlace);
+            thirdPlace = itemView.findViewById(R.id.thirdPlace);
+            proudPlace = itemView.findViewById(R.id.proudPlace);
         }
 
         void bind(Message message) {

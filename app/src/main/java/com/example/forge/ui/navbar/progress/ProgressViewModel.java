@@ -47,7 +47,7 @@ public class ProgressViewModel extends ViewModel {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String noteContent = document.getString("text");
                         int place = document.getLong("place").intValue();
-                        notes.add(new Message(noteContent));
+                        notes.add(new Message(noteContent, place));
                     }
                     progressNotes.postValue(notes);
                 });

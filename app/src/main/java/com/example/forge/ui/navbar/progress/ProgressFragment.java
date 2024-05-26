@@ -162,9 +162,9 @@ public class ProgressFragment extends Fragment {
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null) {
-                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, userUID, username2, placeInt);
+                        progressViewModel.addProgressNote(new Message(newNoteText + place, placeInt), userRole, userUID, username2, placeInt);
                     } else {
-                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, user.getUid(), "", placeInt);
+                        progressViewModel.addProgressNote(new Message(newNoteText + place, placeInt), userRole, user.getUid(), "", placeInt);
                     }
                 } else {
                     Toast.makeText(getContext(), "Conquest text cannot be empty", Toast.LENGTH_SHORT).show();

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -8,10 +7,42 @@
     android:layout_gravity="end"
     android:background="@drawable/bubble_sent">
 
-    <ImageView
-        android:id="@+id/place"
+    <LinearLayout
+        android:id="@+id/layoutPlaces"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <ImageView
+            android:id="@+id/firstPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/medal_first_place"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/secondPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/medal_second_place"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/thirdPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/medal_third_place"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/proudPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/medal_star_place"
+            android:visibility="gone"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/text_view_message"
