@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    private boolean isChosen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,34 +95,31 @@ public class MainActivity extends AppCompatActivity {
                 threeDotsButton.setVisibility(View.GONE);
             } else {
                 threeDotsButton.setVisibility(View.VISIBLE);
-                threeDotsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
-                        navController.navigate(R.id.nav_profile);
+                threeDotsButton.setOnClickListener(view -> {
+                    if (destination.getId() == R.id.nav_chosen_analysis || destination.getId() == R.id.nav_chosen_diet
+                            || destination.getId() == R.id.nav_chosen_progress || destination.getId() == R.id.nav_chosen_schedule
+                            || destination.getId() == R.id.nav_chosen_tournaments || destination.getId() == R.id.nav_choose) {
+                        isChosen = true;
+                    } else {
+                        isChosen = false;
                     }
+                    navController.navigate(R.id.nav_profile);
                 });
             }
 
-            switchAccountsButton.setVisibility(destination.getId() == R.id.nav_profile ? View.VISIBLE : View.GONE);
-            switchAccountsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                    String currentRole = preferences.getString("UserRole", "");
+            switchAccountsButton.setVisibility(destination.getId() == R.id.nav_profile && !isChosen ? View.VISIBLE : View.GONE);
+            switchAccountsButton.setOnClickListener(view -> {
+                SharedPreferences preferences1 = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                String currentRole = preferences1.getString("UserRole", "");
 
-                    String newRole = currentRole.equals("Athlete") ? "Coach" : "Athlete";
-                    preferences.edit().putString("UserRole", newRole).apply();
+                String newRole = currentRole.equals("Athlete") ? "Coach" : "Athlete";
+                preferences1.edit().putString("UserRole", newRole).apply();
 
-                    textWho.setText(newRole);
+                textWho.setText(newRole);
 
-                    NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
-                    navController.popBackStack(R.id.nav_profile, true);
-                    navController.navigate(R.id.nav_profile);
-                }
+                navController.popBackStack(R.id.nav_profile, true);
+                navController.navigate(R.id.nav_profile);
             });
-
-
         });
 
         DrawerLayout drawer = binding.drawerLayout;
