@@ -46,6 +46,7 @@ public class ProgressViewModel extends ViewModel {
                     List<Message> notes = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String noteContent = document.getString("text");
+                        int place = document.getLong("place").intValue();
                         notes.add(new Message(noteContent));
                     }
                     progressNotes.postValue(notes);
@@ -56,7 +57,7 @@ public class ProgressViewModel extends ViewModel {
         return progressNotes;
     }
 
-    public void addProgressNote(Message note, String userRole, String userUID, String username) {
+    public void addProgressNote(Message note, String userRole, String userUID, String username, int place) {
         List<Message> currentNotes = progressNotes.getValue();
         if (currentNotes != null) {
             String noteContent = note.getText();
@@ -73,10 +74,13 @@ public class ProgressViewModel extends ViewModel {
 
             Map<String, Object> noteProgress_m = new HashMap<>();
             noteProgress_m.put("text", noteContent + " - " + username);
+            noteProgress_m.put("place", place);
             Map<String, Object> noteProgress_y = new HashMap<>();
             noteProgress_y.put("text", noteContent + " - " + user.getDisplayName());
+            noteProgress_y.put("place", place);
             Map<String, Object> noteProgress = new HashMap<>();
             noteProgress.put("text", noteContent);
+            noteProgress.put("place", place);
 
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("progress")

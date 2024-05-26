@@ -8,6 +8,7 @@ public class Message {
     private String text;
     private boolean sent;
     private Date timestamp;
+    private int place;
 
     public Message() {
         this.id = UUID.randomUUID().toString();
@@ -33,6 +34,17 @@ public class Message {
         this.id = id;
         this.text = text;
         this.timestamp = new Date();
+    }
+    public Message(String text, int place) {
+        this.text = text;
+        this.place = place;
+    }
+
+    public int getPlace() {
+        return place;
+    }
+    public void setPlace(int place) {
+        this.place = place;
     }
 
     public String getId() {

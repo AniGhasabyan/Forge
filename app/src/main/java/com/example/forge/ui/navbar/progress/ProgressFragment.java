@@ -121,7 +121,7 @@ public class ProgressFragment extends Fragment {
         final EditText input = dialogView.findViewById(R.id.editTextNote);
 
         final RadioGroup radioGroupPlaces = dialogView.findViewById(R.id.radioGroupPlaces);
-        final String[] places = {"1st", "2nd", "3rd"};
+        final int[] places = {1, 2, 3};
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
@@ -131,29 +131,40 @@ public class ProgressFragment extends Fragment {
                 RadioButton selectedRadioButton = dialogView.findViewById(selectedRadioButtonId);
 
                 String place;
+                int placeInt;
                 if (selectedRadioButton != null) {
                     int radioButtonIndex = radioGroupPlaces.indexOfChild(selectedRadioButton);
                     if (radioButtonIndex >= 0 && radioButtonIndex < places.length) {
-                        place = " - " + places[radioButtonIndex];
+                        if(places[radioButtonIndex] == 1){
+                            place = " - 1st";
+                        } else if(places[radioButtonIndex] == 2){
+                            place = " - 2nd";
+                        } else {
+                            place = " - 3rd";
+                        }
+                        placeInt = places[radioButtonIndex];
                     } else {
                         place = "- Proud of my result";
+                        placeInt = 4;
                     }
                 } else {
                     place = "";
+                    placeInt = 0;
                 }
 
                 if (!newNoteText.isEmpty()) {
                     Bundle bundle = new Bundle();
                     bundle.putString("newNoteText", newNoteText + place);
                     bundle.putInt("destinationId", R.id.nav_progress);
+                    bundle.putInt("place", placeInt);
                     if (username2 == null && userRole.equals("Coach")) {
                         DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null) {
-                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, userUID, username2);
+                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, userUID, username2, placeInt);
                     } else {
-                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, user.getUid(), "");
+                        progressViewModel.addProgressNote(new Message(newNoteText + place), userRole, user.getUid(), "", placeInt);
                     }
                 } else {
                     Toast.makeText(getContext(), "Conquest text cannot be empty", Toast.LENGTH_SHORT).show();

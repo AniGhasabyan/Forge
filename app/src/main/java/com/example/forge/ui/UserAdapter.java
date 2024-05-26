@@ -51,6 +51,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private Context context;
     private String userRole;
     private String dayOfWeek;
+    private int place;
 
     public UserAdapter(List<User> userList, int currentDestinationId) {
         this.userList = userList;
@@ -62,6 +63,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         this.currentDestinationId = currentDestinationId;
         this.note = note;
         this.context = context;
+    }
+
+    public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, int place) {
+        this.userList = userList;
+        this.currentDestinationId = currentDestinationId;
+        this.note = note;
+        this.context = context;
+        this.place = place;
     }
 
     public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context, String userRole, String dayOfWeek) {
@@ -149,11 +158,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
                     noteMap.put("text", note);
+                    noteMap.put("place", place);
 
                     Map<String, Object> noteData_m = new HashMap<>();
                     noteData_m.put("text", note + " - " + user.getUsername());
+                    noteData_m.put("place", place);
                     Map<String, Object> noteData_y = new HashMap<>();
                     noteData_y.put("text", note + " - " + currentUserUsername);
+                    noteData_y.put("place", place);
 
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
