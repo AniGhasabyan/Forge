@@ -102,13 +102,13 @@ public class ChosenProgressFragment extends Fragment {
         final TextView textView = binding.textProgress;
         progressViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
+        progressViewModel.loadProgressNotes(userRole, userUID);
+
         progressViewModel.getProgressNotes().observe(getViewLifecycleOwner(), progressNotes -> {
             progressNotesList.clear();
             progressNotesList.addAll(progressNotes);
             messageAdapter.notifyDataSetChanged();
         });
-
-        progressViewModel.loadProgressNotes(userRole, userUID);
     }
 
     private void showAddNoteDialog(String userRole, String username2, String userUID) {
@@ -162,10 +162,8 @@ public class ChosenProgressFragment extends Fragment {
                         dialogFragment.setArguments(bundle);
                         dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
                     } else if (username2 != null) {
-                        // Add new progress note using the ViewModel
                         progressViewModel.addProgressNote(new Message(newNoteText + place, placeInt), userRole, userUID, username2, placeInt);
                     } else {
-                        // Add new progress note using the ViewModel
                         progressViewModel.addProgressNote(new Message(newNoteText + place, placeInt), userRole, user.getUid(), "", placeInt);
                     }
                 } else {

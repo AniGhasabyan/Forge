@@ -101,6 +101,8 @@ public class ScheduleFragment extends Fragment {
         scheduleViewModel = new ViewModelProvider(this, new ScheduleViewModelFactory(userRole, userUID))
                 .get(ScheduleViewModel.class);
 
+        scheduleViewModel.loadScheduleData(userRole, userUID);
+
         scheduleViewModel.getScheduleData().observe(getViewLifecycleOwner(), new Observer<Map<String, String>>() {
             @Override
             public void onChanged(Map<String, String> scheduleMap) {
@@ -113,8 +115,6 @@ public class ScheduleFragment extends Fragment {
                 updateTextView(sundayTextView, scheduleMap.get("sunday"));
             }
         });
-
-        scheduleViewModel.loadScheduleData(userRole, userUID);
     }
 
     private void updateTextView(TextView textView, String text) {

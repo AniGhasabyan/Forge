@@ -97,13 +97,13 @@ public class DietFragment extends Fragment {
         messageAdapter = new MessageAdapter(dietNotesList, getContext(), userRole, userUID);
         recyclerView.setAdapter(messageAdapter);
 
+        dietViewModel.loadDietNotes(userRole, userUID);
+
         dietViewModel.getDietNotes().observe(getViewLifecycleOwner(), dietNotes -> {
             dietNotesList.clear();
             dietNotesList.addAll(dietNotes);
             messageAdapter.notifyDataSetChanged();
         });
-
-        dietViewModel.loadDietNotes(userRole, userUID);
 
         Button addButton = binding.buttonAddNote;
         addButton.setOnClickListener(v -> showAddNoteDialog(userRole, username, userUID));

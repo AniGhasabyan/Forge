@@ -108,6 +108,8 @@ public class ChosenTournamentsFragment extends Fragment {
             }
         });
 
+        tournamentsViewModel.loadTournaments(userRole.get(), userUID.get());
+
         tournamentsViewModel.getTournamentList().observe(getViewLifecycleOwner(), tournaments -> {
             tournamentList.clear();
             for (String tournament : tournaments) {

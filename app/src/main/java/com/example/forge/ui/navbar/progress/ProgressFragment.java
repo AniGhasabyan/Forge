@@ -102,13 +102,13 @@ public class ProgressFragment extends Fragment {
         final TextView textView = binding.textProgress;
         progressViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
+        progressViewModel.loadProgressNotes(userRole, userUID);
+
         progressViewModel.getProgressNotes().observe(getViewLifecycleOwner(), progressNotes -> {
             progressNotesList.clear();
             progressNotesList.addAll(progressNotes);
             messageAdapter.notifyDataSetChanged();
         });
-
-        progressViewModel.loadProgressNotes(userRole, userUID);
     }
 
     private void showAddNoteDialog(String userRole, String username2, String userUID) {
