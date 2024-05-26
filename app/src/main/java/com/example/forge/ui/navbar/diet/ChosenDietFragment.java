@@ -81,6 +81,9 @@ public class ChosenDietFragment extends Fragment {
             initializeViewModel(userRole, userUID.get(), username);
         }
 
+        Button addButton = binding.buttonAddNote;
+        addButton.setOnClickListener(v -> showAddNoteDialog(userRole, username, userUID.get()));
+
         return root;
     }
 
@@ -104,9 +107,6 @@ public class ChosenDietFragment extends Fragment {
             dietNotesList.addAll(dietNotes);
             messageAdapter.notifyDataSetChanged();
         });
-
-        Button addButton = binding.buttonAddNote;
-        addButton.setOnClickListener(v -> showAddNoteDialog(userRole, username, userUID));
     }
 
     @Override

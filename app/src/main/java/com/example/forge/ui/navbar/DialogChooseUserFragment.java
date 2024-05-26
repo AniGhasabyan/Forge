@@ -48,11 +48,11 @@ public class DialogChooseUserFragment extends DialogFragment {
             place = arguments.getInt("place");
         }
 
-        adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), new MutableLiveData<>());
+        adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext());
         if(destinationId == R.id.nav_schedule){
-            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), userRoleArg, dayOfWeek, new MutableLiveData<>());
+            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), userRoleArg, dayOfWeek);
         } else if(destinationId == R.id.nav_progress){
-            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), place, new MutableLiveData<>());
+            adapter = new UserAdapter(new ArrayList<>(), destinationId, newNoteText, requireContext(), place);
         }
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(adapter);
