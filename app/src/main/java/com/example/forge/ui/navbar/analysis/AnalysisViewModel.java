@@ -12,7 +12,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class AnalysisViewModel extends ViewModel {
     private MutableLiveData<List<Message>> message;
@@ -45,7 +48,12 @@ public class AnalysisViewModel extends ViewModel {
                     List<Message> notes = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String noteContent = document.getString("text");
-                        notes.add(new Message(noteContent));
+                        String noteSender = document.getString("sender");
+                        if(!Objects.equals(noteSender, user.getDisplayName())){
+                            notes.add(new Message(noteSender + "\n" + noteContent));
+                        } else {
+                            notes.add(new Message(noteContent));
+                        }
                     }
                     message.postValue(notes);
                 });
@@ -62,23 +70,27 @@ public class AnalysisViewModel extends ViewModel {
             message.setValue(currentNotes);
 
             String oppositeRole = "";
-            if(userRole.equals("Athlete")){
+            if (userRole.equals("Athlete")) {
                 oppositeRole = "Coach";
-            } else if(userRole.equals("Coach")){
+            } else if (userRole.equals("Coach")) {
                 oppositeRole = "Athlete";
             }
+
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("sender", user.getDisplayName());
+            messageData.put("text", note.getText());
 
             db.collection(userRole.toLowerCase()).document(userUID)
                     .collection("analyses")
                     .document(user.getUid())
                     .collection("message")
-                    .add(note);
-            if(!userUID.equals(user.getUid())) {
+                    .add(messageData);
+            if (!userUID.equals(user.getUid())) {
                 db.collection(oppositeRole.toLowerCase()).document(user.getUid())
                         .collection("analyses")
                         .document(userUID)
                         .collection("message")
-                        .add(note);
+                        .add(messageData);
             }
         }
     }
