@@ -130,12 +130,14 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
         private final TextView textViewUsername;
         private final ImageView imageViewCheckMark;
         private final ImageView profilePicture;
+        private String cachedImageUrl;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewUsername = itemView.findViewById(R.id.text_view_username);
             imageViewCheckMark = itemView.findViewById(R.id.image_button_check_mark);
             profilePicture = itemView.findViewById(R.id.profile_picture);
+            cachedImageUrl = null;
         }
 
         public void bind(User user) {
@@ -143,23 +145,45 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
             if ("None".equals(user.getEmail())) {
                 profilePicture.setVisibility(View.GONE);
             } else {
+                profilePicture.setVisibility(View.VISIBLE);
                 Context context = itemView.getContext();
-
-                getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                    @Override
-                    public void onSuccess(String userUID) {
-                        if (userUID != null) {
-                            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + userUID);
-                            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                String imageUrl = uri.toString();
-                                Glide.with(context).load(imageUrl).into(profilePicture); // Load profile picture using Glide
-                            }).addOnFailureListener(e -> {
-                                // Handle failure
-                            });
+                if (cachedImageUrl != null) {
+                    Glide.with(context).load(cachedImageUrl).into(profilePicture);
+                } else {
+                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String userUID) {
+                            if (userUID != null) {
+                                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + userUID);
+                                storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    String imageUrl = uri.toString();
+                                    Glide.with(context).load(imageUrl).into(profilePicture);
+                                    cachedImageUrl = imageUrl;
+                                }).addOnFailureListener(e -> {
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
+        }
+
+        private void getUserUIDByEmail(String email, OnSuccessListener<String> onSuccessListener) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users")
+                    .whereEqualTo("email", email)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                            String userUID = documentSnapshot.getString("uid");
+                            onSuccessListener.onSuccess(userUID);
+                        } else {
+                            onSuccessListener.onSuccess(null);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                    });
         }
     }
 

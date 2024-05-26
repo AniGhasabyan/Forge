@@ -425,6 +425,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         private final ImageView profilePicture;
         private final ImageButton imageViewCheckMark;
         private final ImageButton imageButtonReject;
+        private String cachedImageUrl;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -432,6 +433,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
             profilePicture = itemView.findViewById(R.id.profile_picture);
             imageViewCheckMark = itemView.findViewById(R.id.image_button_check_mark);
             imageButtonReject = itemView.findViewById(R.id.image_button_reject);
+            cachedImageUrl = null;
         }
 
         public void bind(User user) {
@@ -441,19 +443,24 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
             } else {
                 profilePicture.setVisibility(View.VISIBLE);
                 Context context = itemView.getContext();
-                getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                    @Override
-                    public void onSuccess(String userUID) {
-                        if (userUID != null) {
-                            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + userUID);
-                            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                String imageUrl = uri.toString();
-                                Glide.with(context).load(imageUrl).into(profilePicture);
-                            }).addOnFailureListener(e -> {
-                            });
+                if (cachedImageUrl != null) {
+                    Glide.with(context).load(cachedImageUrl).into(profilePicture);
+                } else {
+                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                        @Override
+                        public void onSuccess(String userUID) {
+                            if (userUID != null) {
+                                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + userUID);
+                                storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    String imageUrl = uri.toString();
+                                    Glide.with(context).load(imageUrl).into(profilePicture);
+                                    cachedImageUrl = imageUrl;
+                                }).addOnFailureListener(e -> {
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
 
@@ -472,7 +479,6 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Handle failure
                     });
         }
     }

@@ -31,12 +31,14 @@ public class ProfileViewModel extends AndroidViewModel {
     private final FirebaseFirestore db;
     private final StorageReference storageRef;
     private final MutableLiveData<String> profileImageUrl = new MutableLiveData<>();
+    private String cachedImageUrl;
 
     public ProfileViewModel(@NonNull Application application) {
         super(application);
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
+        cachedImageUrl = null;
     }
 
     public LiveData<String> getProfileImageUrl() {
@@ -56,12 +58,22 @@ public class ProfileViewModel extends AndroidViewModel {
         String userId = auth.getCurrentUser().getUid();
         db.collection("users").document(userId)
                 .update("profileImageUrl", imageUrl)
-                .addOnSuccessListener(aVoid -> profileImageUrl.setValue(imageUrl));
+                .addOnSuccessListener(aVoid -> {
+                    cachedImageUrl = imageUrl;
+                    profileImageUrl.setValue(imageUrl);
+                });
     }
 
     public void loadProfilePicture() {
-        StorageReference imageRef = storageRef.child("profile_images/" + auth.getCurrentUser().getUid());
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> profileImageUrl.setValue(uri.toString()));
+        if (cachedImageUrl != null) {
+            profileImageUrl.setValue(cachedImageUrl);
+        } else {
+            StorageReference imageRef = storageRef.child("profile_images/" + auth.getCurrentUser().getUid());
+            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                cachedImageUrl = uri.toString();
+                profileImageUrl.setValue(cachedImageUrl);
+            }).addOnFailureListener(e -> profileImageUrl.setValue(null));
+        }
     }
 
     public void deleteUserAccount(Activity activity) {
