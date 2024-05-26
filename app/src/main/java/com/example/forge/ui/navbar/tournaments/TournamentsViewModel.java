@@ -23,6 +23,7 @@ public class TournamentsViewModel extends ViewModel {
 
     public TournamentsViewModel(String userRole, String userUID) {
         tournamentList = new MutableLiveData<>();
+        tournamentList.setValue(new ArrayList<>());
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -35,8 +36,9 @@ public class TournamentsViewModel extends ViewModel {
     }
 
     public void loadTournaments(String userRole, String userUID) {
-        tournamentList.setValue(new ArrayList<>());
-
+        if (tournamentList.getValue() != null && !tournamentList.getValue().isEmpty()) {
+            return;
+        }
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("tournaments")
                 .document(userUID)

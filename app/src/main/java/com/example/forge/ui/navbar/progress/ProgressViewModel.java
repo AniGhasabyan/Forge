@@ -37,6 +37,9 @@ public class ProgressViewModel extends ViewModel {
     }
 
     public void loadProgressNotes(String userRole, String userUID) {
+        if (progressNotes.getValue() != null && !progressNotes.getValue().isEmpty()) {
+            return;
+        }
         db.collection(userRole.toLowerCase()).document(user.getUid())
                 .collection("progress")
                 .document(userUID)
