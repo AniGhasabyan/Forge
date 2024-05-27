@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.navigation.NavController;
@@ -53,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
         String addNewAthleteOrCoach = "";
 
         if(userRole.equals("Athlete")){
-            addNewAthleteOrCoach = "add new coach";
+            addNewAthleteOrCoach = "Add new coach";
         } else if(userRole.equals("Coach")){
-            addNewAthleteOrCoach = "add new athlete";
+            addNewAthleteOrCoach = "Add new athlete";
         }
 
         View headerView = binding.navView.getHeaderView(0);
@@ -134,6 +135,21 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {}
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                loadProfilePicture(navHeaderImageView);
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {}
+
+            @Override
+            public void onDrawerStateChanged(int newState) {}
+        });
     }
 
     private void loadProfilePicture(ImageView imageView) {
