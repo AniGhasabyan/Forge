@@ -18,6 +18,16 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"/>
 
+        <ProgressBar
+            android:id="@+id/baseline_loop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/imageViewAvatar"
+            android:layout_alignEnd="@id/imageViewAvatar"
+            android:layout_alignTop="@id/imageViewAvatar"
+            android:layout_alignBottom="@id/imageViewAvatar"
+            android:visibility="gone" />
+
         <ImageButton
             android:id="@+id/add_image"
             android:layout_width="wrap_content"

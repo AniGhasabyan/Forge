@@ -32,6 +32,7 @@ public class ProfileViewModel extends AndroidViewModel {
     private final StorageReference storageRef;
     private final MutableLiveData<String> profileImageUrl = new MutableLiveData<>();
     private String cachedImageUrl;
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     public ProfileViewModel(@NonNull Application application) {
         super(application);
@@ -46,11 +47,13 @@ public class ProfileViewModel extends AndroidViewModel {
     }
 
     public void uploadImageToFirebaseStorage(Uri imageUri) {
+        isLoading.setValue(true);
         StorageReference imageRef = storageRef.child("profile_images/" + auth.getCurrentUser().getUid());
         imageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String imageUrl = uri.toString();
                     saveImageUrlToFirestore(imageUrl);
+                    isLoading.setValue(false);
                 }));
     }
 
@@ -65,15 +68,25 @@ public class ProfileViewModel extends AndroidViewModel {
     }
 
     public void loadProfilePicture() {
+        isLoading.setValue(true);
         if (cachedImageUrl != null) {
             profileImageUrl.setValue(cachedImageUrl);
+            isLoading.setValue(false);
         } else {
             StorageReference imageRef = storageRef.child("profile_images/" + auth.getCurrentUser().getUid());
             imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                 cachedImageUrl = uri.toString();
                 profileImageUrl.setValue(cachedImageUrl);
-            }).addOnFailureListener(e -> profileImageUrl.setValue(null));
+                isLoading.setValue(false);
+            }).addOnFailureListener(e -> {
+                profileImageUrl.setValue(null);
+                isLoading.setValue(false);
+            });
         }
+    }
+
+    public LiveData<Boolean> isLoading() {
+        return isLoading;
     }
 
     public void deleteUserAccount(Activity activity) {

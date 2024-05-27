@@ -9,9 +9,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,11 +37,14 @@ public class ProfileFragment extends Fragment {
     private ProfileViewModel viewModel;
     private ActivityResultLauncher<String> galleryLauncher;
     private ImageView profilePicture;
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        View view = binding.getRoot();
+        progressBar = view.findViewById(R.id.baseline_loop);
+        return view;
     }
 
     @Override
@@ -73,6 +78,16 @@ public class ProfileFragment extends Fragment {
         viewModel.getProfileImageUrl().observe(getViewLifecycleOwner(), imageUrl -> {
             Glide.with(requireContext()).load(imageUrl).into(profilePicture);
         });
+        viewModel.isLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                progressBar.setVisibility(View.VISIBLE);
+                requireActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
+        });
 
         viewModel.loadProfilePicture();
 
@@ -96,6 +111,7 @@ public class ProfileFragment extends Fragment {
                         viewModel.uploadImageToFirebaseStorage(result);
                     }
                 });
+
     }
 
     private void showConfirmationDialog(boolean isDelete) {
