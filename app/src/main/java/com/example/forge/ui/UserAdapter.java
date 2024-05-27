@@ -1,6 +1,7 @@
 package com.example.forge.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,9 +56,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private String dayOfWeek;
     private int place;
 
-    public UserAdapter(List<User> userList, int currentDestinationId) {
+    public UserAdapter(List<User> userList, int currentDestinationId, Context context) {
         this.userList = userList;
         this.currentDestinationId = currentDestinationId;
+        this.context = context;
     }
 
     public UserAdapter(List<User> userList, int currentDestinationId, String note, Context context) {
@@ -87,7 +90,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
-
         return new UserViewHolder(view);
     }
 
@@ -96,201 +98,261 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         User user = userList.get(position);
         holder.bind(user);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putString("username", user.getUsername());
-                bundle.putString("email", user.getEmail());
+        holder.itemView.setOnLongClickListener(view -> {
+            showRemoveUserDialog(position);
+            return true;
+        });
 
-                db = FirebaseFirestore.getInstance();
-                String currentUserUID = getCurrentUserUID();
-                String currentUserUsername = getCurrentUserUsername();
+        holder.itemView.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("username", user.getUsername());
+            bundle.putString("email", user.getEmail());
 
-                if (currentDestinationId == R.id.nav_home) {
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.nav_choose, bundle);
-                } else if (currentDestinationId == R.id.nav_porch) {
-                    NavController navController = Navigation.findNavController(view);
-                    navController.navigate(R.id.nav_analysis, bundle);
-                } else if (currentDestinationId == R.id.nav_diet){
+            db = FirebaseFirestore.getInstance();
+            String currentUserUID = getCurrentUserUID();
+            String currentUserUsername = getCurrentUserUsername();
 
-                    Message noteMessage = new Message(note);
-                    Map<String, Object> noteMap = new HashMap<>();
-                    String noteId = UUID.randomUUID().toString();
-                    noteMap.put("id", noteId);
-                    noteMap.put("text", note);
-                    noteMap.put("timestamp", noteMessage.getTimestamp());
+            if (currentDestinationId == R.id.nav_home) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.nav_choose, bundle);
+            } else if (currentDestinationId == R.id.nav_porch) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.nav_analysis, bundle);
+            } else if (currentDestinationId == R.id.nav_diet) {
+                Message noteMessage = new Message(note);
+                Map<String, Object> noteMap = new HashMap<>();
+                String noteId = UUID.randomUUID().toString();
+                noteMap.put("id", noteId);
+                noteMap.put("text", note);
+                noteMap.put("timestamp", noteMessage.getTimestamp());
 
-                    Map<String, Object> noteData_m = new HashMap<>();
-                    noteData_m.put("text", note + " - " + user.getUsername());
-                    noteData_m.put("timestamp", noteMessage.getTimestamp());
-                    Map<String, Object> noteData_y = new HashMap<>();
-                    noteData_y.put("text", note + " - " + currentUserUsername);
-                    noteData_y.put("timestamp", noteMessage.getTimestamp());
+                Map<String, Object> noteData_m = new HashMap<>();
+                noteData_m.put("text", note + " - " + user.getUsername());
+                noteData_m.put("timestamp", noteMessage.getTimestamp());
+                Map<String, Object> noteData_y = new HashMap<>();
+                noteData_y.put("text", note + " - " + currentUserUsername);
+                noteData_y.put("timestamp", noteMessage.getTimestamp());
 
-                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                        @Override
-                        public void onSuccess(String userUID) {
-                            db.collection("coach")
-                                    .document(currentUserUID)
-                                    .collection("diets")
-                                    .document(userUID)
-                                    .collection("diet notes")
-                                    .add(noteMap);
-                            db.collection("athlete")
-                                    .document(userUID).collection("diets")
-                                    .document(currentUserUID)
-                                    .collection("diet notes")
-                                    .add(noteMap);
-                            db.collection("coach").document(currentUserUID)
-                                    .collection("diets")
-                                    .document(currentUserUID)
-                                    .collection("diet notes")
-                                    .add(noteData_m);
-                            db.collection("athlete")
-                                    .document(userUID).collection("diets")
-                                    .document(userUID)
-                                    .collection("diet notes")
-                                    .add(noteData_y);
-                        }
-                    });
-                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
-                    navController.popBackStack();
-                    navController.navigate(R.id.nav_diet);
+                getUserUIDByEmail(user.getEmail(), userUID -> {
+                    db.collection("coach")
+                            .document(currentUserUID)
+                            .collection("diets")
+                            .document(userUID)
+                            .collection("diet notes")
+                            .add(noteMap);
+                    db.collection("athlete")
+                            .document(userUID).collection("diets")
+                            .document(currentUserUID)
+                            .collection("diet notes")
+                            .add(noteMap);
+                    db.collection("coach").document(currentUserUID)
+                            .collection("diets")
+                            .document(currentUserUID)
+                            .collection("diet notes")
+                            .add(noteData_m);
+                    db.collection("athlete")
+                            .document(userUID).collection("diets")
+                            .document(userUID)
+                            .collection("diet notes")
+                            .add(noteData_y);
+                });
+                NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                navController.popBackStack();
+                navController.navigate(R.id.nav_diet);
 
-                } else if (currentDestinationId == R.id.nav_progress){
-                    Map<String, Object> noteMap = new HashMap<>();
-                    String noteId = UUID.randomUUID().toString();
-                    noteMap.put("id", noteId);
-                    noteMap.put("text", note);
-                    noteMap.put("place", place);
+            } else if (currentDestinationId == R.id.nav_progress) {
+                Map<String, Object> noteMap = new HashMap<>();
+                String noteId = UUID.randomUUID().toString();
+                noteMap.put("id", noteId);
+                noteMap.put("text", note);
+                noteMap.put("place", place);
 
-                    Map<String, Object> noteData_m = new HashMap<>();
-                    noteData_m.put("text", note + " - " + user.getUsername());
-                    noteData_m.put("place", place);
-                    Map<String, Object> noteData_y = new HashMap<>();
-                    noteData_y.put("text", note + " - " + currentUserUsername);
-                    noteData_y.put("place", place);
+                Map<String, Object> noteData_m = new HashMap<>();
+                noteData_m.put("text", note + " - " + user.getUsername());
+                noteData_m.put("place", place);
+                Map<String, Object> noteData_y = new HashMap<>();
+                noteData_y.put("text", note + " - " + currentUserUsername);
+                noteData_y.put("place", place);
 
-                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                        @Override
-                        public void onSuccess(String userUID) {
-                            db.collection("coach")
-                                    .document(currentUserUID)
-                                    .collection("progress")
-                                    .document(userUID)
-                                    .collection("conquests")
-                                    .add(noteMap);
-                            db.collection("athlete")
-                                    .document(userUID).collection("progress")
-                                    .document(currentUserUID)
-                                    .collection("conquests")
-                                    .add(noteMap);
-                            db.collection("coach")
-                                    .document(currentUserUID)
-                                    .collection("progress")
-                                    .document(currentUserUID)
-                                    .collection("conquests")
-                                    .add(noteData_m);
-                            db.collection("athlete")
-                                    .document(userUID).collection("progress")
-                                    .document(userUID)
-                                    .collection("conquests")
-                                    .add(noteData_y);
-                        }
-                    });
-                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
-                    navController.popBackStack();
-                    navController.navigate(R.id.nav_progress);
-                } else if (currentDestinationId == R.id.nav_tournaments){
-                    Map<String, Object> noteData = new HashMap<>();
-                    noteData.put("note", note);
+                getUserUIDByEmail(user.getEmail(), userUID -> {
+                    db.collection("coach")
+                            .document(currentUserUID)
+                            .collection("progress")
+                            .document(userUID)
+                            .collection("conquests")
+                            .add(noteMap);
+                    db.collection("athlete")
+                            .document(userUID).collection("progress")
+                            .document(currentUserUID)
+                            .collection("conquests")
+                            .add(noteMap);
+                    db.collection("coach")
+                            .document(currentUserUID)
+                            .collection("progress")
+                            .document(currentUserUID)
+                            .collection("conquests")
+                            .add(noteData_m);
+                    db.collection("athlete")
+                            .document(userUID).collection("progress")
+                            .document(userUID)
+                            .collection("conquests")
+                            .add(noteData_y);
+                });
+                NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                navController.popBackStack();
+                navController.navigate(R.id.nav_progress);
+            } else if (currentDestinationId == R.id.nav_tournaments) {
+                Map<String, Object> noteData = new HashMap<>();
+                noteData.put("note", note);
 
-                    Map<String, Object> tournamentsData_m = new HashMap<>();
-                    tournamentsData_m.put("note", note + " - " + user.getUsername());
-                    Map<String, Object> tournamentsData_y = new HashMap<>();
-                    tournamentsData_y.put("note", note + " - " + currentUserUsername);
-                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                        @Override
-                        public void onSuccess(String userUID) {
-                            db.collection("coach")
-                                    .document(currentUserUID)
-                                    .collection("tournaments")
-                                    .document(userUID)
-                                    .collection("date")
-                                    .add(noteData);
-                            db.collection("athlete")
-                                    .document(userUID).collection("tournaments")
-                                    .document(currentUserUID)
-                                    .collection("date")
-                                    .add(noteData);
-                            db.collection("coach")
-                                    .document(currentUserUID)
-                                    .collection("tournaments")
-                                    .document(currentUserUID)
-                                    .collection("date")
-                                    .add(tournamentsData_m);
-                            db.collection("athlete")
-                                    .document(userUID).collection("tournaments")
-                                    .document(userUID)
-                                    .collection("date")
-                                    .add(tournamentsData_y);
-                        }
-                    });
-                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
-                    navController.popBackStack();
-                    navController.navigate(R.id.nav_tournaments);
-                } else if (currentDestinationId == R.id.nav_schedule){
-                    Map<String, Object> scheduleData = new HashMap<>();
-                    scheduleData.put("time", note);
+                Map<String, Object> tournamentsData_m = new HashMap<>();
+                tournamentsData_m.put("note", note + " - " + user.getUsername());
+                Map<String, Object> tournamentsData_y = new HashMap<>();
+                tournamentsData_y.put("note", note + " - " + currentUserUsername);
+                getUserUIDByEmail(user.getEmail(), userUID -> {
+                    db.collection("coach")
+                            .document(currentUserUID)
+                            .collection("tournaments")
+                            .document(userUID)
+                            .collection("date")
+                            .add(noteData);
+                    db.collection("athlete")
+                            .document(userUID).collection("tournaments")
+                            .document(currentUserUID)
+                            .collection("date")
+                            .add(noteData);
+                    db.collection("coach")
+                            .document(currentUserUID)
+                            .collection("tournaments")
+                            .document(currentUserUID)
+                            .collection("date")
+                            .add(tournamentsData_m);
+                    db.collection("athlete")
+                            .document(userUID).collection("tournaments")
+                            .document(userUID)
+                            .collection("date")
+                            .add(tournamentsData_y);
+                });
+                NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                navController.popBackStack();
+                navController.navigate(R.id.nav_tournaments);
+            } else if (currentDestinationId == R.id.nav_schedule) {
+                Map<String, Object> scheduleData = new HashMap<>();
+                scheduleData.put("time", note);
 
-                    Map<String, Object> scheduleData_m = new HashMap<>();
-                    if(Objects.equals(user.getEmail(), "None")){
-                        scheduleData_m.put("time", note);
-                    } else{
-                        scheduleData_m.put("time", note + " - " + user.getUsername());
-                    }
-                    Map<String, Object> scheduleData_y = new HashMap<>();
-                    scheduleData_y.put("time", note + " - " + currentUserUsername);
-
-                    String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
-                    getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
-                        @Override
-                        public void onSuccess(String userUID) {
-                            db.collection(userRole.toLowerCase())
-                                    .document(currentUserUID)
-                                    .collection("schedule")
-                                    .document(currentUserUID)
-                                    .collection(dayOfWeek)
-                                    .add(scheduleData_m);
-                            if(!Objects.equals(user.getEmail(), "None")) {
-                                db.collection(userRole.toLowerCase())
-                                        .document(currentUserUID)
-                                        .collection("schedule")
-                                        .document(userUID)
-                                        .collection(dayOfWeek)
-                                        .add(scheduleData);
-                                db.collection(oppositeRole.toLowerCase())
-                                        .document(userUID).collection("schedule")
-                                        .document(currentUserUID)
-                                        .collection(dayOfWeek)
-                                        .add(scheduleData);
-                                db.collection(oppositeRole.toLowerCase())
-                                        .document(userUID).collection("schedule")
-                                        .document(userUID)
-                                        .collection(dayOfWeek)
-                                        .add(scheduleData_y);
-                            }
-                        }
-                    });
-
-                    NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
-                    navController.popBackStack();
-                    navController.navigate(R.id.nav_schedule);
+                Map<String, Object> scheduleData_m = new HashMap<>();
+                if(Objects.equals(user.getEmail(), "None")){
+                    scheduleData_m.put("time", note);
+                } else{
+                    scheduleData_m.put("time", note + " - " + user.getUsername());
                 }
+                Map<String, Object> scheduleData_y = new HashMap<>();
+                scheduleData_y.put("time", note + " - " + currentUserUsername);
+
+                String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
+                getUserUIDByEmail(user.getEmail(), userUID -> {
+                    db.collection(userRole.toLowerCase())
+                            .document(currentUserUID)
+                            .collection("schedule")
+                            .document(currentUserUID)
+                            .collection(dayOfWeek)
+                            .add(scheduleData_m);
+                    if(!Objects.equals(user.getEmail(), "None")) {
+                        db.collection(userRole.toLowerCase())
+                                .document(currentUserUID)
+                                .collection("schedule")
+                                .document(userUID)
+                                .collection(dayOfWeek)
+                                .add(scheduleData);
+                        db.collection(oppositeRole.toLowerCase())
+                                .document(userUID).collection("schedule")
+                                .document(currentUserUID)
+                                .collection(dayOfWeek)
+                                .add(scheduleData);
+                        db.collection(oppositeRole.toLowerCase())
+                                .document(userUID).collection("schedule")
+                                .document(userUID)
+                                .collection(dayOfWeek)
+                                .add(scheduleData_y);
+                    }
+                });
+
+                NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                navController.popBackStack();
+                navController.navigate(R.id.nav_schedule);
             }
         });
+    }
+
+    private void showRemoveUserDialog(int position) {
+        new AlertDialog.Builder(context)  // Ensure context is not null
+                .setTitle("Remove User")
+                .setMessage("Are you sure you want to remove this user?")
+                .setPositiveButton("Yes", (dialog, which) -> removeUser(position))
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void removeUser(int position) {
+        User user = userList.get(position);
+        String currentUserUID = getCurrentUserUID();
+        if (currentUserUID != null) {
+            getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String userUID) {
+                    if (userUID != null) {
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        String userRole = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                                .getString("UserRole", "Athlete");
+
+                        if (userRole.equals("Athlete")) {
+                            removeAthleteCoachRelation(db, currentUserUID, userUID);
+                        } else if (userRole.equals("Coach")) {
+                            removeCoachAthleteRelation(db, currentUserUID, userUID);
+                        }
+
+                        ((Activity) context).runOnUiThread(() -> {
+                            userList.remove(position);
+                            notifyItemRemoved(position);
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    private void removeAthleteCoachRelation(FirebaseFirestore db, String currentUserUID, String userUID) {
+        db.collection("users")
+                .document(currentUserUID)
+                .collection("Your Coaches")
+                .document(userUID)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    db.collection("users")
+                            .document(userUID)
+                            .collection("Your Athletes")
+                            .document(currentUserUID)
+                            .delete()
+                            .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void removeCoachAthleteRelation(FirebaseFirestore db, String currentUserUID, String userUID) {
+        db.collection("users")
+                .document(currentUserUID)
+                .collection("Your Athletes")
+                .document(userUID)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    db.collection("users")
+                            .document(userUID)
+                            .collection("Your Coaches")
+                            .document(currentUserUID)
+                            .delete()
+                            .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private String getCurrentUserUID() {

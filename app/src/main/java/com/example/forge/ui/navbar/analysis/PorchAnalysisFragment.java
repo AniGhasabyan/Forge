@@ -40,7 +40,7 @@ public class PorchAnalysisFragment extends Fragment {
         NavController navController = NavHostFragment.findNavController(this);
         int currentDestinationId = navController.getCurrentDestination().getId();
 
-        adapter1 = new UserAdapter(new ArrayList<>(), currentDestinationId);
+        adapter1 = new UserAdapter(new ArrayList<>(), currentDestinationId, requireContext());
         binding.recyclerViewPorch.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerViewPorch.setAdapter(adapter1);
 

@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment {
         NavController navController = NavHostFragment.findNavController(this);
         int currentDestinationId = navController.getCurrentDestination().getId();
 
-        adapter1 = new UserAdapter(new ArrayList<>(), currentDestinationId);
+        adapter1 = new UserAdapter(new ArrayList<>(), currentDestinationId, requireContext());
         adapter3 = new UserAdapterRequests(new ArrayList<>());
         adapter2 = new HomeUserAdapter(requireContext(), new ArrayList<>());
 
