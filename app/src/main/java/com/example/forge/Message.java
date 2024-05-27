@@ -30,6 +30,11 @@ public class Message {
         this(text, true, new Date());
     }
 
+    public Message(String text, Date timestamp) {
+        this(text, true, new Date());
+        this.timestamp = timestamp != null ? timestamp : new Date();
+    }
+
     public Message(String id, String text) {
         this.id = id;
         this.text = text;

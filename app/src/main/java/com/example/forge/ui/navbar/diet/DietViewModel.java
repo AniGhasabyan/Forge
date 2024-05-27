@@ -19,9 +19,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DietViewModel extends ViewModel {
     private MutableLiveData<List<Message>> dietNotes;
@@ -58,7 +60,8 @@ public class DietViewModel extends ViewModel {
                     List<Message> notes = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String noteContent = document.getString("text");
-                        notes.add(new Message(noteContent));
+                        Date timestamp = document.getDate("timestamp");
+                        notes.add(new Message(noteContent, timestamp));
                     }
                     Collections.sort(notes, (m1, m2) -> {
                         if (m1.getTimestamp() == null && m2.getTimestamp() == null) {

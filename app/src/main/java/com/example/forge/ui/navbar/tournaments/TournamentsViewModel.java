@@ -93,7 +93,7 @@ public class TournamentsViewModel extends ViewModel {
                             if (updatedTournaments == null) {
                                 updatedTournaments = new ArrayList<>();
                             }
-                            updatedTournaments.add(note);
+                            updatedTournaments.add(0, note);
                             tournamentList.setValue(updatedTournaments);
                         });
                 db.collection(oppositeRole.toLowerCase()).document(userUID)
