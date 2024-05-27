@@ -18,6 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,18 @@ public class DietViewModel extends ViewModel {
                         String noteContent = document.getString("text");
                         notes.add(new Message(noteContent));
                     }
+                    Collections.sort(notes, (m1, m2) -> {
+                        if (m1.getTimestamp() == null && m2.getTimestamp() == null) {
+                            return 0;
+                        }
+                        if (m1.getTimestamp() == null) {
+                            return 1;
+                        }
+                        if (m2.getTimestamp() == null) {
+                            return -1;
+                        }
+                        return m2.getTimestamp().compareTo(m1.getTimestamp());
+                    });
                     dietNotes.postValue(notes);
                 });
     }
@@ -73,6 +86,18 @@ public class DietViewModel extends ViewModel {
             String noteContent = note.getText();
 
             currentNotes.add(0, note);
+            Collections.sort(currentNotes, (m1, m2) -> {
+                if (m1.getTimestamp() == null && m2.getTimestamp() == null) {
+                    return 0;
+                }
+                if (m1.getTimestamp() == null) {
+                    return 1;
+                }
+                if (m2.getTimestamp() == null) {
+                    return -1;
+                }
+                return m2.getTimestamp().compareTo(m1.getTimestamp());
+            });
             dietNotes.setValue(currentNotes);
 
             String oppositeRole = "";
@@ -84,10 +109,13 @@ public class DietViewModel extends ViewModel {
 
             Map<String, Object> noteData_m = new HashMap<>();
             noteData_m.put("text", noteContent + username);
+            noteData_m.put("timestamp", note.getTimestamp());
             Map<String, Object> noteData_y = new HashMap<>();
             noteData_y.put("text", noteContent + " - " + user.getDisplayName());
+            noteData_y.put("timestamp", note.getTimestamp());
             Map<String, Object> noteData = new HashMap<>();
             noteData.put("text", noteContent);
+            noteData.put("timestamp", note.getTimestamp());
 
             db.collection(userRole.toLowerCase()).document(user.getUid())
                     .collection("diets")

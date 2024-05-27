@@ -64,10 +64,10 @@ public class AnalysisViewModel extends ViewModel {
                             return 0;
                         }
                         if (m1.getTimestamp() == null) {
-                            return 1; // Null dates go last
+                            return 1;
                         }
                         if (m2.getTimestamp() == null) {
-                            return -1; // Null dates go last
+                            return -1;
                         }
                         return m2.getTimestamp().compareTo(m1.getTimestamp());
                     });
@@ -88,10 +88,10 @@ public class AnalysisViewModel extends ViewModel {
                     return 0;
                 }
                 if (m1.getTimestamp() == null) {
-                    return 1; // Null dates go last
+                    return 1;
                 }
                 if (m2.getTimestamp() == null) {
-                    return -1; // Null dates go last
+                    return -1;
                 }
                 return m2.getTimestamp().compareTo(m1.getTimestamp());
             });

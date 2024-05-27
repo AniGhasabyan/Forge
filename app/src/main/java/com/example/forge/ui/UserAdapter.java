@@ -115,15 +115,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     navController.navigate(R.id.nav_analysis, bundle);
                 } else if (currentDestinationId == R.id.nav_diet){
 
+                    Message noteMessage = new Message(note);
                     Map<String, Object> noteMap = new HashMap<>();
                     String noteId = UUID.randomUUID().toString();
                     noteMap.put("id", noteId);
                     noteMap.put("text", note);
+                    noteMap.put("timestamp", noteMessage.getTimestamp());
 
                     Map<String, Object> noteData_m = new HashMap<>();
                     noteData_m.put("text", note + " - " + user.getUsername());
+                    noteData_m.put("timestamp", noteMessage.getTimestamp());
                     Map<String, Object> noteData_y = new HashMap<>();
                     noteData_y.put("text", note + " - " + currentUserUsername);
+                    noteData_y.put("timestamp", noteMessage.getTimestamp());
 
                     getUserUIDByEmail(user.getEmail(), new OnSuccessListener<String>() {
                         @Override
