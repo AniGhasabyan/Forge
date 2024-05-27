@@ -110,6 +110,17 @@ public class LoginActivity extends AppCompatActivity {
                         finishPreviousActivities(LoginActivity.this);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
+                    } else if (email.equals("sictst1@gmail.com") || email.equals("sictst2@gmail.com")
+                            || email.equals("sictst3@gmail.com") || email.equals("sictst4@gmail.com")){
+                        SharedPreferences preferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("UserRole", userRole);
+                        editor.apply();
+
+                        Toast.makeText(LoginActivity.this, "Email Is Not Verified. Login in 'Test Mode'.", Toast.LENGTH_SHORT).show();
+                        finishPreviousActivities(LoginActivity.this);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
                     } else {
                         Dialog dialog = new Dialog(LoginActivity.this);
                         dialog.showDialog("Email Is Not Verified", "Please check your email and click on the verification link to complete the registration process.");
