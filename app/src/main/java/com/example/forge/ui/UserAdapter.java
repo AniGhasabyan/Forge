@@ -285,7 +285,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     private void showRemoveUserDialog(int position) {
-        new AlertDialog.Builder(context)  // Ensure context is not null
+        new AlertDialog.Builder(context)
                 .setTitle("Remove User")
                 .setMessage("Are you sure you want to remove this user?")
                 .setPositiveButton("Yes", (dialog, which) -> removeUser(position))

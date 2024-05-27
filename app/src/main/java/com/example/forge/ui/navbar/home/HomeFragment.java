@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment {
         int currentDestinationId = navController.getCurrentDestination().getId();
 
         adapter1 = new UserAdapter(new ArrayList<>(), currentDestinationId, requireContext());
-        adapter3 = new UserAdapterRequests(new ArrayList<>());
+        adapter3 = new UserAdapterRequests(new ArrayList<>(), requireContext());
         adapter2 = new HomeUserAdapter(requireContext(), new ArrayList<>());
 
         binding.recyclerViewHome1.setLayoutManager(new LinearLayoutManager(getContext()));
