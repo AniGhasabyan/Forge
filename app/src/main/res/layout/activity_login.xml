@@ -107,19 +107,11 @@
                 android:checked="false"
                 android:textAllCaps="false"/>
 
-            <TextView
-                android:id="@+id/forgot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="3dp"
-                android:layout_marginTop="5dp"
-                android:text="Forgot password?"/>
-
             <Button
                 android:id="@+id/logIn"
                 android:layout_width="170dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="13dp"
                 android:backgroundTint="@color/red"
                 android:hint="Log in"
                 android:textSize="18sp"
