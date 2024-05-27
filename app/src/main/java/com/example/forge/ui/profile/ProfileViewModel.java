@@ -79,7 +79,7 @@ public class ProfileViewModel extends AndroidViewModel {
                 profileImageUrl.setValue(cachedImageUrl);
                 isLoading.setValue(false);
             }).addOnFailureListener(e -> {
-                profileImageUrl.setValue(null);
+                profileImageUrl.setValue("@drawable/baseline_downloading");
                 isLoading.setValue(false);
             });
         }

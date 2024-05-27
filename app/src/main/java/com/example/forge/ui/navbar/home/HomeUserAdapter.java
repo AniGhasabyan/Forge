@@ -55,6 +55,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
         holder.bind(user);
+        int removedPosition = position;
 
         Bundle bundle = new Bundle();
         bundle.putString("username", user.getUsername());
@@ -82,17 +83,13 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                     foo2(user, finalCurrent);
                 }
 
-                int removedPosition = holder.getAdapterPosition();
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        userList.remove(removedPosition);
-                        notifyItemRemoved(removedPosition);
-                    }
-                });
-
                 NavController navController = Navigation.findNavController(view);
                 navController.navigate(R.id.nav_home, bundle);
+
+                ((Activity) context).runOnUiThread(() -> {
+                    userList.remove(removedPosition);
+                    notifyItemRemoved(removedPosition);
+                });
             }
         });
         holder.imageButtonReject.setOnClickListener(new View.OnClickListener() {
@@ -104,17 +101,10 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                     rejectCoachOffer(user);
                 }
 
-                int removedPosition = holder.getAdapterPosition();
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        userList.remove(removedPosition);
-                        notifyItemRemoved(removedPosition);
-                    }
+                ((Activity) context).runOnUiThread(() -> {
+                    userList.remove(removedPosition);
+                    notifyItemRemoved(removedPosition);
                 });
-
-                NavController navController = Navigation.findNavController(view);
-                navController.navigate(R.id.nav_home, bundle);
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {

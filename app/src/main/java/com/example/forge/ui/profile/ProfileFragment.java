@@ -76,7 +76,12 @@ public class ProfileFragment extends Fragment {
         tv_userRole.setText(userRole);
 
         viewModel.getProfileImageUrl().observe(getViewLifecycleOwner(), imageUrl -> {
-            Glide.with(requireContext()).load(imageUrl).into(profilePicture);
+            if (imageUrl.startsWith("@")) {
+                profilePicture.setImageResource(R.drawable.baseline_downloading);
+            } else {
+                Glide.with(requireContext()).load(imageUrl).into(profilePicture);
+            }
+
         });
         viewModel.isLoading().observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading) {

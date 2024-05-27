@@ -1,6 +1,7 @@
 package com.example.forge.ui.navbar.home;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,14 @@ public class UserAdapterRequests extends RecyclerView.Adapter<UserAdapterRequest
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
         holder.bind(user);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("username", user.getUsername());
+            }
+        });
     }
 
     @Override
