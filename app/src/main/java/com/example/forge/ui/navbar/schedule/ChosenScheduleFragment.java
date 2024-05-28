@@ -1,5 +1,6 @@
 package com.example.forge.ui.navbar.schedule;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -94,7 +96,75 @@ public class ChosenScheduleFragment extends Fragment {
         setDayClickListener(saturdayTextView, username, userRole, userUID);
         setDayClickListener(sundayTextView, username, userRole, userUID);
 
+        setDayLongClickListener(mondayTextView, userRole, userUID);
+        setDayLongClickListener(tuesdayTextView, userRole, userUID);
+        setDayLongClickListener(wednesdayTextView, userRole, userUID);
+        setDayLongClickListener(thursdayTextView, userRole, userUID);
+        setDayLongClickListener(fridayTextView, userRole, userUID);
+        setDayLongClickListener(saturdayTextView, userRole, userUID);
+        setDayLongClickListener(sundayTextView, userRole, userUID);
+
         return root;
+    }
+
+    private void setDayLongClickListener(TextView textView, String userRole, AtomicReference<String> userUID) {
+        textView.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Clear Training Sessions")
+                    .setMessage("Do you want to clear the training session(s) for " + textView.getTag() + "?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        String dayOfWeek = getDayOfWeekFromView(textView);
+                        clearTrainingSessions(userRole, userUID.get(), dayOfWeek);
+                        textView.setText("");
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+            return true;
+        });
+    }
+
+    private void clearTrainingSessions(String userRole, String userUID, String dayOfWeek) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        String oppositeRole = userRole.equals("Athlete") ? "Coach" : "Athlete";
+
+        db.collection(userRole.toLowerCase()).document(user.getUid())
+                .collection("schedule").document(userUID)
+                .collection(dayOfWeek)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete();
+                    }
+                });
+        db.collection(oppositeRole.toLowerCase()).document(userUID)
+                .collection("schedule").document(userUID)
+                .collection(dayOfWeek)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete();
+                    }
+                });
+        db.collection(userRole.toLowerCase()).document(user.getUid())
+                .collection("schedule").document(user.getUid())
+                .collection(dayOfWeek)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete();
+                    }
+                });
+        db.collection(oppositeRole.toLowerCase()).document(userUID)
+                .collection("schedule").document(user.getUid())
+                .collection(dayOfWeek)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete();
+                    }
+                });
     }
 
     private void initializeViewModel(String userRole, String userUID, String username) {
