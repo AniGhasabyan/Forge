@@ -96,22 +96,22 @@ public class ChosenScheduleFragment extends Fragment {
         setDayClickListener(saturdayTextView, username, userRole, userUID);
         setDayClickListener(sundayTextView, username, userRole, userUID);
 
-        setDayLongClickListener(mondayTextView, userRole, userUID);
-        setDayLongClickListener(tuesdayTextView, userRole, userUID);
-        setDayLongClickListener(wednesdayTextView, userRole, userUID);
-        setDayLongClickListener(thursdayTextView, userRole, userUID);
-        setDayLongClickListener(fridayTextView, userRole, userUID);
-        setDayLongClickListener(saturdayTextView, userRole, userUID);
-        setDayLongClickListener(sundayTextView, userRole, userUID);
+        setDayLongClickListener(mondayTextView, userRole, userUID, username);
+        setDayLongClickListener(tuesdayTextView, userRole, userUID, username);
+        setDayLongClickListener(wednesdayTextView, userRole, userUID, username);
+        setDayLongClickListener(thursdayTextView, userRole, userUID, username);
+        setDayLongClickListener(fridayTextView, userRole, userUID, username);
+        setDayLongClickListener(saturdayTextView, userRole, userUID, username);
+        setDayLongClickListener(sundayTextView, userRole, userUID, username);
 
         return root;
     }
 
-    private void setDayLongClickListener(TextView textView, String userRole, AtomicReference<String> userUID) {
+    private void setDayLongClickListener(TextView textView, String userRole, AtomicReference<String> userUID, String username) {
         textView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(requireContext())
                     .setTitle("Clear Training Sessions")
-                    .setMessage("Do you want to clear the training session(s) for " + textView.getTag() + "?")
+                    .setMessage("Clear the training session(s) for " + username + " for " + textView.getTag() + "?")
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                         String dayOfWeek = getDayOfWeekFromView(textView);
                         clearTrainingSessions(userRole, userUID.get(), dayOfWeek);
