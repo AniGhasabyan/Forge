@@ -73,12 +73,12 @@ public class DietFragment extends Fragment {
                 if (useruid != null) {
                     userUID.set(useruid);
                 }
-                initializeViewModel(userRole, userUID.get(), username);
+                initializeViewModel(userRole, userUID.get());
             });
 
         } else {
             username = null;
-            initializeViewModel(userRole, userUID.get(), username);
+            initializeViewModel(userRole, userUID.get());
         }
 
         Button addButton = binding.buttonAddNote;
@@ -87,7 +87,41 @@ public class DietFragment extends Fragment {
         return root;
     }
 
-    private void initializeViewModel(String userRole, String userUID, String username) {
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences preferences = getActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userRole = preferences.getString("UserRole", "Athlete");
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        AtomicReference<String> userUID = new AtomicReference<>(user.getUid());
+        String username, email = null;
+
+        Bundle args = getArguments();
+        if (args != null) {
+            username = args.getString("username", "");
+            email = args.getString("email", "");
+
+            TextView usernameTextView = binding.textUsername;
+            String menuDiet = getString(R.string.menu_diet);
+            usernameTextView.setText("This is " + username + "'s " + menuDiet);
+            usernameTextView.setVisibility(View.VISIBLE);
+
+            getUserUIDByEmail(email, useruid -> {
+                if (useruid != null) {
+                    userUID.set(useruid);
+                }
+                initializeViewModel(userRole, userUID.get());
+            });
+
+        } else {
+            username = null;
+            initializeViewModel(userRole, userUID.get());
+        }
+    }
+
+    private void initializeViewModel(String userRole, String userUID) {
         dietViewModel = new ViewModelProvider(this, new DietViewModelFactory(userRole, userUID))
                 .get(DietViewModel.class);
 

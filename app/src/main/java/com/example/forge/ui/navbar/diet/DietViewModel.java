@@ -83,6 +83,59 @@ public class DietViewModel extends ViewModel {
         return dietNotes;
     }
 
+    public void deleteMessage(Message message, String userRole, String userUID) {
+        db.collection(userRole.toLowerCase()).document(user.getUid())
+                .collection("diets")
+                .document(userUID)
+                .collection("diet notes")
+                .whereEqualTo("timestamp", message.getTimestamp())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        db.collection(userRole.toLowerCase()).document(user.getUid())
+                                .collection("diets")
+                                .document(userUID)
+                                .collection("diet notes")
+                                .document(document.getId())
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    if (dietNotes.getValue() != null) {
+                                        List<Message> currentNotes = new ArrayList<>(dietNotes.getValue());
+                                        currentNotes.remove(message);
+                                        dietNotes.setValue(currentNotes);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                });
+                    }
+                });
+        db.collection(userRole.toLowerCase()).document(user.getUid())
+                .collection("diets")
+                .document(user.getUid())
+                .collection("diet notes")
+                .whereEqualTo("timestamp", message.getTimestamp())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        db.collection(userRole.toLowerCase()).document(user.getUid())
+                                .collection("diets")
+                                .document(user.getUid())
+                                .collection("diet notes")
+                                .document(document.getId())
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    if (dietNotes.getValue() != null) {
+                                        List<Message> currentNotes = new ArrayList<>(dietNotes.getValue());
+                                        currentNotes.remove(message);
+                                        dietNotes.setValue(currentNotes);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                });
+                    }
+                });
+    }
+
     public void addDietNote(Message note, String userRole, String userUID, String username) {
         List<Message> currentNotes = dietNotes.getValue();
         if (currentNotes != null) {

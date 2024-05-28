@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.R;
 import com.example.forge.Message;
-import com.example.forge.ui.MessageAdapter;
+import com.example.forge.ui.ChosenMessageAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ChosenDietFragment extends Fragment {
     private FragmentDietBinding binding;
     private List<Message> dietNotesList;
     private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
+    private ChosenMessageAdapter messageAdapter;
     private DietViewModel dietViewModel;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -97,7 +97,7 @@ public class ChosenDietFragment extends Fragment {
         recyclerView = binding.getRoot().findViewById(R.id.recycler_view_diet);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         dietNotesList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(dietNotesList, getContext(), userRole, userUID);
+        messageAdapter = new ChosenMessageAdapter(dietNotesList, getContext(), userRole, userUID, dietViewModel);
         recyclerView.setAdapter(messageAdapter);
 
         dietViewModel.loadDietNotes(userRole, userUID);

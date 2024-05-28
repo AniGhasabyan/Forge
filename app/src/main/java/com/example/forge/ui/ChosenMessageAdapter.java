@@ -14,16 +14,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.forge.Message;
 import com.example.forge.R;
+import com.example.forge.ui.navbar.diet.DietViewModel;
 
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+public class ChosenMessageAdapter extends RecyclerView.Adapter<ChosenMessageAdapter.MessageViewHolder> {
 
     private List<Message> messages;
     private Context context;
     private OnMessageDeleteListener messageDeleteListener;
     private String userRole;
     private String userUID;
+    private DietViewModel dietViewModel;
 
     public interface OnMessageDeleteListener {
         void onMessageDeleted(Message message, String userRole, String userUID);
@@ -33,11 +35,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         this.messageDeleteListener = listener;
     }
 
-    public MessageAdapter(List<Message> messages, Context context, String userRole, String userUID) {
+    public ChosenMessageAdapter(List<Message> messages, Context context, String userRole, String userUID) {
         this.messages = messages;
         this.context = context;
         this.userRole = userRole;
         this.userUID = userUID;
+    }
+
+    public ChosenMessageAdapter(List<Message> messages, Context context, String userRole, String userUID, DietViewModel dietViewModel) {
+        this.messages = messages;
+        this.context = context;
+        this.userRole = userRole;
+        this.userUID = userUID;
+        this.dietViewModel = dietViewModel;
     }
 
     @NonNull
@@ -86,8 +96,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 break;
         }
 
+        holder.itemView.setOnLongClickListener(v -> {
+            showDeleteDialog(message);
+            return true;
+        });
+
         holder.itemView.setOnClickListener(v -> {
         });
+    }
+
+    private void showDeleteDialog(final Message message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Delete For Yourself");
+        builder.setMessage("Are you sure you want to delete this?");
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            dietViewModel.deleteMessage(message, userRole, userUID);
+            Toast.makeText(context, "Message deleted", Toast.LENGTH_SHORT).show();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
+        builder.show();
     }
 
     @Override
