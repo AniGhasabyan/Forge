@@ -2,20 +2,22 @@ package com.example.forge.ui.profile;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -24,11 +26,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
-import com.example.forge.LoginActivity;
 import com.example.forge.R;
 import com.example.forge.databinding.FragmentProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProfileFragment extends Fragment {
 
@@ -63,6 +66,8 @@ public class ProfileFragment extends Fragment {
         Button editProfileButton = view.findViewById(R.id.buttonChangePassword);
         ImageButton addImage = view.findViewById(R.id.add_image);
         profilePicture = view.findViewById(R.id.imageViewAvatar);
+        EditText sportEditText = view.findViewById(R.id.sport_ac);
+        Button saveButton = view.findViewById(R.id.buttonSave_ac);
 
         FirebaseUser firebaseUser = auth.getCurrentUser();
         String displayName = firebaseUser.getDisplayName();
@@ -99,6 +104,55 @@ public class ProfileFragment extends Fragment {
         addImage.setOnClickListener(v -> {
             ImagePickerDialogFragment dialogFragment = new ImagePickerDialogFragment();
             dialogFragment.show(getChildFragmentManager(), "ImagePickerDialogFragment");
+        });
+
+        AtomicBoolean isEditTextChangedByUser = new AtomicBoolean(false);
+        sportEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isEditTextChangedByUser.get()) {
+                    if (s.length() > 0) {
+                        saveButton.setVisibility(View.VISIBLE);
+                    } else {
+                        saveButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        sportEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                isEditTextChangedByUser.set(true);
+            }
+        });
+
+        saveButton.setOnClickListener(v -> {
+            String sportText = sportEditText.getText().toString().trim();
+            if (!sportText.isEmpty()) {
+                viewModel.updateUserField("sport", sportText);
+                sportEditText.clearFocus();
+
+                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(sportEditText.getWindowToken(), 0);
+                }
+
+                saveButton.setVisibility(View.GONE);
+            }
+        });
+
+        viewModel.loadSport();
+
+        viewModel.getSport().observe(getViewLifecycleOwner(), sport -> {
+            sportEditText.setText(sport);
         });
 
         logoutButton.setOnClickListener(view1 -> showConfirmationDialog(false));

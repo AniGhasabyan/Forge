@@ -33,6 +33,10 @@ public class ProfileViewModel extends AndroidViewModel {
     private final MutableLiveData<String> profileImageUrl = new MutableLiveData<>();
     private String cachedImageUrl;
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<String> sport = new MutableLiveData<>();
+    public LiveData<String> getSport() {
+        return sport;
+    }
 
     public ProfileViewModel(@NonNull Application application) {
         super(application);
@@ -44,6 +48,33 @@ public class ProfileViewModel extends AndroidViewModel {
 
     public LiveData<String> getProfileImageUrl() {
         return profileImageUrl;
+    }
+
+    public void updateUserField(String field, String value) {
+        String userId = auth.getCurrentUser().getUid();
+        db.collection("users").document(userId)
+                .update(field, value)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getApplication(), "Saved successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getApplication(), "Failed to save", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    public void loadSport() {
+        String userId = auth.getCurrentUser().getUid();
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String sportValue = documentSnapshot.getString("sport");
+                        sport.setValue(sportValue);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getApplication(), "Failed to load sport", Toast.LENGTH_SHORT).show();
+                });
     }
 
     public void uploadImageToFirebaseStorage(Uri imageUri) {
