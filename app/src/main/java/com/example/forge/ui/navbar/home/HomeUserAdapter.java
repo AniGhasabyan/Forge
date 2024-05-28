@@ -15,13 +15,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.forge.MainActivity;
 import com.example.forge.R;
 import com.example.forge.User;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,18 +82,10 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
             @Override
             public void onClick(View view) {
                 if (userRole.equals("Athlete")) {
-                    foo1(user, finalCurrent);
+                    foo1(user, finalCurrent, holder);
                 } else if (userRole.equals("Coach")) {
-                    foo2(user, finalCurrent);
+                    foo2(user, finalCurrent, holder);
                 }
-
-                NavController navController = Navigation.findNavController(view);
-                navController.navigate(R.id.nav_home, bundle);
-
-                ((Activity) context).runOnUiThread(() -> {
-                    userList.remove(removedPosition);
-                    notifyItemRemoved(removedPosition);
-                });
             }
         });
         holder.imageButtonReject.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +107,14 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
             @Override
             public void onClick(View view) {
             }
+        });
+    }
+
+    private void updateUI(int position) {
+        ((Activity) context).runOnUiThread(() -> {
+            userList.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, userList.size());
         });
     }
 
@@ -208,7 +212,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         }
     }
 
-    private void foo1(User user, User current) {
+    private void foo1(User user, User current, UserViewHolder holder) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
@@ -249,7 +253,9 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
-                                                                                        // Handle success
+                                                                                        NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                                                                                        navController.navigate(R.id.nav_home);
+                                                                                        updateUI(holder.getAdapterPosition());
                                                                                     }
                                                                                 })
                                                                                 .addOnFailureListener(new OnFailureListener() {
@@ -288,7 +294,7 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
         }
     }
 
-    private void foo2(User user, User current) {
+    private void foo2(User user, User current, UserViewHolder holder) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserUID = getCurrentUserUID();
         if (currentUserUID != null) {
@@ -329,7 +335,9 @@ public class HomeUserAdapter extends RecyclerView.Adapter<HomeUserAdapter.UserVi
                                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
-                                                                                        // Handle success
+                                                                                        NavController navController = Navigation.findNavController((Activity) context, R.id.nav_host_fragment_content_main);
+                                                                                        navController.navigate(R.id.nav_home);
+                                                                                        updateUI(holder.getAdapterPosition());
                                                                                     }
                                                                                 })
                                                                                 .addOnFailureListener(new OnFailureListener() {
