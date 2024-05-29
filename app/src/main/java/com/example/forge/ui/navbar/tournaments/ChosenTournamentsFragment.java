@@ -108,7 +108,7 @@ public class ChosenTournamentsFragment extends Fragment {
                 long currentDateClicked = view.getDate();
 
                 if (currentDateClicked == lastDateClicked && doubleClick) {
-                    showDialogPrompt(year, month, dayOfMonth, username, userUID.get(), userRole.get());
+                    showDialogPrompt(year, month, dayOfMonth, username, userUID.get(), userRole.get(), args);
                 }
 
                 lastDateClicked = currentDateClicked;
@@ -136,7 +136,7 @@ public class ChosenTournamentsFragment extends Fragment {
         });
     }
 
-    private void showDialogPrompt(int year, int month, int dayOfMonth, String username2, String userUID, String userRole) {
+    private void showDialogPrompt(int year, int month, int dayOfMonth, String username, String userUID, String userRole, Bundle bundle) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Tournament Day");
         final EditText input = new EditText(requireContext());
@@ -147,24 +147,18 @@ public class ChosenTournamentsFragment extends Fragment {
                 String tournament = input.getText().toString().trim();
                 String date = dayOfMonth + "/" + (month + 1) + "/" + year;
                 String tournamentDetails = date + "\n\n" + tournament;
-                Bundle bundle = new Bundle();
-                bundle.putString("newNoteText", tournamentDetails);
-                bundle.putInt("destinationId", R.id.nav_tournaments);
                 if (!tournament.isEmpty()) {
-                    if(username2 == null && userRole.equals("Coach")){
-                        DialogChooseUserFragment dialogFragment = new DialogChooseUserFragment();
-                        dialogFragment.setArguments(bundle);
-                        dialogFragment.show(getChildFragmentManager(), "choose_user_dialog");
-                    } else if (username2 != null) {
-                        tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, " - " + username2);
+                    if(username == null && userRole.equals("Coach")){
+                    } else if (username != null) {
+                        tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, " - " + username);
                         NavController navController = Navigation.findNavController(requireView());
                         navController.popBackStack();
-                        navController.navigate(R.id.nav_tournaments);
+                        navController.navigate(R.id.nav_chosen_tournaments, bundle);
                     } else {
                         tournamentsViewModel.addTournament(tournamentDetails, userRole, userUID, "");
                         NavController navController = Navigation.findNavController(requireView());
                         navController.popBackStack();
-                        navController.navigate(R.id.nav_tournaments);
+                        navController.navigate(R.id.nav_chosen_tournaments, bundle);
                     }
                 }
             }
